@@ -1,0 +1,22 @@
+# Try to find appropriate low-fidelty, high-fidelty pair as starting point. 
+
+# Current QoI is horizontal dispacement of the L-shaped domain. 
+
+# Using 200 samples, r = 10, n = 20
+
+
+sigma = 0.33, corr_length = 0.3, d = 7, nu = 0.3
+L 4.01 %
+Bi 2.45 %
+
+nu = 0.15 
+L 3.8 %
+Bi 2. 7 %
+
+nu = 0.3, sigma 0.85
+L 11.6 % 
+B 7.6 % 
+
+nu = 0.3, sigma 0.85 and corr_length 0.1
+L 13.2
+B 10.55
