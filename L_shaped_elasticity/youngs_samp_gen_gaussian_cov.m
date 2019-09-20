@@ -1,4 +1,5 @@
-function youngs_samp_gen_gaussian_cov(youngs_0, sigma, L_c, d, xy_coord, xi,num_kl_grid,delta)
+function youngs_samp_gen_gaussian_cov(youngs_0, sigma, L_c, d, xy_coord,...
+    xi,num_kl_grid,delta)
 
 % note code applied for square domain but will read youngs over the l-shaped
 
@@ -81,6 +82,7 @@ for i=1:nsim
 end
 
 Youngs = Youngs*(1+delta); 
+1; 
 save('./fenics_inputs/Youngs.mat', 'Youngs')
 
 end

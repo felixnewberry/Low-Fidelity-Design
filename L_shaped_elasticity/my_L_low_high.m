@@ -1,4 +1,5 @@
-function [error_bound,err_Ahat, Uc, Uf] = my_L_low_high(nsim, n, r,n_reps)
+function [error_bound,err_Ahat, Uc, Uf] = my_L_low_high(X,nsim, n, r,n_reps,...
+    mode_delta, mode_qoi)
 
 %%% Inputs
 
@@ -40,29 +41,43 @@ d = 7;
 youngs_0 = 0.1; % was 0.1. not sure what to make of this. 
 num_kl_grid = 8 * d; % Note this should be appropriately checked
 
+nu = 0.3; 
+delta_y = 0; 
+
+if mode_delta == 0
+    nu = nu*(1+X); 
+elseif mode_delta ==1
+    delta_y = X; 
+end
+save('./fenics_inputs/inputs.mat','nu','mode_qoi')
+
 % Extract number of degrees of freedom and nodal coordinates
 frid = fopen(['./mesh/mesh_' num2str(coarse_level) '.txt'],'r');
 mesh_info = fscanf(frid,'%d',[1,2]);
 xy_coarse = fscanf(frid,'%g %g',[2 mesh_info(1)]); xy_coarse = xy_coarse';
 % full field
-% coarse_grid = size(xy_coarse,1);
-% line
-coarse_grid = 6; 
+if mode_qoi == 0
+    coarse_grid = 6; 
+elseif mode_qoi == 1
+    coarse_grid = size(xy_coarse,1);
+end
+
 
 frid = fopen(['./mesh/mesh_' num2str(fine_level) '.txt'],'r');
 mesh_info = fscanf(frid,'%d',[1,2]);
 xy_fine = fscanf(frid,'%g %g',[2 mesh_info(1)]); xy_fine = xy_fine';
-% full_field
-fine_grid = size(xy_fine,1);
-% line
-fine_grid = 22; 
+if mode_qoi == 0
+    fine_grid = 22; 
+elseif mode_qoi == 1
+    fine_grid = size(xy_fine,1);
+end
 
 % % xi 
 load('fenics_inputs/xi')
 
 %%%%%%%%%%%%COARSE GRID
 %2A generate youngs data
-youngs_samp_gen_gaussian_cov(youngs_0, sigma, corr_length, d, xy_coarse, xi, num_kl_grid)
+youngs_samp_gen_gaussian_cov(youngs_0, sigma, corr_length, d, xy_coarse, xi, num_kl_grid,delta_y)
 
 % Generate mesh file name
 system(['cp ./mesh/mesh_' num2str(coarse_level) '.xml' ' ./mesh/mesh.xml'])
@@ -92,7 +107,7 @@ system('rm -f L_data/solution.*');
 % load('L_data/Uf')
 % Uf = U; 
 
-youngs_samp_gen_gaussian_cov(youngs_0, sigma, corr_length, d, xy_fine, xi, num_kl_grid)
+youngs_samp_gen_gaussian_cov(youngs_0, sigma, corr_length, d, xy_fine, xi, num_kl_grid,delta_y)
 
 % Generate mesh file name
 system(['cp ./mesh/mesh_' num2str(fine_level) '.xml' ' ./mesh/mesh.xml'])
@@ -187,6 +202,7 @@ errors_Ahat = (Uf-Uf(:,ix_r)*P_s_r); %/norm(Uf);
 % % save('Beam_design/Bi_nom','Bi')
 % save('Beam_design/Bi_opt','Bi')
 
-1; 
+1;
+
 
 end

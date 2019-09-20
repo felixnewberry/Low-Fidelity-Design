@@ -39,17 +39,24 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%% Choose optimization method
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-check_data = 0; % update with 0 pertubations to bound. 
+check_data = 1; % update with 0 pertubations to bound. 
 
-line_search = 1; 
-mode = 1;  % mode 0 is nu, mode 1 is E
+line_search = 0; 
 
+
+
+mode_delta = 0;  
 %%% change this
 % 0 is nu
 % 1 is E
 % % 2 is h2
 % % 3 is h3
 % % 4 is h1=h2 and h3
+
+mode_qoi = 1; 
+% 0 is line from x = 0, y = 0 to y = 1
+% 1 is field 
+
 
 % % mode for entire field and just line? not yet. 
 % mode_qoi = 0; 
@@ -77,12 +84,12 @@ dof_coords_c = dof_coords;
 load('L_data/dof_coords_f')
 dof_coords_f = dof_coords; 
 
-%Uf fine
-load('L_data/Uf')
-Uf = U; 
-% Uc course
-load('L_data/Uc')
-Uc = U; 
+% %Uf fine
+% load('L_data/Uf')
+% Uf = U; 
+% % Uc course
+% load('L_data/Uc')
+% Uc = U; 
 
 % xi 
 load('fenics_inputs/xi')
@@ -131,7 +138,9 @@ nsim = 200;
 X = 0; 
 
 % Find Uh Uc and bound 
-% [error_bound,err_Ahat, Uc, Uf] = my_L_low_high(nsim, n, r,n_bound_reps); 
+% [error_bound,err_Ahat, Uc, Uf] = my_L_low_high(X,nsim, n, r,n_bound_reps, mode_delta, mode_qoi); 
+% 
+% 1; 
 
 % % interploate surface solution
 % Uc_int = zeros(length(dof_coords_f),nsim); 
@@ -168,52 +177,55 @@ X = 0;
 % indices x = 0 and y > 0 
 
 % bi-fidelity 
-[error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r, mode, n_bound_reps); 
+[error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r, mode_delta, n_bound_reps, mode_qoi); 
 
 
 % Load established Uh and nominal Ul and Ub. 
 
 1; 
 
-load('L_data/Idx_f')
-load('L_data/Idx_c')
+if mode_qoi == 0
+    load('L_data/Idx_f')
+    load('L_data/Idx_c')
 
-load('L_data/Uf')
-Uf = U(Idx_f,:); 
-load('L_data/Uc')
-Uc = U(Idx_c,:); 
+    load('L_data/Uf_line')
+    Uf = U(Idx_f,:); 
+    load('L_data/Uc_line')
+    Uc = U(Idx_c,:); 
 
-load('L_data/x_f')
-load('L_data/x_c')
+    load('L_data/x_f')
+    load('L_data/x_c')
+    load('L_data/Ub_line')
+    
+        % interploate surface solution
+    Uc_int = zeros(length(x_f),nsim); 
 
-load('L_data/Ub')
+    for i_int = 1:nsim
+        Uc_int(:,i_int) = interp1(x_c,Uc(:,i_int),x_f); 
+        1; 
 
-% interploate surface solution
-Uc_int = zeros(length(x_f),nsim); 
+    end
+elseif mode_qoi == 1
+    load('L_data/Uf_field')
+    Uf = U; 
+    load('L_data/Uc_field')
+    Uc = U; 
+    load('L_data/Ub_field')
+    Ub = U; 
+    Uc_int = zeros(length(dof_coords_f),nsim); 
 
-for i_int = 1:nsim
-%     F = scatteredInterpolant(x_c, Uc(:,i_int)); %dof_coords_f(:,1),dof_coords_f(:,2)); 
-%     Uc_int(:,i_int) = F(x_f); 
-    Uc_int(:,i_int) = interp1(x_c,Uc(:,i_int),x_f); 
-    1; 
+    for i_int = 1:nsim
+        F = scatteredInterpolant(dof_coords_c(:,1),dof_coords_c(:,2), Uc(:,i_int));
+        Uc_int(:,i_int) = F(dof_coords_f(:,1),dof_coords_f(:,2));
+    end
     
 end
+    
 
-figure
-p1 = plot(x_f,Uf(:,end),'-x','color',c1, 'LineWidth', LW, 'MarkerSize', MS);
-hold on
-p2 = plot(x_c,Uc(:,end),'-o','color',c2, 'LineWidth', LW, 'MarkerSize', MS);
-p3 = plot(x_f,Uc_int(:,end),'-d','color',c3, 'LineWidth', LW, 'MarkerSize', MS);
-p4 = plot(x_f,Ub(:,end),'-s','color',c4, 'LineWidth', LW, 'MarkerSize', MS);
-hold off
-xlabel('y', 'interpreter', 'latex', 'fontsize', FS)
-ylabel('Horizontal displacement', 'interpreter', 'latex', 'fontsize', FS)
-legend([p1,p2,p3,p4],{'H','L','L_int','B'},'interpreter', 'latex', 'fontsize', FS_leg)
-grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
 
-error_L = norm(Uf-Uc_int)/norm(Uf);
 
-fprintf("Low-fidelity error:  %d .\n Bi-fidelity error:  %d \n",error_L, err_Ahat);
+
+
 
 %%%
 
@@ -223,37 +235,72 @@ fprintf("Low-fidelity error:  %d .\n Bi-fidelity error:  %d \n",error_L, err_Aha
 % Desire a worse low-fidelty model and a corresponding worse bi-fidelity
 % estimate. 
 
-% pdf
-[f_f,x_pdf_f] = ksdensity(Uf(1,:)); 
-[f_c,x_pdf_c] = ksdensity(Uc(1,:)); 
-[f_b,x_pdf_b] = ksdensity(Ub(1,:));
 
-figure % point 0, 1
-p1 = plot(x_pdf_f,f_f , 'color',c1,'LineWidth',LW);
+
+if mode_qoi == 0 
+    figure
+    p1 = plot(x_f,Uf(:,end),'-x','color',c1, 'LineWidth', LW, 'MarkerSize', MS);
+    hold on
+    p2 = plot(x_c,Uc(:,end),'-o','color',c2, 'LineWidth', LW, 'MarkerSize', MS);
+    % p3 = plot(x_f,Uc_int(:,end),'-d','color',c3, 'LineWidth', LW, 'MarkerSize', MS);
+    p4 = plot(x_f,Ub(:,end),'-s','color',c3, 'LineWidth', LW, 'MarkerSize', MS);
+    hold off
+    xlabel('y', 'interpreter', 'latex', 'fontsize', FS)
+    ylabel('Horizontal displacement', 'interpreter', 'latex', 'fontsize', FS)
+    % legend([p1,p2,p3,p4],{'H','L','L_int','B'},'interpreter', 'latex', 'fontsize', FS_leg)
+    legend([p1,p2,p4],{'H','L','B'},'interpreter', 'latex', 'fontsize', FS_leg)
+    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+    
+    % pdf
+    [f_f,x_pdf_f] = ksdensity(Uf(1,:)); 
+    [f_c,x_pdf_c] = ksdensity(Uc(1,:)); 
+    [f_b,x_pdf_b] = ksdensity(Ub(1,:));
+
+    figure % point 0, 1
+    p1 = plot(x_pdf_f,f_f , 'color',c1,'LineWidth',LW);
+    hold on
+    p2 = plot(x_pdf_c,f_c , 'color',c2,'LineWidth',LW);
+    p3 = plot(x_pdf_b,f_b , 'color',c3,'LineWidth',LW);
+    hold off
+    xlabel('Horizontal displacement, $u(0.0,1.0)$', 'interpreter', 'latex', 'fontsize', FS)
+    ylabel('plot of $u(0.0,1.0)$', 'interpreter', 'latex', 'fontsize', FS)
+    legend([p1,p2,p3],{'H','L','B'},'interpreter', 'latex', 'fontsize', FS_leg)
+    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+    
+    
+elseif mode_qoi == 1
+    figure
+    p1 = plot3(dof_coords_f(:,1),dof_coords_f(:,2),Uf(:,end),'x','color',c1);
+    hold on
+    p2 = plot3(dof_coords_c(:,1),dof_coords_c(:,2),Uc(:,end),'o','color',c2);
+    p3 = plot3(dof_coords_f(:,1),dof_coords_f(:,2),Uc_int(:,end),'d','color',c3);
+    hold off
+    xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
+    ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
+    zlabel('Horizontal displacement', 'interpreter', 'latex', 'fontsize', FS)
+    legend([p1,p2,p3],{'H','L','L_int'},'interpreter', 'latex', 'fontsize', FS_leg)
+    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+    
+end
+
+
+error_L = norm(Uf-Uc_int)/norm(Uf);
+
+fprintf("Low-fidelity error:  %d \n Error Bound:  %d \n Bi-fidelity error:  %d \n",error_L, error_bound, err_Ahat);
+
+% svd
+figure
+p1 = semilogy(svd(Uf)/max(svd(Uf)),'-x','color',c1,'LineWidth',LW,'MarkerSize',MS); 
 hold on
-p2 = plot(x_pdf_c,f_c , 'color',c2,'LineWidth',LW);
-p3 = plot(x_pdf_b,f_b , 'color',c3,'LineWidth',LW);
-hold off
-xlabel('Horizontal displacement, $u(0.0,1.0)$', 'interpreter', 'latex', 'fontsize', FS)
-ylabel('plot of $u(0.0,1.0)$', 'interpreter', 'latex', 'fontsize', FS)
-legend([p1,p2,p3],{'H','L','B'},'interpreter', 'latex', 'fontsize', FS_leg)
+p2 = semilogy(svd(Uc)/max(svd(Uc)),'-o','color',c2,'LineWidth',LW,'MarkerSize',MS); 
+% p3 = semilogy(svd(Ub)/max(svd(Ub)),'-x','color',c1,'LineWidth',LW,'MarkerSize',MS); 
+xlabel('index $i$', 'interpreter', 'latex', 'fontsize', FS)
+ylabel('Normalized singular value', 'interpreter', 'latex', 'fontsize', FS)
+legend([p1,p2],{'H','L'},'interpreter', 'latex', 'fontsize', FS_leg)
 grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+xlim([1,30])
 
 
-
-% Full field QoI
-% figure
-% p1 = plot3(dof_coords_f(:,1),dof_coords_f(:,2),Uf(:,end),'x','color',c1);
-% hold on
-% p2 = plot3(dof_coords_c(:,1),dof_coords_c(:,2),Uc(:,end),'o','color',c2);
-% p3 = plot3(dof_coords_f(:,1),dof_coords_f(:,2),Uc_int(:,end),'d','color',c3);
-% hold off
-% xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
-% ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
-% zlabel('Horizontal displacement', 'interpreter', 'latex', 'fontsize', FS)
-% legend([p1,p2,p3],{'H','L','L_int'},'interpreter', 'latex', 'fontsize', FS_leg)
-% grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
-% 
 
 
 
@@ -277,19 +324,20 @@ if line_search == 1
 % nu
 % delta_vec = 0.0:0.05:0.4;
 % delta_vec = -0.3:0.05:0.1;
-delta_vec = -0.04:0.2:0.04;
+delta_vec = -0.04:0.02:0.04;
 
 % E
 % delta_vec = -0.7:0.1:0.7;
-delta_vec = -0.04:0.2:0.04;
+% delta_vec = -0.04:0.02:0.04;
+% delta_vec = -0.95:0.95:0.95;
 
 
-if mode == 0
+if mode_delta == 0
 %     delta_vec = -0.5:0.1:0.5;
 %     delta_vec = -0.95:0.1:0.5;
 
     plot_label = '$ \Delta \nu [\%]$';
-elseif mode == 1
+elseif mode_delta == 1
 %     delta_vec = -0.95:0.1:0.5;
     plot_label = '$ \Delta E [\%]$';
 % elseif mode == 2
@@ -312,11 +360,14 @@ tic
 
 for i_test = 1:length(delta_vec)
     
-[error_bound,err_Ahat,efficacy] = my_L_bound(delta_vec(i_test),nsim, n, r, mode, n_bound_reps); 
+[error_bound,err_Ahat,efficacy] = my_L_bound(delta_vec(i_test),nsim, n, r, mode_delta, n_bound_reps, mode_qoi); 
 
 error_bound_mat(i_test) = error_bound;
 error_Ahat_mat(i_test) =  err_Ahat;
 efficacy_mat(i_test) = efficacy; 
+
+1; 
+
 
 end
 
@@ -400,7 +451,7 @@ end
 if grid_search == 1
 %%
 
-mode = 4; 
+mode_delta = 4; 
 
 % 40 x 40 takes 196 s
 % t3_vec = 5:5:200; 
@@ -423,7 +474,7 @@ for i_test = 1:length(delta_t1_vec)
  i_test
 for i_t3 = 1:length(delta_t3_vec)
 
-[error_bound,err_Ahat,efficacy] =  my_beam_bound([delta_t1_vec(i_test),delta_t3_vec(i_t3)],nsim, n, r, mode, n_bound_reps);
+[error_bound,err_Ahat,efficacy] =  my_beam_bound([delta_t1_vec(i_test),delta_t3_vec(i_t3)],nsim, n, r, mode_delta, n_bound_reps);
 
 % results(i_t3,:) = results(i_t3,:) +[error_bound, err_Ahat, efficacy]; 
 error_bound_mat(i_test,i_t3) = error_bound; 
@@ -516,7 +567,7 @@ end
 if random_search == 1
 %%    
 
-mode = 4; 
+mode_delta = 4; 
 n_samps = 200; 
 
 % Identify limits from t1_vec and t3_vec
@@ -579,7 +630,7 @@ delta_t3_rand(1:2) = [0,29];
 
 for i_t = 1:n_samps
     
-[error_bound,err_Ahat,efficacy] =  my_beam_bound([delta_t1_rand(i_t),delta_t3_rand(i_t)],nsim, n, r, mode, n_bound_reps);
+[error_bound,err_Ahat,efficacy] =  my_beam_bound([delta_t1_rand(i_t),delta_t3_rand(i_t)],nsim, n, r, mode_delta, n_bound_reps);
 
 % error_bound = ahat_error_est/norm(Uf);
 % err_Ahat = norm(Uf-Uf(:,ix)*P_s)/norm(Uf);

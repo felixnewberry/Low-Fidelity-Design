@@ -1,4 +1,5 @@
-function [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r, mode,n_reps)
+function [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r,...
+    mode_delta,n_reps,mode_qoi)
 
 %%% Inputs
 
@@ -42,19 +43,24 @@ num_kl_grid = 8 * d; % Note this should be appropriately checked
 nu = 0.3; 
 delta_y = 0; 
 
-if mode == 0
+if mode_delta == 0
     nu = nu*(1+X); 
-elseif mode ==1
+elseif mode_delta ==1
     delta_y = X; 
 end
     
-save('./fenics_inputs/nu.mat','nu')
+save('./fenics_inputs/inputs.mat','nu','mode_qoi')
+
 % Extract number of degrees of freedom and nodal coordinates
 frid = fopen(['./mesh/mesh_' num2str(coarse_level) '.txt'],'r');
 mesh_info = fscanf(frid,'%d',[1,2]);
 xy_coarse = fscanf(frid,'%g %g',[2 mesh_info(1)]); xy_coarse = xy_coarse';
-coarse_grid = size(xy_coarse,1);
-coarse_grid = 6; 
+if mode_qoi == 0
+    coarse_grid = 6; 
+elseif mode_qoi == 1
+    coarse_grid = size(xy_coarse,1);
+end
+
 
 % % xi 
 load('fenics_inputs/xi')
@@ -86,17 +92,22 @@ end
 % save(file,'U','-mat')
 
 
-load('L_data/Idx_f')
-load('L_data/Idx_c')
+
 
 %Uf fine
-load('L_data/Uf')
-Uf = U(Idx_f,:); 
+if mode_qoi == 0  
+    load('L_data/Idx_f')
+    load('L_data/Idx_c')
+    load('L_data/Uf_line')
+    Uf = U(Idx_f,:); 
+    Uc = Uc(Idx_c,:); 
+elseif mode_qoi == 1
+    load('L_data/Uf_field')
+    Uf = U; 
+end
+
 
 samps = 1:nsim; 
-
-% load('L_data/Uc')
-Uc = Uc(Idx_c,:); 
 
 Uf = Uf(:,samps);
 Uc = Uc(:,samps);

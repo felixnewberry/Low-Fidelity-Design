@@ -79,8 +79,9 @@ content = loadmat('./fenics_inputs/Youngs.mat')
 young = content['Youngs']
 E = Function(W)
 
-content = loadmat('./fenics_inputs/nu.mat')
+content = loadmat('./fenics_inputs/inputs.mat')
 nu = float(content['nu'])
+mode_qoi = float(content['mode_qoi'])
 
 E = Function(W)
 
@@ -140,34 +141,15 @@ for i in range(len(young)):
     #File("u_pvd.pvd") << u_0
 
     # hardcode coordinates? Nah. Use dof_map / find coordinates.
-    u_0_array_field=u_0.vector()
+    if mode_qoi == 0:
+        indices = np.where(np.logical_and(abs(dof_coords[:, 0]) < 0.000001, dof_coords[:, 1] > -0.000001))[0]
+        # indices 4 and 5 (and likely more are in wrong order.)
+        dof_y = dof_coords[:,1]
+        dof_y[indices]
+        u_0_array = u_0.vector()[indices]
+    elif mode_qoi == 1:
+        u_0_array=u_0.vector()
 
-    indices = np.where(np.logical_and(abs(dof_coords[:, 0]) < 0.000001, dof_coords[:, 1] > -0.000001))[0]
-    # indices 4 and 5 (and likely more are in wrong order.)
-    dof_y = dof_coords[:,1]
-    dof_y[indices]
+    np.savetxt(fname,u_0_array)
 
-
-
-    #dof_y = dof_coords[indices,1]
-
-    u_0_array_line = u_0.vector()[indices]
-    # Want values where x = 0 and y > 0
-    # # interpolate solution
-    # Only necessary if QoI is entire field
-    # easier to do in matlab
-    # content = loadmat('./L_data/dof_coords_f.mat')
-    # dof_coords = content['dof_coords']
-    #
-    # u_0_array = np.zeros(dof_coords.shape[0])
-    #
-    # u_0.set_allow_extrapolation(True)
-    #
-    # for i_coords in range(dof_coords.shape[0]):
-    #     #print(dof_coords[i_coords,1])
-    #     u_0_array[i_coords] = u_0(dof_coords[i_coords,0],dof_coords[i_coords,1])
-
-    np.savetxt(fname,u_0_array_field)
-    np.savetxt(fname,u_0_array_line)
-
-    # save the 465 coordinates
+    # save the 465 coordinates in field, or 22 along line
