@@ -39,21 +39,26 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%% Choose optimization method
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-check_data = 1; % update with 0 pertubations to bound. 
+check_data = 0; % update with 0 pertubations to bound. 
 
-line_search = 0; 
+line_search = 1; 
 
 
 
-mode_delta = 0;  
+mode_delta = 3;  
 %%% change this
 % 0 is nu
 % 1 is E
+% 2 is changing trapezoid angle of slope of trapezoid. Nominal value 0. Max
+% maybe pi/8 to start. (corresponds to 0.4142 in max change to applied load)
+% 3 is changing mean width of trapezoid
+% temporary, try mode_delta = 1 as sigma or corr
+
 % % 2 is h2
 % % 3 is h3
 % % 4 is h1=h2 and h3
 
-mode_qoi = 1; 
+mode_qoi = 0; 
 % 0 is line from x = 0, y = 0 to y = 1
 % 1 is field 
 
@@ -106,7 +111,9 @@ load('fenics_inputs/xi')
 % tol = 1e-4; 
 
 % heuristic n = r+10
-r = 10; 
+% r = 10; 
+r = 6; % or it may break, not certain on nuances of this. 
+% some NaNs for im rank_k_gsqr within matrixID for certain pertubation values. 
 % r = 10;
 n = r+10; 
 
@@ -179,7 +186,6 @@ X = 0;
 % bi-fidelity 
 [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r, mode_delta, n_bound_reps, mode_qoi); 
 
-
 % Load established Uh and nominal Ul and Ub. 
 
 1; 
@@ -197,6 +203,8 @@ if mode_qoi == 0
     load('L_data/x_c')
     load('L_data/Ub_line')
     
+    load('L_data/Uc_line_2')
+        
         % interploate surface solution
     Uc_int = zeros(length(x_f),nsim); 
 
@@ -221,7 +229,6 @@ elseif mode_qoi == 1
     
 end
     
-
 
 
 
@@ -323,14 +330,25 @@ if line_search == 1
 
 % nu
 % delta_vec = 0.0:0.05:0.4;
-% delta_vec = -0.3:0.05:0.1;
-delta_vec = -0.04:0.02:0.04;
+% delta_vec = -0.3:0.05:0.3;
+
+% delta_vec = [-0.3,0.3];
+
+% delta_vec = -0.04:0.02:0.04;
 
 % E
-% delta_vec = -0.7:0.1:0.7;
-% delta_vec = -0.04:0.02:0.04;
+% delta_vec = 0:0.025:0.2;
+% do finer detail for sigma
+% delta_vec = -0.02:0.005:0.02;
 % delta_vec = -0.95:0.95:0.95;
 
+% Theta
+
+% delta_vec = [-pi/8:pi/16:pi/8];
+% delta_vec = [0:pi/16:7*pi/16]; % maximum angle corresponds to triangular shape 0 to 2
+
+% delta_q
+delta_vec = [-0.5:0.25:0.5];
 
 if mode_delta == 0
 %     delta_vec = -0.5:0.1:0.5;
@@ -339,13 +357,20 @@ if mode_delta == 0
     plot_label = '$ \Delta \nu [\%]$';
 elseif mode_delta == 1
 %     delta_vec = -0.95:0.1:0.5;
-    plot_label = '$ \Delta E [\%]$';
+%     plot_label = '$ \Delta E [\%]$';
+%     plot_label = '$ \Delta \sigma [\%]$';
+    plot_label = '$ \Delta corr length [\%]$';
+
 % elseif mode == 2
 % %     delta_vec = -0.95:0.1:0.5;
 %     plot_label = '$ \Delta h_2 [\%]$';
 % elseif mode == 3
 % %     delta_vec = 0:1:35;
 %     plot_label = '$ \Delta h_3 [\%]$';
+elseif mode_delta == 2
+    plot_label = '$ \Delta \theta [rad] $';    
+elseif mode_delta == 3
+    plot_label = '$ \Delta q [\%] $';    
 end
 
 % delta_vec = -0.5:0.1:0.5;
@@ -358,8 +383,10 @@ efficacy_mat = zeros(length(delta_vec),1);
 
 tic
 
+%%% matrixIDvR fails on svd. NaNs in R if maxrnk > rank = 6 of problem... 
+
 for i_test = 1:length(delta_vec)
-    
+delta_vec(i_test)
 [error_bound,err_Ahat,efficacy] = my_L_bound(delta_vec(i_test),nsim, n, r, mode_delta, n_bound_reps, mode_qoi); 
 
 error_bound_mat(i_test) = error_bound;
@@ -399,7 +426,7 @@ grid on
 % Not appropriate to plot Ahat here
 figure
 hold on
-p1 = plot(100*delta_vec,100*error_Ahat_mat,'r-', 'LineWidth',LW); 
+p1 = plot(100*delta_vec,100*error_Ahat_mat,'sr-', 'LineWidth',LW); 
 hold off
 xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bi $[\%]$','interpreter','latex','Fontsize',FS)

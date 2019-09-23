@@ -1,6 +1,7 @@
 function [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r,...
     mode_delta,n_reps,mode_qoi)
 
+
 %%% Inputs
 
 % X - vector of deltas 
@@ -34,22 +35,41 @@ coarse_level = 1; % 1-4
 % randn('state',1) %xi already generated. 
 
 % Define sigma, correlation length, and dimension of the one-D Gaussian defining youngs
+
+% % Test 1 
+% sigma = .85;
+% corr_length = 0.1;
+
+% Test 2 
 sigma = .85;
 corr_length = 0.1;
+
 d = 7;
 youngs_0 = 0.1; % was 0.1. not sure what to make of this. 
 num_kl_grid = 8 * d; % Note this should be appropriately checked
 
 nu = 0.3; 
-delta_y = 0; 
+delta_y = 0;
+delta_q = 0; 
+theta = 0; 
 
 if mode_delta == 0
     nu = nu*(1+X); 
 elseif mode_delta ==1
-    delta_y = X; 
+%     delta_y = X; 
+    delta_y = 0; 
+%     sigma = sigma*(1+X); 
+    corr_length = corr_length*(1+X); 
+elseif mode_delta == 2
+    % limit should be pm pi/8 to start (maybe less)
+    theta = X; 
+elseif mode_delta == 3
+    delta_q = X; 
 end
-    
-save('./fenics_inputs/inputs.mat','nu','mode_qoi')
+  
+1; 
+
+save('./fenics_inputs/inputs.mat','nu','mode_qoi','theta','delta_q')
 
 % Extract number of degrees of freedom and nodal coordinates
 frid = fopen(['./mesh/mesh_' num2str(coarse_level) '.txt'],'r');
@@ -100,6 +120,10 @@ if mode_qoi == 0
     load('L_data/Idx_c')
     load('L_data/Uf_line')
     Uf = U(Idx_f,:); 
+
+%     load('L_data/Uf_line_2')
+%     Uf = Uf(Idx_f,:); 
+    
     Uc = Uc(Idx_c,:); 
 elseif mode_qoi == 1
     load('L_data/Uf_field')
@@ -111,6 +135,10 @@ samps = 1:nsim;
 
 Uf = Uf(:,samps);
 Uc = Uc(:,samps);
+
+1; 
+mean(Uc(:))
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bi-fid details
@@ -138,6 +166,7 @@ A_R = Uf(:,rand_sample)/norm(Uf,'fro');
 
 % Obtain column skeleton of P
 % In the paper they use 100 samples of Uc here... 
+
 [P_s,ix] = matrixIDvR(B_R,n);
 
 % Inputs
@@ -156,6 +185,8 @@ error_bound_vec(i_reps) = ahat_error_est/norm(A_R);
 end
 
 error_bound = mean(error_bound_vec); 
+
+1; 
 
 [P_s_r,ix_r] = matrixIDvR(Uc,r);
 err_Ahat = norm(Uf-Uf(:,ix_r)*P_s_r)/norm(Uf);

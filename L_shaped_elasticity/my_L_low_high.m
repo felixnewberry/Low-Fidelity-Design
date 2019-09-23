@@ -35,8 +35,14 @@ fine_level = 4;
 % randn('state',1) %xi already generated. 
 
 % Define sigma, correlation length, and dimension of the one-D Gaussian defining youngs
-sigma = .85;
-corr_length = 0.1;
+% % Test 1
+% sigma = .85;
+% corr_length = 0.1;
+
+% Test 2
+sigma = .33;
+corr_length = 0.3;
+
 d = 7;
 youngs_0 = 0.1; % was 0.1. not sure what to make of this. 
 num_kl_grid = 8 * d; % Note this should be appropriately checked
@@ -203,6 +209,8 @@ errors_Ahat = (Uf-Uf(:,ix_r)*P_s_r); %/norm(Uf);
 % save('Beam_design/Bi_opt','Bi')
 
 1;
+
+save('L_data/Uf_line_2.mat')
 
 
 end

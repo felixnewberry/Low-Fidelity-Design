@@ -56,8 +56,29 @@ Gamma_N_L.mark(boundary_parts, 2)
 #ds = ds[boundary_parts]
 ds = Measure('ds',domain=mesh, subdomain_data=boundary_parts)
 
+# Load Young's modulus
+content = loadmat('./fenics_inputs/Youngs.mat')
+young = content['Youngs']
+
+
+content = loadmat('./fenics_inputs/inputs.mat')
+nu = float(content['nu'])
+mode_qoi = float(content['mode_qoi'])
+theta = float(content['theta'])
+delta_q = float(content['delta_q'])
+
 # Define the traction force on the left boundary (Neumann)
-f = Constant((1.0,0.0))
+# use theta in trapezoid. This will possibly work...
+# Currently does not work. Fix this. Shouldn't be hard.
+#load_profile = ('1.0+ x[1]*tan(theta)', '0.0')
+#load_profile = (1.0,0.0)
+# Test some other stuff
+# f = Constant(Expression(load_profile))
+# maybe this does something?
+#f1 = Constant((1.0,0.0))
+
+
+f = Expression(('1.0*(1 + delta_q) + x[1]*tan(theta)', '0.0'),degree=1, delta_q=delta_q, theta=theta)
 
 
 
@@ -67,6 +88,8 @@ W = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
 v = TestFunction(V)
 
+E = Function(W)
+
 V_0, V_1 = V.split()
 
 # Define Dirichlet boundaries
@@ -74,14 +97,7 @@ bcs = [DirichletBC(V_1, Constant(0.0), boundary_parts, 0),
        DirichletBC(V_0, Constant(0.0), boundary_parts, 1)]
 
 
-# Load Young's modulus
-content = loadmat('./fenics_inputs/Youngs.mat')
-young = content['Youngs']
-E = Function(W)
 
-content = loadmat('./fenics_inputs/inputs.mat')
-nu = float(content['nu'])
-mode_qoi = float(content['mode_qoi'])
 
 E = Function(W)
 
