@@ -46,7 +46,7 @@ line_search = 1;
 
 % I think this is broken for E (=1) just now... 
 
-mode_delta = 5;  
+mode_delta = 1;   
 %%% change this
 % 0 is nu
 % 1 is E
@@ -62,8 +62,8 @@ mode_delta = 5;
 % % 3 is h3
 % % 4 is h1=h2 and h3
 
-mode_qoi = 2; 
-% 0 is line from x = 0, y = 0 to y = 1
+mode_qoi = 0; 
+% 0 is line from x = 0, y = 0 to y = 1 change r to 6
 % 1 is field 
 % 2 is field 
 
@@ -116,7 +116,7 @@ load('fenics_inputs/xi')
 
 % heuristic n = r+10
 r = 10; 
-% r = 6; % or it may break, not certain on nuances of this. 
+r = 6; % or it may break, not certain on nuances of this. 
 % some NaNs for im rank_k_gsqr within matrixID for certain pertubation values. 
 % r = 10;
 n = r+10; 
@@ -155,9 +155,6 @@ X = 0;
 % Find values from field. Also sort, sort is used for current high fidelity
 % data. 
 
-% bi-fidelity \
-r = 10;
-n = r+10;
 [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r, mode_delta, n_bound_reps, mode_qoi); 
 error_bound
 err_Ahat
@@ -184,7 +181,7 @@ if mode_qoi == 0
     Uc_int = zeros(length(x_f),nsim); 
 
     for i_int = 1:nsim
-        Uc_int(:,i_inoundt) = interp1(x_c,Uc(:,i_int),x_f); 
+        Uc_int(:,i_int) = interp1(x_c,Uc(:,i_int),x_f); 
         1; 
 
     end
@@ -248,7 +245,7 @@ if mode_qoi == 0
     grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
     
     
-elseif mode_qoi == 1 || moce_qoi == 2
+elseif mode_qoi == 1 || mode_qoi == 2
     figure
     p1 = plot3(dof_coords_f(:,1),dof_coords_f(:,2),Uf(:,end),'x','color',c1);
     hold on
@@ -304,7 +301,7 @@ if line_search == 1
 
 % nu
 % delta_vec = 0.0:0.05:0.4;
-% delta_vec = 0.0:0.05:0.7;
+% delta_vec = 0.0:0.05:0.5;
 
 % delta_vec = -0.3:0.05:0.3;
 
@@ -315,7 +312,7 @@ if line_search == 1
 % E
 % delta_vec = 0:0.025:0.2;
 % do finer detail for sigma
-% delta_vec = -0.5:0.5:0.5;
+delta_vec = -0.5:0.5:0.5;
 
 % corr
 % delta_vec = 0.0:0.1:2.6;
@@ -332,7 +329,7 @@ if line_search == 1
 % delta_vec = [-7*pi/16:pi/16:0];
 
 % delta_q
-delta_vec = [-0.5:0.25:0.5];
+% delta_vec = [-0.5:0.25:0.5];
 
 if mode_delta == 0
 %     delta_vec = -0.5:0.1:0.5;

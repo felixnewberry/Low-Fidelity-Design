@@ -114,7 +114,7 @@ end
 % % save course data
 % file = sprintf( 'L_data/U%d.mat',coarse_level);
 % save(file,'U','-mat')
-
+system('rm -f L_data/solution.*');
 
 
 
