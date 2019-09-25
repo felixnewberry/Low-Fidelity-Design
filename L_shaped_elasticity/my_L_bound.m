@@ -56,14 +56,16 @@ theta = 0;
 if mode_delta == 0
     nu = nu*(1+X); 
 elseif mode_delta ==1
-%     delta_y = X; 
-    delta_y = 0; 
-%     sigma = sigma*(1+X); 
-    corr_length = corr_length*(1+X); 
+    delta_y = X; 
+%     delta_y = 0; 
 elseif mode_delta == 2
+    corr_length = corr_length*(1+X); 
+elseif mode_delta == 3
+    sigma = sigma*(1+X); 
+elseif mode_delta == 4
     % limit should be pm pi/8 to start (maybe less)
     theta = X; 
-elseif mode_delta == 3
+elseif mode_delta == 5
     delta_q = X; 
 end
   
@@ -78,6 +80,8 @@ xy_coarse = fscanf(frid,'%g %g',[2 mesh_info(1)]); xy_coarse = xy_coarse';
 if mode_qoi == 0
     coarse_grid = 6; 
 elseif mode_qoi == 1
+    coarse_grid = size(xy_coarse,1);
+elseif mode_qoi == 2
     coarse_grid = size(xy_coarse,1);
 end
 
@@ -128,6 +132,9 @@ if mode_qoi == 0
 elseif mode_qoi == 1
     load('L_data/Uf_field')
     Uf = U; 
+elseif mode_qoi == 2
+    load('L_data/Uf_stress')
+    Uf = Uf; 
 end
 
 
@@ -203,7 +210,7 @@ errors_Ahat = (Uf-Uf(:,ix_r)*P_s_r); %/norm(Uf);
 % save('tip_error_regular','tip_error')
 % save('tip_error_optimized','tip_error')
 
-% Bi = Uf(:,ix_r)*P_s_r; 
+% U = Uf(:,ix_r)*P_s_r; 
 % % save('Beam_design/Bi_nom','Bi')
 % save('Beam_design/Bi_opt','Bi')
 

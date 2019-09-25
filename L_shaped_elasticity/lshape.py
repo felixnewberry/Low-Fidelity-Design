@@ -119,6 +119,10 @@ dof_coords = W.tabulate_dof_coordinates().reshape((W.dim(),-1))
 #ufile = File("solution.pvd")
 #umfile = open("solution_middle.txt","w")
 
+d = mesh.geometry().dim()
+Vsig = FunctionSpace(mesh, 'P', 1)
+# Vsig = FunctionSpace(mesh, 'P', 1)
+
 
 for i in range(len(young)):
     #print(i)
@@ -165,7 +169,42 @@ for i in range(len(young)):
         u_0_array = u_0.vector()[indices]
     elif mode_qoi == 1:
         u_0_array=u_0.vector()
+    elif mode_qoi == 2:
+        #https://fenicsproject.org/pub/tutorial/html/._ftut1008.html
+        s = sigma(u) - (1./3)*tr(sigma(u))*Identity(d)
+        von_Mises_1 = sqrt(3./2*inner(s, s))
+        von_Mises = project(von_Mises_1, Vsig)
+        u_0_array=von_Mises.vector()
 
     np.savetxt(fname,u_0_array)
 
-    # save the 465 coordinates in field, or 22 along line
+    ### Post-processing for stress
+
+    # does stress have singularity in corner? This may be problematic...
+    # von mises calculation, option 1 interpolates to nodes. Gets a negative value in one corner.
+
+    # d = mesh.geometry().dim()
+    # s = sigma(u) - (1./3)*tr(sigma(u))*Identity(d)
+    # von_Mises_1 = sqrt(3./2*inner(s, s))
+    #
+    # # Vsig = FunctionSpace(mesh, 'P', 1)
+    # Vsig = FunctionSpace(mesh, 'P', 2)
+    # von_Mises = project(von_Mises_1, Vsig)
+
+    # # Cauchy stress tensor
+    # Vsig2 = TensorFunctionSpace(mesh, "DG", degree=0)
+    # sig = Function(Vsig2, name="Stress")
+    # sig.assign(project(sigma(u),Vsig2))
+
+    ## save values for paraview
+
+    # File("u_0_fine.pvd") << u_0
+    # File("u_1_fine.pvd") << u_1
+    # File("sig_fine.pvd") << von_Mises
+    if i == 0:
+        # File("u_0_coarse.pvd") << u_0
+        # File("u_1_coarse.pvd") << u_1
+        # File("sig_coarse.pvd") << von_Mises
+        File("u_0_fine.pvd") << u_0
+        File("u_1_fine.pvd") << u_1
+        File("sig_fine.pvd") << von_Mises

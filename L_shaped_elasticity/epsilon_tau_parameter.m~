@@ -44,26 +44,30 @@ check_data = 0; % update with 0 pertubations to bound.
 line_search = 1; 
 
 
+% I think this is broken for E (=1) just now... 
 
-mode_delta = 2;  
+mode_delta = 3;  
 %%% change this
 % 0 is nu
 % 1 is E
-% 2 is changing trapezoid angle of slope of trapezoid. Nominal value 0. Max
+% 2 is corr length
+% 3 is sigma
+% 4 is changing trapezoid angle of slope of trapezoid. Nominal value 0. Max
 % maybe pi/8 to start. (corresponds to 0.4142 in max change to applied load)
-% 3 is changing mean width of trapezoid
+% 5 is changing mean width of trapezoid
+
 % temporary, try mode_delta = 1 as sigma or corr
 
 % % 2 is h2
 % % 3 is h3
 % % 4 is h1=h2 and h3
 
-mode_qoi = 0; 
+mode_qoi = 2; 
 % 0 is line from x = 0, y = 0 to y = 1
 % 1 is field 
+% 2 is field 
 
 
-% % mode for entire field and just line? not yet. 
 % mode_qoi = 0; 
 % mode_qoi = 1; 
 
@@ -111,8 +115,8 @@ load('fenics_inputs/xi')
 % tol = 1e-4; 
 
 % heuristic n = r+10
-% r = 10; 
-r = 6; % or it may break, not certain on nuances of this. 
+r = 10; 
+% r = 6; % or it may break, not certain on nuances of this. 
 % some NaNs for im rank_k_gsqr within matrixID for certain pertubation values. 
 % r = 10;
 n = r+10; 
@@ -146,46 +150,17 @@ X = 0;
 
 % Find Uh Uc and bound 
 % [error_bound,err_Ahat, Uc, Uf] = my_L_low_high(X,nsim, n, r,n_bound_reps, mode_delta, mode_qoi); 
-% 
-% 1; 
 
-% % interploate surface solution
-% Uc_int = zeros(length(dof_coords_f),nsim); 
-% 
-% for i_int = 1:nsim
-%     F = scatteredInterpolant(dof_coords_c, Uc(:,i_int)); %dof_coords_f(:,1),dof_coords_f(:,2)); 
-%     Uc_int(:,i_int) = F(dof_coords_f); 
-% end
-% error_L = norm(Uf-Uc_int)/norm(Uf);
-
-% fprintf("Low-fidelity error:  %d .\n Bi-fidelity error:  %d \n",error_L, err_Ahat);
-
-
-%%
-% What if the qoI is some line of horizontal displacements, for instance
-% from x = 0, y = 0 to 1. 
 
 % Find values from field. Also sort, sort is used for current high fidelity
 % data. 
 
-% tol_1 = 1e-6; 
-% 
-% % low fid
-% [rows_c, cols] = find(abs(dof_coords_c(:,1)-0)<tol_1 & (dof_coords_c(:,2)-0)>=-tol_1);
-% [x_c,Idx_c] = sort(dof_coords_c(rows_c,2));
-% % Uc_2 = Uc(rows_c(Idx_c),:);
-% 
-% % low fid int and high fid
-% [rows_f, cols] = find(abs(dof_coords_f(:,1)-0)<tol_1 & (dof_coords_f(:,2)-0)>=-tol_1);
-% [x_f,Idx_f] = sort(dof_coords_f(rows_f,2));
-% Uc_int_2 = Uc_int(rows_f(Idx_f),:);
-
-% Uf_2 = Uf(rows_f(Idx_f),:);
-% indices x = 0 and y > 0 
-
-% bi-fidelity 
+% bi-fidelity \
+r = 10;
+n = r+10;
 [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r, mode_delta, n_bound_reps, mode_qoi); 
-
+error_bound
+err_Ahat
 % Load established Uh and nominal Ul and Ub. 
 
 1; 
@@ -209,7 +184,7 @@ if mode_qoi == 0
     Uc_int = zeros(length(x_f),nsim); 
 
     for i_int = 1:nsim
-        Uc_int(:,i_int) = interp1(x_c,Uc(:,i_int),x_f); 
+        Uc_int(:,i_inoundt) = interp1(x_c,Uc(:,i_int),x_f); 
         1; 
 
     end
@@ -227,22 +202,20 @@ elseif mode_qoi == 1
         Uc_int(:,i_int) = F(dof_coords_f(:,1),dof_coords_f(:,2));
     end
     
+elseif mode_qoi == 2
+    load('L_data/Uf_stress')
+    Uf = Uf; 
+    load('L_data/Uc_stress')
+    Uc = Uc; 
+    load('L_data/Ub_stress')
+    Ub = U; 
+    Uc_int = zeros(length(dof_coords_f),nsim); 
+
+    for i_int = 1:nsim
+        F = scatteredInterpolant(dof_coords_c(:,1),dof_coords_c(:,2), Uc(:,i_int));
+        Uc_int(:,i_int) = F(dof_coords_f(:,1),dof_coords_f(:,2));
+    end
 end
-    
-
-
-
-
-
-%%%
-
-
-% low-fidelity error is only 4 % - really not bad. 
-
-% Desire a worse low-fidelty model and a corresponding worse bi-fidelity
-% estimate. 
-
-
 
 if mode_qoi == 0 
     figure
@@ -275,7 +248,7 @@ if mode_qoi == 0
     grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
     
     
-elseif mode_qoi == 1
+elseif mode_qoi == 1 || moce_qoi == 2
     figure
     p1 = plot3(dof_coords_f(:,1),dof_coords_f(:,2),Uf(:,end),'x','color',c1);
     hold on
@@ -292,6 +265,7 @@ end
 
 
 error_L = norm(Uf-Uc_int)/norm(Uf);
+error_B = norm(Uf-Ub)/norm(Uf);
 
 fprintf("Low-fidelity error:  %d \n Error Bound:  %d \n Bi-fidelity error:  %d \n",error_L, error_bound, err_Ahat);
 
@@ -330,6 +304,8 @@ if line_search == 1
 
 % nu
 % delta_vec = 0.0:0.05:0.4;
+% delta_vec = 0.0:0.05:0.7;
+
 % delta_vec = -0.3:0.05:0.3;
 
 % delta_vec = [-0.3,0.3];
@@ -337,17 +313,26 @@ if line_search == 1
 % delta_vec = -0.04:0.02:0.04;
 
 % E
-delta_vec = 0:0.025:0.2;
+% delta_vec = 0:0.025:0.2;
 % do finer detail for sigma
-% delta_vec = -0.02:0.005:0.02;
+% delta_vec = -0.5:0.5:0.5;
+
+% corr
+% delta_vec = 0.0:0.1:2.6;
+% delta_vec = -0.95:0.95:0.95;
+
+% sigma
+% delta_vec = -0.05:0.05:0.05;
+% delta_vec = -0.95:0.15:0.2;
+
 % delta_vec = -0.95:0.95:0.95;
 
 % Theta
-
-% delta_vec = [-pi/8:pi/16:pi/8];
-delta_vec = [0:pi/16:pi/4]; % ma
+delta_vec = [-pi/8:pi/16:pi/8];
+% delta_vec = [0:pi/16:7*pi/16]; % maximum angle corresponds to triangular shape 0 to 2
 
 % delta_q
+% delta_vec = [-0.5:0.25:0.5];
 
 if mode_delta == 0
 %     delta_vec = -0.5:0.1:0.5;
@@ -356,18 +341,15 @@ if mode_delta == 0
     plot_label = '$ \Delta \nu [\%]$';
 elseif mode_delta == 1
 %     delta_vec = -0.95:0.1:0.5;
-%     plot_label = '$ \Delta E [\%]$';
-%     plot_label = '$ \Delta \sigma [\%]$';
-    plot_label = '$ \Delta corr length [\%]$';
-
-% elseif mode == 2
-% %     delta_vec = -0.95:0.1:0.5;
-%     plot_label = '$ \Delta h_2 [\%]$';
-% elseif mode == 3
-% %     delta_vec = 0:1:35;
-%     plot_label = '$ \Delta h_3 [\%]$';
+    plot_label = '$ \Delta E [\%]$';
 elseif mode_delta == 2
+    plot_label = '$ \Delta corr length [\%]$';
+elseif mode_delta == 3
+    plot_label = '$ \Delta \sigma [\%]$';
+elseif mode_delta == 4
     plot_label = '$ \Delta \theta [rad] $';    
+elseif mode_delta == 5
+    plot_label = '$ \Delta q [\%] $';    
 end
 
 % delta_vec = -0.5:0.1:0.5;
