@@ -589,6 +589,8 @@ n_samps = 1;
 delta_mat = [0, 0.0, 0,0.0334; 0, 2.6, 2.4, 2.1908; 0, -0.95, 0, -0.9392]; 
 
 delta_mat = [0.2274; 2.3557; -0.7113]; 
+
+delta_mat = [0; 0; 0]; 
 % r = 10 minimum value is -3.0334 (evidently unrealistic) error of
 % 6.9 %. 
 % Minimum is corner position at 0, 2.6, -0.95... 
@@ -614,9 +616,10 @@ error_bound_mat(i_t) = error_bound;
 error_Ahat_mat(i_t) =  err_Ahat;
 efficacy_mat(i_t) = efficacy; 
 
-% error_bound
-% err_Ahat
-% 1;
+error_bound
+err_Ahat
+1;
+
 
 
 
