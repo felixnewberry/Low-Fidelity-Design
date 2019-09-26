@@ -219,8 +219,12 @@ errors_Ahat = (Uf-Uf(:,ix_r)*P_s_r); %/norm(Uf);
 
 % U = Uf(:,ix_r)*P_s_r; 
 % % save('Beam_design/Bi_nom','Bi')
-save('L_data/Ub_stress_opt','U')
+% save('L_data/Ub_stress_opt','U')
 
+err_Ahat
+ahat_error_est/norm(A_R)
 1; 
+
+
 
 end
