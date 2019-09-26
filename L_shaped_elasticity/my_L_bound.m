@@ -10,11 +10,14 @@ function [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r,...
 % r - truncation with which bi-fidelity model is found
 
 % mode:
-% 0 test nu
-% 1 test E
-% % % 2 test t2 
-% % % 3 test t3
-% % % 4 test 
+% 0 is nu
+% 1 is E
+% 2 is corr length
+% 3 is sigma
+% 4 is theta - changing trapezoid angle of slope of trapezoid. Nominal value 0. Max
+% maybe pi/8 to start. (corresponds to 0.4142 in max change to applied load)
+% 5 is q: changing mean width of trapezoid
+% 6 nu, corr and sigma
 
 % n_reps number of repetitions of bound samples
 
@@ -67,6 +70,10 @@ elseif mode_delta == 4
     theta = X; 
 elseif mode_delta == 5
     delta_q = X; 
+elseif mode_delta == 6
+    nu = nu*(1+X(1)); 
+    corr_length = corr_length*(1+X(2)); 
+    sigma = sigma*(1+X(3)); 
 end
   
 1; 
@@ -212,7 +219,7 @@ errors_Ahat = (Uf-Uf(:,ix_r)*P_s_r); %/norm(Uf);
 
 % U = Uf(:,ix_r)*P_s_r; 
 % % save('Beam_design/Bi_nom','Bi')
-% save('Beam_design/Bi_opt','Bi')
+save('L_data/Ub_stress_opt','U')
 
 1; 
 
