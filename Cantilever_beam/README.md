@@ -1,9 +1,9 @@
 # Cantilever Beam 
 
-EB_Camtilever.m - beam model. 
-epsilon_tau_parameter - parametric low-fidelity model design. 
-my_beam_bound - calclate bound for given low-fidelity model settings. 
-main_deflection_plot - plot deflection - shift other plots to be here too. 
+EB_Camtilever.m - beam model.   
+epsilon_tau_parameter - parametric low-fidelity model design.   
+my_beam_bound - calclate bound for given low-fidelity model settings.   
+main_deflection_plot - plot deflection - shift other plots to be here too.   
 
 ## Beam_data
 Uc - course/low-fidelity vertical displacement of top chord
