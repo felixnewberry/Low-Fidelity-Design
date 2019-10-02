@@ -2,19 +2,20 @@ clear all
 close all
 clc
 
+save_on = 1; 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 LW = 2;     % Line width
+MS = 8;     % Marker Size
 FS_leg = 16; % Font size legend
 
 
 size_1 = [0,0,670,515]; 
 size_2 = [0,0,1340,515]; 
-
-% size_1 = [0, 0, 500, 350]; 
 
 FS = 28;    % Font size axis
 FS_axis = 18; 
@@ -28,77 +29,110 @@ c4 = [0.4940, 0.1840, 0.5560];
 c5 = [0.4660, 0.6740, 0.1880]; 
 c6 = [0.3010, 0.7450, 0.9330]; 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Generate a new Uc 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% % Compute the deflection of a cantilever beam with composit cross section,
-% % where the Young's modulus of the each section is random
-% 
-% % Sizes of beam cross section: 1 for top flang, 2 for bottom flang and 3
-% % for the web
-% 
-% % % Original sizes
-% % t1 = 0.2;
-% % t2 = 0.2;
-% % t3 = 5;
-% % w = 1; % Cross section width
-% 
-% % adjusted
-% t1 = 0.2150;
-% t2 = 0.2150;
-% t3 = 75;
-% w = 1; % Cross section width
-% 
-% 
-% % parameters it would be good to vary: t3 (down from 5, ie to 4)
-% % w from 1 to 0.5 
-% 
-% % Young modulus E_j = E0_j + s_j * Z_j and Z_j~U[-1,1]
-% E01 = 1e6; 
-% s1 = 1e5;
-% E02 = 1e6; 
-% s2 = 1e5;
-% E03 = 1e4; 
-% s3 = 1e3;
-% 
-% % Length of the beam 
-% L = 50;
-% load('Beam_data/x_highfidelity.txt')
-% load('Beam_data/xi')
-% 
-% %x = linspace(0,L,100)';
-% 
-% % Unifom load 
-% q0 = 10;
-% s4 = 1;
-% 
-% % Number of samples
-% nsim = 100;
-% 
-% % Start the simulation
-% % rand('state',3);
-% % xi = 2*rand(nsim,4) - 1;
-% 
-% 
-% for isim = 1:nsim
-%     E1 = E01 + s1 * xi(isim,1);
-%     E2 = E02 + s2 * xi(isim,2);
-%     E3 = E03 + s3 * xi(isim,3);
-%     q  = q0  + s4 * xi(isim,4);
-%     Uc(:,isim) = EB_Cantilever(L,t1,t2,t3,w,E1,E2,E3,q,x_highfidelity);
-% end
-% 
-% save('Beam_design/Uc_opt','Uc');
-
-% Uc_plot = Uc; 
-% 
-
-
-1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Plot ensemble
+%%% Plot line search
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+load('Beam_design/line_w_pm95')
+error_w = error_bound_mat;
+load('Beam_design/line_h1_pm95')
+error_h1 = error_bound_mat;
+load('Beam_design/line_h2_pm95')
+error_h2 = error_bound_mat;
+load('Beam_design/line_h3_pm95')
+error_h3 = error_bound_mat;
+load('Beam_design/delta_vec_pm95')
+
+figure
+hold on
+p1 = plot(100*delta_vec,100*error_w,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+p2 = plot(100*delta_vec,100*error_h1,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_vec,100*error_h2,'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
+p4 = plot(100*delta_vec,100*error_h3,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel('$\Delta [\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+legend([p1,p2,p3,p4],{'$w$','$h_1$','$h_2$','$h_3$'},'interpreter', 'latex', 'fontsize', FS_leg,'Location','SouthEast')
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+grid on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/line_all','epsc')
+end
+
+load('Beam_design/line_h1h2_p2m1')
+error_h1h2 = error_bound_mat;
+load('Beam_design/delta_vec_h1h2_p2m1')
+delta_vec_h1h2 = delta_vec;
+
+figure
+plot(100*delta_vec_h1h2,100*error_h1h2,'o-','Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
+xlabel('$ \Delta h_1 = \Delta h_2 [\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf,'Position',size_1)
+grid on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/line_h1h2','epsc')
+end
+
+load('Beam_design/line_h3_p35')
+error_h3 = error_bound_mat;
+load('Beam_design/delta_vec_h3_p35')
+delta_vec_h3 = delta_vec;
+
+figure
+plot(100*delta_vec_h3,100*error_h3,'o-','Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+xlabel('$ \Delta h_3 [\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf,'Position',size_1)
+grid on
+set(gcf,'Position',size_1)
+
+
+if save_on ==1
+    saveas(gcf,'Plots/line_h3','epsc')
+end
+
+
+figure 
+
+subplot(1,2,1)
+plot(100*delta_vec_h1h2,100*error_h1h2,'o-','Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
+xlabel('$ \Delta h_1 = \Delta h_2 [\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+grid on
+ylim(100*[min(error_h3), max(error_h1h2)])
+title('$h1$ and $h2$' ,'interpreter', 'latex')
+
+subplot(1,2,2)
+plot(100*delta_vec_h3,100*error_h3,'o-','Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
+xlabel('$ \Delta h_3 [\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+grid on
+ylim(100*[min(error_h3), max(error_h1h2)])
+title('$h3$' ,'interpreter', 'latex')
+
+set(gcf,'Position',size_2)
+
+if save_on ==1
+    saveas(gcf,'Plots/line_h1h2h3','epsc')
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Plot displacement ensemble
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 load('Beam_data/x_highfidelity.txt')
@@ -168,8 +202,8 @@ legend([h1,h2,h3],{'H','Nominal L','Nominal B'},'interpreter', 'latex', 'fontsiz
 ylim([-4, 0])
 % % title('Gaussian')
 grid on; 
-
-
+set(gcf,'Position',size_1)
+saveas(gcf,'Plots/ensemble_1','epsc')
 
 % Plot high, nominal low, and nominal bi, optimal low and optimal bi ensembles
 figure
@@ -198,9 +232,13 @@ legend([h1,h2,h3,h4,h5],{'H','Nominal L','Nominal B','Optimal L','Optimal B'},'i
 ylim([-4, 0])
 % % title('Gaussian')
 grid on; 
+set(gcf,'Position',size_1)
+if save_on ==1
+    saveas(gcf,'Plots/ensemble_2','epsc')
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Plot realization
+%%% Plot displacement realization
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Identify worst performing bi-fidelity estimate? 
@@ -222,6 +260,10 @@ legend([p1,p2,p3],{'H','Nominal L','Nominal B'},'interpreter', 'latex', 'fontsiz
 ylim([-4, 0])
 title('Displacement Realization' ,'interpreter', 'latex')
 grid on; 
+set(gcf,'Position',size_1)
+if save_on ==1
+    saveas(gcf,'Plots/realization_1','epsc')
+end
 
 figure
 hold on;
@@ -239,4 +281,10 @@ legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B','Optimal L','Optimal B'},'i
 ylim([-4, 0])
 title('Displacement Realization' ,'interpreter', 'latex')
 grid on; 
+set(gcf,'Position',size_1)
+if save_on ==1
+    saveas(gcf,'Plots/realization_2','epsc')
+end
+
+
 

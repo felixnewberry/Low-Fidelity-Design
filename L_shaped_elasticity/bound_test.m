@@ -1,3 +1,6 @@
+clear all
+close all
+clc
 % bound test 
 
 load('L_data/Uc_stress.mat')
@@ -5,7 +8,7 @@ load('L_data/Uf_stress.mat')
 
 r = 6; 
 n = r+10; 
-nsim = 200; 
+nsim = n; 
 
 rand_sample = 1:nsim; 
 

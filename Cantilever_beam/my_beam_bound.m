@@ -3,18 +3,19 @@ function [error_bound,err_Ahat,efficacy] = my_beam_bound(X,nsim, n, r, mode,n_re
 %%% Inputs
 
 % X - vector of deltas 
-% X(1) = delta t1= delta t2; 
-% X(2) = delta t3; 
+% X(1) = delta h1= delta h2; 
+% X(2) = delta h3; 
 % nsim - number of runs within one sample, ie 100 for cantilever beam
 % n - truncation - subset of data from which bound is estimated. 
 % r - truncation with which bi-fidelity model is found
 
 % mode:
 % 0 test w
-% 1 test t1
-% 2 test t2 
-% 3 test t3
-% 4 test 
+% 1 test h1
+% 2 test h2 
+% 3 test h3
+% 4 test h1 = h2
+% 5 test h1 = h2 and h3
 
 % n_reps number of repetitions of bound samples
 
@@ -25,7 +26,7 @@ function [error_bound,err_Ahat,efficacy] = my_beam_bound(X,nsim, n, r, mode,n_re
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Beam details
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%t%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Unifom load 
 q0 = 10;
 s4 = 1;
@@ -34,22 +35,25 @@ s4 = 1;
 % Original sizes
 
 w = 1; % Cross section width
-t1 = 0.2; % height of part 1
-t2 = 0.2;
-t3 = 5;
+h1 = 0.2; % height of part 1
+h2 = 0.2;
+h3 = 5;
     
 if mode == 0
     w = w*(1+X);
 elseif mode == 1
-    t1 = t1*(1+X);
+    h1 = h1*(1+X);
 elseif mode == 2
-    t2 = t2*(1+X);
+    h2 = h2*(1+X);
 elseif mode == 3
-    t3 = t3*(1+X);
+    h3 = h3*(1+X);
 elseif mode == 4
-    t1 = t1*(1+X(1));
-    t2 = t2*(1+X(1));
-    t3 = t3*(1+X(2));
+    h1 = h1*(1+X(1));
+    h2 = h2*(1+X(1));
+elseif mode == 5
+    h1 = h1*(1+X(1));
+    h2 = h2*(1+X(1));
+    h3 = h3*(1+X(2));
 end
 
 L = 50;
@@ -63,13 +67,13 @@ E03 = 1e4;
 s3 = 1e3;
 
 % coordinates
-load('Beam_data/x_highfidelity.txt')
+load('Beam_data/x_highfidelity.txt','x_highfidelity')
 
 %Uf fine
-load('Beam_data/Uf')
+load('Beam_data/Uf','Uf')
 
 % xi 
-load('Beam_data/xi')
+load('Beam_data/xi','xi')
 
 % xi = load('/Users/felixnewberry/Google Drive/1_Research/3_low_fidelity_design/CantileverBeam/Beam_data/xi.mat');
 % xi = xi.xi; 
@@ -83,7 +87,7 @@ for isim = 1:nsim
     E2 = E02 + s2 * xi(isim,2);
     E3 = E03 + s3 * xi(isim,3);
     q  = q0  + s4 * xi(isim,4);
-    Uc(:,isim) = EB_Cantilever(L,t1,t2,t3,w,E1,E2,E3,q,x_highfidelity);
+    Uc(:,isim) = EB_Cantilever(L,h1,h2,h3,w,E1,E2,E3,q,x_highfidelity);
 end
 
 samps = 1:nsim; 
@@ -103,23 +107,14 @@ for i_reps = 1:n_reps
 % rand_sample = randsample(nsim,n);
 rand_sample = 1:n; 
 
-% % Normalize matrices
-% Uc= Uc;
-% Uf = Uf;
-
-% Bi-fid matrices. 
+% % Normalize matrices for bi-fidelity error bound
 B_R = Uc(:,rand_sample)/norm(Uc,'fro');
 A_R = Uf(:,rand_sample)/norm(Uf,'fro');
 
-% % % Normalize matrices
-% B_R= B_R/norm(B_R,'fro');
-% A_R = A_R/norm(A_R,'fro');
-
 % Obtain column skeleton of P
-% In the paper they use 100 samples of Uc here... 
 [P_s,ix] = matrixIDvR(B_R,n);
 
-% Inputs
+% Error bound inputs
 normC = norm(P_s);
 sb = svd(B_R); 
 err_Bhat = norm(B_R-B_R(:,ix)*P_s); 
@@ -127,7 +122,7 @@ N = nsim;
 
 
 % % % Compute epsilon tau... 
-[delta_eps, ahat_error_est,Ir, min_de1,min_de2] = ...
+[~, ahat_error_est,~, ~,~] = ...
     mat_id_error_est_one_normal(B_R, A_R, normC, err_Bhat, sb,N,n);
 
 error_bound_vec(i_reps) = ahat_error_est/norm(A_R);
@@ -136,25 +131,11 @@ end
 
 error_bound = mean(error_bound_vec); 
 
+% Do bi-fidelity estimate to compare with bound
 [P_s_r,ix_r] = matrixIDvR(Uc,r);
 err_Ahat = norm(Uf-Uf(:,ix_r)*P_s_r)/norm(Uf);
 efficacy = error_bound/err_Ahat;
 
-
-% tip error calculation
-errors_Ahat = (Uf-Uf(:,ix_r)*P_s_r); %/norm(Uf);
-% tip_error_1 = errors_Ahat(end,:)/norm(Uf(end,:)); 
-
-% or 
-% tip_error = errors_Ahat(end,:)./Uf(end,:); 
-
-% save('tip_error_regular','tip_error')
-% save('tip_error_optimized','tip_error')
-
-% Bi = Uf(:,ix_r)*P_s_r; 
-% % save('Beam_design/Bi_nom','Bi')
-% save('Beam_design/Bi_opt','Bi')
-
-1; 
-
+% % Calculate tip error (optional) 
+% errors_Ahat = (Uf-Uf(:,ix_r)*P_s_r); %/norm(Uf);
 end

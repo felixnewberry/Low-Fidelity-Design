@@ -1,34 +1,14 @@
-% Optimize over t1,t2,t3
-% Find bound and A_hat... how do I vary all three together? 
-
+% House keeping
 close all
 clear all
 clc
 
-% change to deltas
+% Objective:
 
-% Look into minimization of epsilon tau... over some stuff. 
-% minimize epsilon tau over low-fidelity parameterization of model. 
-% This is an indicator of the error. 
-% First: figure out how to calculate it. 
-
-
-
-% Can estimate epsilon tau using limited high-fidelity data. 
+% Minimize epsilon tau over low-fidelity parameterization of model. 
 
 % Then apply to both lifting technique and basis reduction and compare
 % performance. 
-% Are these easy to compare? 
-
-% Address cantilever beam first to begin. 
-% low-fid fails to accurately predict deflection. If I alter the effective
-% area, will this improve epsilon tau? 
-
-% Lack of holes in low fid, make beam stiffer than in reality. Therefore it
-% deflects less. 
-
-% epsilon tau: max eigenvalue of the difference between H and tau L
-% grammians. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -41,8 +21,6 @@ FS_leg = 16; % Font size legend
 
 size_1 = [0,0,670,515]; 
 size_2 = [0,0,1340,515]; 
-
-% size_1 = [0, 0, 500, 350]; 
 
 FS = 28;    % Font size axis
 FS_axis = 18; 
@@ -57,27 +35,28 @@ c5 = [0.4660, 0.6740, 0.1880];
 c6 = [0.3010, 0.7450, 0.9330]; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Choose optimization method
+%%% Choose optimization method and mode
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% type of search 
 line_search = 1; 
+grid_search = 0; % 1515 s when 40x40 grid with 50 repetitions of the bound estimate
+random_search = 0; % pce error is about 8 % - stick with grid?
+
+% choose parameters to vary
 mode = 3; 
 
 % 0 is w
 % 1 is h1
 % 2 is h2
 % 3 is h3
-% 4 is h1=h2 and h3
+% 4 is h1 = h2
+% 5 is h1=h2 and h3
 
-% need to fix up with deltas. 
-grid_search = 0; % 1515 s when 40x40 grid with 50 repetitions of the bound estimate
-
-random_search = 0; % pce error is about 8 % - stick with grid?
 % error improves if I take average of 50 bounds. 
-% maybe 5 mintutes? 
+% maybe 5 minutes? - what If I don't take average... 
 
 plot_tip = 0; 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Load data, vanilla approach first
@@ -134,46 +113,39 @@ n_bound_reps = 1; % does grid look reasonable if I don't do repetitions?
 if line_search == 1
     
 % choose mode to test w, t1, t2, t3. mode [0,1,2,3]
-% Update plot according.
 
 % nominal and optimal delta values
 % delta_t1_rand = [0, 1.5];
-% delta_t3_rand) = [0,29]; 
+% delta_t3_rand = [0,29]; 
 
-% delta_vec = -0.5:0.1:0.5;
 
-delta_vec = -0.95:0.1:1.0;
+% delta_vec = -0.95:0.1:1.0;
+
+% delta_vec = -0.95:0.1:0.95; 
+% delta_vec = -1:0.05:2; 
+delta_vec = 0:1:35; 
+
 
 if mode == 0
-%     delta_vec = -0.5:0.1:0.5;
-%     delta_vec = -0.95:0.1:0.5;
-
     plot_label = '$ \Delta w [\%]$';
 elseif mode == 1
-%     delta_vec = -0.95:0.1:0.5;
     plot_label = '$ \Delta h_1 [\%]$';
 elseif mode == 2
-%     delta_vec = -0.95:0.1:0.5;
     plot_label = '$ \Delta h_2 [\%]$';
 elseif mode == 3
-%     delta_vec = 0:1:35;
     plot_label = '$ \Delta h_3 [\%]$';
+elseif mode == 4
+    plot_label = '$ \Delta h_1 = \Delta h_2 [\%]$';
 end
 
-% delta_vec = -0.5:0.1:0.5;
-
-% t3 
 error_bound_mat = zeros(length(delta_vec),1); 
-
 error_Ahat_mat = zeros(length(delta_vec),1);
 efficacy_mat = zeros(length(delta_vec),1);
 
-tic
 
 for i_test = 1:length(delta_vec)
     
 [error_bound,err_Ahat,efficacy] =  my_beam_bound(delta_vec(i_test),nsim, n, r, mode, n_bound_reps);
-
 
 error_bound_mat(i_test) = error_bound;
 error_Ahat_mat(i_test) =  err_Ahat;
@@ -181,19 +153,25 @@ efficacy_mat(i_test) = efficacy;
 
 end
 
+% % save line 
 % if mode == 0
-%     save('Beam_design/line_w_1to10','error_bound_mat')
+%     save('Beam_design/line_w_pm90','error_bound_mat')
 %     save('Beam_design/delta_vec','delta_vec')
 % elseif mode == 1
-%     save('Beam_design/line_h1_1to10','error_bound_mat')
+%     save('Beam_design/line_h1_pm90','error_bound_mat')
 % elseif mode == 2
-%     save('Beam_design/line_h2_1to10','error_bound_mat')
+%     save('Beam_design/line_h2_pm90','error_bound_mat')
 % elseif mode == 3
-%     save('Beam_design/line_h3_1to10','error_bound_mat')
+%     save('Beam_design/line_h3_pm90','error_bound_mat')
 % end
-% toc
 
-% % Improve contour plot
+% save('Beam_design/line_h3_p35','error_bound_mat')
+% save('Beam_design/delta_vec_h3_p35','delta_vec')
+
+% save('Beam_design/line_h1h2_p2m1','error_bound_mat')
+% save('Beam_design/delta_vec_h1h2_p2m1','delta_vec')
+
+% Plot error bound 
 figure
 hold on
 p1 = plot(100*delta_vec,100*error_bound_mat,'ob-', 'LineWidth',LW,'MarkerSize',MS); 
@@ -202,66 +180,28 @@ xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf,'Position',size_1)
 grid on
 
-1; 
 
-% Not appropriate to plot Ahat here
+% Plot bi-fidelity error 
 figure
 hold on
-p1 = plot(100*delta_vec,100*error_Ahat_mat,'r-', 'LineWidth',LW); 
+p1 = plot(100*delta_vec,100*error_Ahat_mat,'sr-', 'LineWidth',LW); 
 hold off
 xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bi $[\%]$','interpreter','latex','Fontsize',FS)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf,'Position',size_1)
 grid on
-
-
-% load('Beam_design/line_w')
-% error_w = error_bound_mat;
-% load('Beam_design/line_h1')
-% error_h1 = error_bound_mat;
-% load('Beam_design/line_h2')
-% error_h2 = error_bound_mat;
-% load('Beam_design/line_h3')
-% error_h3 = error_bound_mat;
-% load('Beam_design/delta_vec')
-
-load('Beam_design/line_w_1to10')
-error_w = error_bound_mat;
-load('Beam_design/line_h1_1to10')
-error_h1 = error_bound_mat;
-load('Beam_design/line_h2_1to10')
-error_h2 = error_bound_mat;
-load('Beam_design/line_h3_1to10')
-error_h3 = error_bound_mat;
-load('Beam_design/delta_vec')
-
-% matlab default colors look good: how to use these? 
-
-figure
-hold on
-p1 = plot(100*delta_vec,100*error_w,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
-p2 = plot(100*delta_vec,100*error_h1,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot(100*delta_vec,100*error_h2,'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
-p4 = plot(100*delta_vec,100*error_h3,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
-hold off
-xlabel('$\Delta [\%]$','interpreter','latex','Fontsize',FS)
-ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2,p3,p4],{'$w$','$h_1$','$h_2$','$h_3$'},'interpreter', 'latex', 'fontsize', FS_leg,'Location','SouthEast')
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-grid on
-
-
 
 end
 
 if grid_search == 1
 %%
 
-mode = 4; 
+mode = 5; 
 
 % 40 x 40 takes 196 s
 % t3_vec = 5:5:200; 
@@ -377,7 +317,7 @@ end
 if random_search == 1
 %%    
 
-mode = 4; 
+mode = 5; 
 n_samps = 200; 
 
 % Identify limits from t1_vec and t3_vec

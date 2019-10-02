@@ -172,36 +172,45 @@ plot3(x_f(:,1),x_f(:,2),Uf(:,30),'x')
 
 % Interpolate solution - nah. 
 [Xq,Yq] = meshgrid(-1:0.01:1,-1:0.01:1);
-Vq = griddata(x_f(:,1),x_f(:,2),Uf(:,30),Xq,Yq); 
+V_nom = griddata(x_f(:,1),x_f(:,2),Uf(:,30),Xq,Yq); 
 figure
-surf(Xq, Yq, Vq)
+surf(Xq, Yq, V_nom)
 view(0,90)
+
 
 % Interpolate error nom
 [Xq,Yq] = meshgrid(-1:0.01:1,-1:0.01:1);
-Vq = griddata(x_f(:,1),x_f(:,2),e_B_nom_p(:,30),Xq,Yq); 
-zmax = max(Vq(:)); 
+V_nom = griddata(x_f(:,1),x_f(:,2),e_B_nom_p(:,30),Xq,Yq); 
+V_opt = griddata(x_f(:,1),x_f(:,2),e_B_opt_p(:,30),Xq,Yq); 
+
+% to exclude certain points - set to NaN. 
+index_1 = find(Xq>0 & Yq>0); 
+V_nom(index_1) = NaN; 
+V_opt(index_1) = NaN; 
+
+zmax = max(V_nom(:)); 
+
 
 figure
+set(gcf, 'Position',  size_2)
 subplot(1,2,1)
-surf(Xq, Yq, Vq)
+surf(Xq, Yq, V_nom,'edgecolor','none')
 view(0,90)
 xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight; 
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis); grid off; box off; axis tight; 
 caxis([0,zmax]); % could do 0.4
 % zlim([0,zmax])
 
 % Interpolate error bi
-[Xq,Yq] = meshgrid(-1:0.01:1,-1:0.01:1);
-Vq = griddata(x_f(:,1),x_f(:,2),e_B_opt_p(:,30),Xq,Yq); 
+% [Xq,Yq] = meshgrid(-1:0.01:1,-1:0.01:1);
 
 subplot(1,2,2)
-surf(Xq, Yq, Vq)
+surf(Xq, Yq, V_opt,'edgecolor','none')
 view(0,90)
 xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);grid off; box off; axis tight;
 caxis([0,zmax]);
 % zlim([0,zmax])
 colorbar
