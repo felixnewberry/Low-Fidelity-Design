@@ -3,7 +3,7 @@
 EB_Camtilever.m - beam model   
 epsilon_tau_parameter - parametric low-fidelity model design   
 my_beam_bound - calclate bound for given low-fidelity model settings   
-main_deflection_plot - plot deflection - shift other plots to be here too   
+deflection_plots - plot deflection - shift other plots to be here too   
 
 ## Beam_data
 Uc - course/low-fidelity vertical displacement of top chord  
@@ -16,5 +16,5 @@ Contains various design results
 Bi_nom - nominal bi-fidelity estimate  
 Bi_opt - optimal bi-fidelity estimate  
 
-## plots
+## Plots
 Plot results  
