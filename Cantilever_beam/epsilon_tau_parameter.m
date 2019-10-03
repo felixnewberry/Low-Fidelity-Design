@@ -39,12 +39,13 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % type of search 
-line_search = 1; 
+line_search = 0; 
 grid_search = 0; % 1515 s when 40x40 grid with 50 repetitions of the bound estimate
 random_search = 0; % pce error is about 8 % - stick with grid?
+plot_tip = 1; 
 
 % choose parameters to vary
-mode = 3; 
+mode = 5; 
 
 % 0 is w
 % 1 is h1
@@ -56,7 +57,6 @@ mode = 3;
 % error improves if I take average of 50 bounds. 
 % maybe 5 minutes? - what If I don't take average... 
 
-plot_tip = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Load data, vanilla approach first
@@ -85,7 +85,9 @@ load('Beam_data/xi')
 % heuristic n = r+10
 r = 1; 
 % r = 10;
-n = r+10; 
+% n = r+10; 
+n = r+2; 
+
 
 % nsim = 100; 
 nsim = 100; 
@@ -94,17 +96,14 @@ n_sample = 100;
 efficacy_vec = zeros(1,n_sample); 
 
 % n_bound_reps = 50; % draw different sets of n samples to compute bound from N low-fidelity realizations
-n_bound_reps = 1; % does grid look reasonable if I don't do repetitions? 
-% need to also make samples consistent. - in fact - would be better to have
-% samples consistent for the line search too. Might be able to complete
-% with fewer samples. 
+n_bound_reps = 1; % does not make sense to do repetitions - this would require access to more high-fidelity samples. 
 
 % Some questions for Alireza about this. 
 
 % how best to sample? Fix 1:10 and stick with this (only captures some
 % realizatios so not the best measure)
 % randomly sample 50 times for every point. 
-% randomly sample the same 50 samples for each point. 
+% randomly sample the same 50 samples for each point. - likely this... 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Line search
@@ -118,12 +117,9 @@ if line_search == 1
 % delta_t1_rand = [0, 1.5];
 % delta_t3_rand = [0,29]; 
 
-
-% delta_vec = -0.95:0.1:1.0;
-
 % delta_vec = -0.95:0.1:0.95; 
-% delta_vec = -1:0.05:2; 
-delta_vec = 0:1:35; 
+% delta_vec = -1:0.075:2;
+delta_vec = 0:1:40; 
 
 
 if mode == 0
@@ -139,37 +135,40 @@ elseif mode == 4
 end
 
 error_bound_mat = zeros(length(delta_vec),1); 
-error_Ahat_mat = zeros(length(delta_vec),1);
+error_Bi_mat = zeros(length(delta_vec),1);
 efficacy_mat = zeros(length(delta_vec),1);
 
 
 for i_test = 1:length(delta_vec)
     
-[error_bound,err_Ahat,efficacy] =  my_beam_bound(delta_vec(i_test),nsim, n, r, mode, n_bound_reps);
+[error_bound,err_Bi,efficacy] =  my_beam_bound(delta_vec(i_test),nsim, n, r, mode, n_bound_reps);
 
 error_bound_mat(i_test) = error_bound;
-error_Ahat_mat(i_test) =  err_Ahat;
+error_Bi_mat(i_test) =  err_Bi;
 efficacy_mat(i_test) = efficacy; 
 
 end
 
-% % save line 
+
+% save line for using 1:N, N = r+1 = 2. 
 % if mode == 0
-%     save('Beam_design/line_w_pm90','error_bound_mat')
-%     save('Beam_design/delta_vec','delta_vec')
+%     save('Beam_design/line_w_pm95','error_bound_mat')
+% %     save('Beam_design/delta_vec','delta_vec')
 % elseif mode == 1
-%     save('Beam_design/line_h1_pm90','error_bound_mat')
+%     save('Beam_design/line_h1_pm95','error_bound_mat')
 % elseif mode == 2
-%     save('Beam_design/line_h2_pm90','error_bound_mat')
+%     save('Beam_design/line_h2_pm95','error_bound_mat')
 % elseif mode == 3
-%     save('Beam_design/line_h3_pm90','error_bound_mat')
+%     save('Beam_design/line_h3_pm95','error_bound_mat')
 % end
+
+% save('Beam_design/line_h1h2_p2m1','error_bound_mat')
+% save('Beam_design/delta_vec_h1h2_p2m1','delta_vec')
 
 % save('Beam_design/line_h3_p35','error_bound_mat')
 % save('Beam_design/delta_vec_h3_p35','delta_vec')
 
-% save('Beam_design/line_h1h2_p2m1','error_bound_mat')
-% save('Beam_design/delta_vec_h1h2_p2m1','delta_vec')
+
 
 % Plot error bound 
 figure
@@ -187,7 +186,7 @@ grid on
 % Plot bi-fidelity error 
 figure
 hold on
-p1 = plot(100*delta_vec,100*error_Ahat_mat,'sr-', 'LineWidth',LW); 
+p1 = plot(100*delta_vec,100*error_Bi_mat,'sr-', 'LineWidth',LW); 
 hold off
 xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bi $[\%]$','interpreter','latex','Fontsize',FS)
@@ -206,8 +205,8 @@ mode = 5;
 % 40 x 40 takes 196 s
 % t3_vec = 5:5:200; 
 % t1_vec = [0.005:0.015:0.6];
-delta_t3_vec = 0:1:39; 
-delta_t1_vec = -0.975:0.075:2; 
+delta_t3_vec = 0:1:40; 
+delta_t1_vec = -1:0.075:2; 
 
 % 20 x 20 takes 45 s. 
 % t3_vec = 5:10:200; 
@@ -217,18 +216,18 @@ delta_t1_vec = -0.975:0.075:2;
 
 tic
 error_bound_mat = zeros(length(delta_t1_vec),length(delta_t3_vec)); 
-error_Ahat_mat = zeros(length(delta_t1_vec),length(delta_t3_vec)); 
+error_Bi_mat = zeros(length(delta_t1_vec),length(delta_t3_vec)); 
 efficacy_mat = zeros(length(delta_t1_vec),length(delta_t3_vec)); 
 
 for i_test = 1:length(delta_t1_vec)
  i_test
 for i_t3 = 1:length(delta_t3_vec)
 
-[error_bound,err_Ahat,efficacy] =  my_beam_bound([delta_t1_vec(i_test),delta_t3_vec(i_t3)],nsim, n, r, mode, n_bound_reps);
+[error_bound,err_Bi,efficacy] =  my_beam_bound([delta_t1_vec(i_test),delta_t3_vec(i_t3)],nsim, n, r, mode, n_bound_reps);
 
-% results(i_t3,:) = results(i_t3,:) +[error_bound, err_Ahat, efficacy]; 
+% results(i_t3,:) = results(i_t3,:) +[error_bound, err_Bi, efficacy]; 
 error_bound_mat(i_test,i_t3) = error_bound; 
-error_Ahat_mat(i_test,i_t3) =err_Ahat; 
+error_Bi_mat(i_test,i_t3) =err_Bi; 
 efficacy_mat(i_test,i_t3) = efficacy; 
 
 % error_efficacy_sum
@@ -241,15 +240,15 @@ toc
 
 % A_hat
 % Minimum of each column
-[min_values, index_t1_A] = min(error_Ahat_mat); 
+[min_values, index_t1_A] = min(error_Bi_mat); 
 % Global minimum, column index is t3
 [min_value, index_t3_A] = min(min_values); 
 index_t1_A = index_t1_A(index_t3_A);
-t1_Ahat = delta_t1_vec(index_t1_A);
-t3_Ahat = delta_t3_vec(index_t3_A);
-min_Ahat = min_value; 
+t1_Bi = delta_t1_vec(index_t1_A);
+t3_Bi = delta_t3_vec(index_t3_A);
+min_Bi = min_value; 
 
-min_bound_Ahat = error_bound_mat(index_t1_A,index_t3_A);
+min_bound_Bi = error_bound_mat(index_t1_A,index_t3_A);
 
 % Error bound
 % Minimum of each column
@@ -262,17 +261,21 @@ t3_bound = delta_t3_vec(index_t3_B);
 min_bound = min_value; 
 
 % min_bound_A = error_est_sum(index_t1_A,index_t3_A); 
-min_Ahat_bound = error_Ahat_mat(index_t1_B,index_t3_B);
+min_Bi_bound = error_Bi_mat(index_t1_B,index_t3_B);
 
 fprintf('Bound location and values \n');
 fprintf('t3: %d, t1=t2: %d \n',t3_bound, t1_bound);
 fprintf('Bound: %d \n',min_bound);
-fprintf('Ahat: %d \n',min_Ahat_bound);
+fprintf('Bi: %d \n',min_Bi_bound);
 
-fprintf('Ahat location and values \n');
-fprintf('t3: %d, t1=t2: %d \n',t3_Ahat, t1_Ahat);
-fprintf('Bound: %d \n',min_bound_Ahat);
-fprintf('Ahat: %d \n',min_Ahat);
+fprintf('Bi location and values \n');
+fprintf('t3: %d, t1=t2: %d \n',t3_Bi, t1_Bi);
+fprintf('Bound: %d \n',min_bound_Bi);
+fprintf('Bi: %d \n',min_Bi);
+
+save('Beam_design/grid_search_N3','delta_t3_vec','delta_t1_vec','error_bound_mat', ...
+    'error_Bi_mat','t3_bound', 't1_bound','t3_Bi','t1_Bi','min_bound',...
+'min_Bi_bound')
 
 figure
 hold on
@@ -281,7 +284,7 @@ colorbar
 % 5, 0.2
 p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
 p2 = plot(100*t3_bound,100*t1_bound,'rx','MarkerSize',8,'linewidth',LW);
-p3 = plot(100*t3_Ahat,100*t1_Ahat,'rs','MarkerSize',8,'linewidth',LW);
+p3 = plot(100*t3_Bi,100*t1_Bi,'rs','MarkerSize',8,'linewidth',LW);
 hold off
 legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg,'Location','NorthWest')
 xlabel('$\Delta h_3$ [\%]','interpreter','latex','Fontsize',FS)
@@ -292,14 +295,13 @@ grid on
 title('Error bound','Interpreter','latex')
 
 
-
 figure
 hold on
-contourf(100*delta_t3_vec,100*delta_t1_vec,100*error_Ahat_mat)
+contourf(100*delta_t3_vec,100*delta_t1_vec,100*error_Bi_mat)
 colorbar
 p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
 p2 = plot(100*t3_bound,100*t1_bound,'rx','MarkerSize',8,'linewidth',LW);
-p3 = plot(100*t3_Ahat,100*t1_Ahat,'rs','MarkerSize',8,'linewidth',LW);
+p3 = plot(100*t3_Bi,100*t1_Bi,'rs','MarkerSize',8,'linewidth',LW);
 hold off
 legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg,'Location','NorthWest')
 xlabel('$\Delta h_3 [\%]$','interpreter','latex','Fontsize',FS)
@@ -370,7 +372,7 @@ delta_t3_rand = delta_t3_vec(1)+ (delta_t3_vec(2)-delta_t3_vec(1)).*xi_rand(:,2)
     
 results = zeros(n_samps,3); 
 error_bound_mat = zeros(n_samps,1); 
-error_Ahat_mat = zeros(n_samps,1);
+error_Bi_mat = zeros(n_samps,1);
 efficacy_mat = zeros(n_samps,1);
 
 
@@ -380,18 +382,18 @@ delta_t3_rand(1:2) = [0,29];
 
 for i_t = 1:n_samps
     
-[error_bound,err_Ahat,efficacy] =  my_beam_bound([delta_t1_rand(i_t),delta_t3_rand(i_t)],nsim, n, r, mode, n_bound_reps);
+[error_bound,err_Bi,efficacy] =  my_beam_bound([delta_t1_rand(i_t),delta_t3_rand(i_t)],nsim, n, r, mode, n_bound_reps);
 
-% error_bound = ahat_error_est/norm(Uf);
-% err_Ahat = norm(Uf-Uf(:,ix)*P_s)/norm(Uf);
-% efficacy = error_bound/err_Ahat;
+% error_bound = Bi_error_est/norm(Uf);
+% err_Bi = norm(Uf-Uf(:,ix)*P_s)/norm(Uf);
+% efficacy = error_bound/err_Bi;
 
 error_bound_mat(i_t) = error_bound;
-error_Ahat_mat(i_t) =  err_Ahat;
+error_Bi_mat(i_t) =  err_Bi;
 efficacy_mat(i_t) = efficacy; 
 
 % error_bound
-% err_Ahat
+% err_Bi
 % 1;
 
 
@@ -411,7 +413,7 @@ end
 
 % Solve with least squares
 c_ref = psi\error_bound_mat(1:N,1); 
-c_ref_A = psi\error_Ahat_mat(1:N,1); 
+c_ref_A = psi\error_Bi_mat(1:N,1); 
 
 % opts = spgSetParms('iterations',10000,'verbosity',0);
 opts = spgSetParms('iterations',10000,'verbosity',0,'optTol',1e-9,'bpTol',1e-9);
@@ -423,8 +425,8 @@ Psiweights = psi*weights;
 sigma =  cross_val_sigma(psi,error_bound_mat(1:N,1));
 c_spg = weights*spg_bpdn(Psiweights,error_bound_mat(1:N,1),sigma*norm(error_bound_mat(1:N,1)),opts);
 
-sigma_A =  cross_val_sigma(psi,error_Ahat_mat(1:N,1));
-c_spg_A = weights*spg_bpdn(Psiweights,error_Ahat_mat(1:N,1),sigma_A*norm(error_Ahat_mat(1:N,1)),opts);
+sigma_A =  cross_val_sigma(psi,error_Bi_mat(1:N,1));
+c_spg_A = weights*spg_bpdn(Psiweights,error_Bi_mat(1:N,1),sigma_A*norm(error_Bi_mat(1:N,1)),opts);
 
 %%% Start validation
 
@@ -438,8 +440,8 @@ end
 error_val_ls = norm(error_bound_mat(N+1:end,1)-psi*c_ref)/norm(error_bound_mat(N+1:end,1));
 error_val_spg = norm(error_bound_mat(N+1:end,1)-psi*c_spg)/norm(error_bound_mat(N+1:end,1));
 
-error_val_ls_A = norm(error_Ahat_mat(N+1:end,1)-psi*c_ref_A)/norm(error_Ahat_mat(N+1:end,1));
-error_val_spg_A = norm(error_Ahat_mat(N+1:end,1)-psi*c_spg_A)/norm(error_Ahat_mat(N+1:end,1));
+error_val_ls_A = norm(error_Bi_mat(N+1:end,1)-psi*c_ref_A)/norm(error_Bi_mat(N+1:end,1));
+error_val_spg_A = norm(error_Bi_mat(N+1:end,1)-psi*c_spg_A)/norm(error_Bi_mat(N+1:end,1));
 
 error_ls(i_rep) = error_val_ls; 
 error_spg(i_rep) = error_val_spg; 
@@ -566,120 +568,42 @@ title('Bi-fidelity error','Interpreter','latex')
 
 end
 
-
-
-
-
-
-% figure
-% contourf(efficacy_sum)
-% colorbar
-% 
-% point_height = 1; 
-% figure
-% surf(t3_vec,t1_vec,error_Ahat_sum)
-% colorbar
-% view(2)
-% shading interp
-% axis tight;
-% hold on
-% p1 = plot(5,0.2,point_height,'ro','MarkerSize',8,'linewidth',LW);
-% p2 = plot(t3_bound,t1_bound,point_height,'rx','MarkerSize',8,'linewidth',LW);
-% p3 = plot(t3_Ahat,t1_Ahat,point_height,'rs','MarkerSize',8,'linewidth',LW);
-% hold off
-% legend([p1,p2,p3],{'Nominal','Bound', '$\hat{A}$ Min'},'interpreter', 'latex', 'fontsize', FS_leg)
-% xlabel('t3','interpreter','latex','Fontsize',FS)
-% ylabel('t1=t2','interpreter','latex','Fontsize',FS)
-% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% grid on
-% title('$\hat{A}$ error','Interpreter','latex')
-
-% figure
-% contourf(t3_vec,t1_vec,error_Ahat_sum)
-% shading interp
-% colorbar
-
-
-
-
-
-% plot for alireza: 
-% By any chance, for the beam problem, do you have the histogram of... 
-% the tip displacement errors for the regular and optimized bi-fidelity...
-% errors? You mentioned the error reduced to 0.4% from 3% and I was hoping...
-% to show in a report the associated error histogram. 
-
-% t3 is 195 
-% t2=21 is 0.59
-% 
 % nominal t3 = 5, t2 = t1 = 0.2
 
 if plot_tip == 1
+
+mode = 5; 
+
 n_samps = 2; 
 
 results = zeros(n_samps,3); 
 error_bound_mat = zeros(n_samps,1); 
-error_Ahat_mat = zeros(n_samps,1);
+error_Bi_mat = zeros(n_samps,1);
 efficacy_mat = zeros(n_samps,1);
 
-delta_t1_rand = [0.2,0.59];
-delta_t3_rand = [5,195]; 
-
-delta_t1_rand = [0,1.95]; 
-delta_t3_rand = [0,38]; 
+delta_t1_rand = [0,1.025]; 
+delta_t3_rand = [0,29]; 
 
 % tic
 
-
+% have to pause at end of my_beam_bound 
 n_samps = 2; 
 
 for i_t = 1:n_samps
     
-[error_bound,err_Ahat,efficacy] =  my_beam_bound([delta_t1_rand(i_t),delta_t3_rand(i_t)],nsim, n, r);
+[error_bound,err_Bi,efficacy] =  my_beam_bound([delta_t1_rand(i_t),delta_t3_rand(i_t)],nsim, n, r, mode,n_bound_reps);
 
-% error_bound = ahat_error_est/norm(Uf);
-% err_Ahat = norm(Uf-Uf(:,ix)*P_s)/norm(Uf);
-% efficacy = error_bound/err_Ahat;
+% error_bound = Bi_error_est/norm(Uf);
+% err_Bi = norm(Uf-Uf(:,ix)*P_s)/norm(Uf);
+% efficacy = error_bound/err_Bi;
 
 error_bound_mat(i_t) = error_bound; 
-error_Ahat_mat(i_t) =  err_Ahat; 
+error_Bi_mat(i_t) =  err_Bi; 
 efficacy_mat(i_t) = efficacy; 
 
-err_Ahat
 end
 
 
-% error_bound_mat
-% error_Ahat_mat
 
 
-% err_Ahat = norm(Uf-Uf(:,ix)*P_s)/norm(Uf);
-% change to 
-% errors_Ahat = (Uf-Uf(:,ix)*P_s);
-% % tip displacements
-% tip_error = errors_Ahat(end,:)/norm(Uf(end,:)); 
-% save('tip_error_optimized','tip_error')
-
-load('tip_error_regular')
-
-tip_reg = tip_error; 
-load('tip_error_optimized')
-tip_opt = tip_error; 
-
-%%% Vizualize  data
-n_hist = 20; 
-
-% I think some of the samples suck. look at 647 on... 
-
-figure
-hold on
-h1 = histogram(abs(tip_reg),n_hist);
-h2 = histogram(abs(tip_opt),n_hist);
-hold off
-legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
-xlabel('bi-fidelity error','interpreter','latex','Fontsize',FS)
-ylabel('frequency','interpreter','latex','Fontsize',FS)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-grid on
 end

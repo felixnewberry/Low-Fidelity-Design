@@ -152,7 +152,6 @@ tip_error_L = errors_L(end,:)./Uf(end,:);
 % save('Beam_design/tip_error_nom_bi','tip_error')
 % save('Beam_design/tip_error_nom_L','tip_error_L')
 
-% save('Beam_design/tip_error_opt_bi','tip_error')
-% save('Beam_design/tip_error_opt_L','tip_error_L')
+% save('Beam_design/tip_error_opt','tip_error')
 
 end
