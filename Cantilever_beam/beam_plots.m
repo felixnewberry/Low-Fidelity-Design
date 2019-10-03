@@ -140,7 +140,7 @@ caxis(100*[min([error_bound_mat(:); error_Bi_mat(:)]) max([error_bound_mat(:); e
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 % grid on
 set(gcf,'Position',size_1)
-colormap('cividis') % cividis, inferno, fake_parula, magma, plasma, viridis 
+% colormap('cividis') % cividis, inferno, fake_parula, magma, plasma, viridis 
 title('Error bound','Interpreter','latex')
 
 if save_on ==1
@@ -163,7 +163,7 @@ caxis(100*[min([error_bound_mat(:); error_Bi_mat(:)]) max([error_bound_mat(:); e
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 % grid on
 set(gcf,'Position',size_1)
-colormap('cividis')
+% colormap('cividis')
 title('Bi-fidelity error','Interpreter','latex')
 
 if save_on ==1
@@ -437,5 +437,61 @@ end
 
 1; 
 
-eig_L_nom = eig(Uc); 
+sv_L_nom = svd(Uc); 
+sv_L_Opt = svd(Uc_opt); 
 
+i_lim = 5; 
+
+% normalized
+figure
+p1 = semilogy(sv_L_nom(1:i_lim)/sv_L_nom(1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+hold on
+p2 = semilogy(sv_L_Opt(1:i_lim)/sv_L_Opt(1),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel('Index $i$','interpreter','latex','Fontsize',FS)
+ylabel('Normalized Singular Values','interpreter','latex','Fontsize',FS)
+legend([p1,p2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% grid on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/beam_sv_normalized','epsc')
+end
+
+% normalized by nominal 
+figure
+p1 = semilogy(sv_L_nom(1:i_lim)/sv_L_nom(1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+hold on
+p2 = semilogy(sv_L_Opt(1:i_lim)/sv_L_nom(1),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel('Index $i$','interpreter','latex','Fontsize',FS)
+ylabel('Singular Values','interpreter','latex','Fontsize',FS)
+legend([p1,p2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% grid on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/beam_sv_nom','epsc')
+end
+
+% not normalized 
+figure
+p1 = semilogy(sv_L_nom(1:i_lim),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+hold on
+p2 = semilogy(sv_L_Opt(1:i_lim),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel('Index $i$','interpreter','latex','Fontsize',FS)
+ylabel('Singular Values','interpreter','latex','Fontsize',FS)
+legend([p1,p2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% grid on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/beam_sv','epsc')
+end
