@@ -1,9 +1,9 @@
 # Cantilever Beam 
 
-EB_Camtilever.m - beam model   
+EB_Cantilever.m - beam model   
 epsilon_tau_parameter - parametric low-fidelity model design   
 my_beam_bound - calclate bound for given low-fidelity model settings   
-beam_plots - plot deflection realization and ensemble, line searches  
+beam_plots - plot line searches, grid search, deflection realization, deflection ensemble, tip error histogram, eigenvalue decay.   
 
 ## Beam_data
 Uc - course/low-fidelity vertical displacement of top chord  
