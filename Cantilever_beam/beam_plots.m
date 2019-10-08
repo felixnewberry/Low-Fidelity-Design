@@ -355,7 +355,7 @@ set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 legend([p1,p2,p3],{'H','Nominal L','Nominal B'},'interpreter', 'latex', 'fontsize', FS_leg)
 ylim([-4, 0])
 title('Displacement Realization' ,'interpreter', 'latex')
-grid on; 
+% grid on; 
 set(gcf,'Position',size_1)
 if save_on ==1
     saveas(gcf,'Plots/beam_realization_1','epsc')
@@ -376,7 +376,7 @@ set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B','Optimal L','Optimal B'},'interpreter', 'latex', 'fontsize', FS_leg)
 ylim([-4, 0])
 title('Displacement Realization' ,'interpreter', 'latex')
-grid on; 
+% grid on; 
 set(gcf,'Position',size_1)
 if save_on ==1
     saveas(gcf,'Plots/beam_realization_2','epsc')
