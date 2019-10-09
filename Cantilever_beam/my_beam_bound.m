@@ -109,19 +109,23 @@ for i_reps = 1:n_reps
 
 rand_sample = 1:n; 
 
+%%% made some changes: rerun
+
 % % Normalize matrices for bi-fidelity error bound
-B_R = Uc(:,rand_sample)/norm(Uc,'fro');
-A_R = Uf(:,rand_sample)/norm(Uf,'fro');
+B = Uc(:,rand_sample)/norm(Uc,'fro');
+A = Uf(:,rand_sample)/norm(Uf,'fro');
+
+B_R = B(:,rand_sample);
+A_R = A(:,rand_sample);
 
 % Obtain column skeleton of P
-[P_s,ix] = matrixIDvR(B_R,n);
+[P_s,ix] = matrixIDvR(B,n);
 
 % Error bound inputs
 normC = norm(P_s);
-sb = svd(B_R); 
-err_Bhat = norm(B_R-B_R(:,ix)*P_s); 
+sb = svd(B); 
+err_Bhat = norm(B-B(:,ix)*P_s); 
 N = nsim;
-
 
 % % % Compute epsilon tau... 
 [~, ahat_error_est,~, ~,~] = ...

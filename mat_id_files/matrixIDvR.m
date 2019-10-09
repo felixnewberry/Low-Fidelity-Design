@@ -8,11 +8,10 @@ function [P,ix,k] = matrixIDvR(Y,maxrnk)
   % compute the QR factorization of Y
   [~,R,ix,k] = rank_k_gsqr(Y,maxrnk);%dgsqr(Y,tol);
  
- 
   Pr = eye(size(Y,2));
   Pr = Pr(:,ix);
   ix = ix(1:k);
-    
+  
   % Non-lazy way to solve for T
   [Ru,Rs,Rv] = svd(R(1:k,1:k));
   rnk = min(size(Rs));
