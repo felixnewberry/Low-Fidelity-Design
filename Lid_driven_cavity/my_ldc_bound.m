@@ -1,4 +1,4 @@
-function [error_bound,err_Ahat,efficacy] = my_ldc_bound(QoI,nx, n, r, delta_u, delta_nu)
+function [error_bound,err_Bi,efficacy] = my_ldc_bound(QoI,nx, n, r, delta_u, delta_nu)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% LDC details
@@ -96,7 +96,7 @@ err_Bhat = norm(B-B(:,ix)*P_s);
 N = 200;
 
 % % % Compute epsilon tau... 
-[delta_eps, ahat_error_est,Ir, min_de1,min_de2] = ...
+[~, ahat_error_est,~, ~,~] = ...
     mat_id_error_est_one_normal(B_R, A_R, normC, err_Bhat, sb,N,n);
 
 error_bound = ahat_error_est/norm(A);
@@ -105,8 +105,29 @@ error_bound = ahat_error_est/norm(A);
 
 % Do bi-fidelity estimate to compare with bound
 
-err_Ahat = norm(A-A(:,ix)*P_s)/norm(A);
-efficacy = error_bound/err_Ahat;
+err_Bi = norm(A-A(:,ix)*P_s)/norm(A);
+efficacy = error_bound/err_Bi;
+
+if QoI == 0
+    save_label = 'u_field';
+elseif QoI == 1
+    save_label = 'P_field';
+elseif QoI == 2
+    save_label = 'u_mid';
+elseif QoI == 3
+    save_label = 'P_mid';
+elseif QoI == 4
+    save_label = 'P_top';
+end
+
+Ub = Uf(:,ix)*P_s;
+save(strcat('LDC_design/',save_label, '_nom'),'Uc', 'Ub', 'sb', 'error_bound','err_Bi')
+
+% save(strcat(save_label, '_opt',Uc, Ub, sb, error_bound,err_Bi)
+
+% % save('Uc_opt','Uc')
+% % save('Ub_opt','Ub')
+% % save('sb_opt','sb')
 
 % % 
 % % % debug plot

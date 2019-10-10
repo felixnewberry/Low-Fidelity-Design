@@ -8,38 +8,8 @@ clear all
 close all
 clc
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Task Switches
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% make data for presentation
-plot_ghia = 0; 
-
-plot_mesh = 0; 
-
-
-%QoI
-% choose QoI
-QoI = 0; 
-% 0 is u_mat
-% 1 is P_mat
-% 2 is u_vec mid
-% 3 is p_vec mid
-% 4 is p_vec top
-
-% only works p_top at moment? 
-plot_QoI = 0; 
-% appropriate for slices ie, mid and top. 
-
-% PCE optimal bound response surface
-plot_response = 0; 
-
-plot_p_curious = 0; 
-% save bi-fidelity too to compute accurate error and report. Run p_mat now.
-% 
-
 save_on = 1; 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,8 +36,42 @@ c4 = [0.4940, 0.1840, 0.5560];
 c5 = [0.4660, 0.6740, 0.1880]; 
 c6 = [0.3010, 0.7450, 0.9330]; 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if plot_ghia == 1
+%%% Task Switches
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% % % make data for presentation
+% % plot_ghia = 0; 
+% % 
+% % plot_mesh = 0; 
+% % 
+% % 
+% % %QoI
+% % % choose QoI
+% % QoI = 0; 
+% % % 0 is u_mat
+% % % 1 is P_mat
+% % % 2 is u_vec mid
+% % % 3 is p_vec mid
+% % % 4 is p_vec top
+% % 
+% % % only works p_top at moment? 
+% % plot_QoI = 0; 
+% % % appropriate for slices ie, mid and top. 
+% % 
+% % % PCE optimal bound response surface
+% % plot_response = 0; 
+% % 
+% % plot_p_curious = 0; 
+% % % save bi-fidelity too to compute accurate error and report. Run p_mat now.
+% % % 
+% % 
+% % save_on = 1; 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  Plot ghia
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
 load 'x_32.mat'
@@ -93,8 +97,6 @@ v_4 = v_4.u_y_array;
 u_4 = load('u_x_array_4.mat');
 u_4 = u_4.u_x_array; 
 
-
-% 
 % Ghiea et al
 % Results for u velocity along Vertical Line through Geometric Center of
 % Cavityu_out
@@ -119,7 +121,7 @@ p4 = plot(u_6, y_32(:,2), 'k-','LineWidth',LW);
 p5 = plot(u_4, y_32(:,2), 'g-','LineWidth',LW);
 p1 = plot(u_ghia_100, y_ghia,'ro-','LineWidth',LW);
 
-xlabel('u velocity', 'interpreter', 'latex', 'fontsize', FS)
+ylabel('u velocity', 'interpreter', 'latex', 'fontsize', FS)
 xlabel('y', 'interpreter', 'latex', 'fontsize', FS)
 %legend('ghia et al', 'fenics')
 grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
@@ -136,13 +138,13 @@ p1 = plot(x_ghia, v_ghia_100,'ro-','LineWidth',LW);
 xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('v velocity', 'interpreter', 'latex', 'fontsize', FS)
 legend([p1,p2,p3,p4,p5],{'ghia et al','32','8','6','4'},...
-       'interpreter', 'latex', 'fontsize', FS_leg)
+       'interpreter', 'latex', 'fontsize', FS_leg/2)
 grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
 
-end 
+1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if plot_mesh == 1
+%%% Plot the mesh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 n_l = 4; 
 n_h = 32; 
@@ -174,6 +176,9 @@ ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
 set(gcf,'Position',size_1)
 
+if save_on ==1
+    saveas(gcf,'plots/mesh_low','epsc')
+end
 
 figure
 plot(xx_h, yy_h, 'k','LineWidth',LW/2)
@@ -185,7 +190,11 @@ ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
 set(gcf,'Position',size_1)
 
+
+if save_on ==1
+    saveas(gcf,'plots/mesh_high','epsc')
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot line search
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -207,19 +216,19 @@ load('LDC_design/line_u_mid_u.mat')
 error_u_mid_u = error_bound_mat;
 
 load('LDC_design/line_p_mid_nu_2.mat')
-error_p_mid_nu = error_bound_mat;
+error_P_mid_nu = error_bound_mat;
 load('LDC_design/line_p_mid_u_2.mat')
-error_p_mid_u = error_bound_mat;
+error_P_mid_u = error_bound_mat;
 
 load('LDC_design/line_p_top_nu.mat')
-error_p_top_nu = error_bound_mat;
+error_P_top_nu = error_bound_mat;
 load('LDC_design/line_p_top_u.mat')
-error_p_top_u = error_bound_mat;
+error_P_top_u = error_bound_mat;
 
 load('LDC_design/delta_P_mid_nu_vec.mat')
-delta_p_mid_nu_vec = delta_nu_vec; 
+delta_P_mid_nu_vec = delta_nu_vec; 
 load('LDC_design/delta_P_mid_u_vec.mat')
-delta_p_mid_u_vec = delta_u_vec; 
+delta_P_mid_u_vec = delta_u_vec; 
 
 load('LDC_design/delta_nu_vec.mat')
 load('LDC_design/delta_u_vec.mat')
@@ -234,7 +243,7 @@ hold on
 p1 = plot(100*delta_nu_vec,100*error_u_field_nu,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
 p2 = plot(100*delta_nu_vec,100*error_P_field_nu,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
 p3 = plot(100*delta_nu_vec,100*error_u_mid_nu,'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
-p4 = plot(100*delta_nu_vec,100*error_p_top_nu,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+p4 = plot(100*delta_nu_vec,100*error_P_top_nu,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel('$\Delta \nu [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
@@ -256,7 +265,7 @@ hold on
 p1 = plot(100*delta_u_vec,100*error_u_field_u,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
 p2 = plot(100*delta_u_vec,100*error_P_field_u,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
 p3 = plot(100*delta_u_vec,100*error_u_mid_u,'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
-p4 = plot(100*delta_u_vec,100*error_p_top_u,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+p4 = plot(100*delta_u_vec,100*error_P_top_u,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel('$\Delta U [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
@@ -273,7 +282,7 @@ end
 
 % plot u change for QoI P Mid
 figure
-p1 = plot(100*delta_P_mid_u_vec,100*error_p_mid_u,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+p1 = plot(100*delta_P_mid_u_vec,100*error_P_mid_u,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
 xlabel('$\Delta U [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
@@ -289,7 +298,7 @@ end
 
 % plot nu change for QoI P Mid
 figure
-p1 = plot(100*delta_P_mid_nu_vec,100*error_p_mid_nu,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+p1 = plot(100*delta_P_mid_nu_vec,100*error_P_mid_nu,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
 xlabel('$\Delta \nu [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
@@ -302,6 +311,281 @@ title('Line Search of $\nu$','Interpreter', 'latex')
 if save_on ==1
     saveas(gcf,'plots/LDC_nu_P_mid','epsc')
 end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% PCE fit to random points. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+QoI_vec = [0:4]; 
+
+% I should save the PC error, and nominal and optimal (and low) errors too
+PC_errors= zeros(2,length(QoI_vec)); 
+Nom_errors = zeros(3,length(QoI_vec)); % low, bound and bi
+Opt_errors = zeros(3,length(QoI_vec)); % low, bound and bi
+Opt_delta = zeros(2, length(QoI_vec)); 
+
+for i_qoi = 1:length(QoI_vec); 
+
+QoI = QoI_vec(i_qoi); 
+
+if QoI == 0
+    load('LDC_design/rand_u_field')
+    plot_label = 'U Field'; 
+    plot_save = 'u_field'; 
+elseif QoI == 1
+    load('LDC_design/rand_P_field')
+    plot_label = 'P Field'; 
+    plot_save = 'P_field'; 
+elseif QoI == 2
+    load('LDC_design/rand_u_mid')
+    plot_label = 'U Mid'; 
+    plot_save = 'u_mid'; 
+elseif QoI == 3
+    load('LDC_design/rand_P_mid')
+    plot_label = 'P Mid'; 
+    plot_save = 'P_mid'; 
+elseif QoI == 4
+    load('LDC_design/rand_P_top')
+    plot_label = 'P Top'; 
+    plot_save = 'P_Top'; 
+end
+
+N_total = length(xi_rand);
+
+N = 75; 
+nsim_v = N_total - N; 
+
+% Desired polynomial order of PCE
+d = 2; 
+p = 5; 
+
+index_pc = nD_polynomial_array(d,p); 
+
+P = size(index_pc,1);
+
+psi = zeros(N,P);
+
+for isim=1:N
+%     piset evaluates a multi dimensional pc basis at xi. (legendre 
+%     appropriate for  uniform RV expansion)
+    crow_ref = piset(xi_rand(isim,:),index_pc);
+    psi(isim,:) = crow_ref(1:P);
+end
+
+
+% Solve with least squares
+c_ref = psi\error_bound_mat(1:N,1); 
+c_ref_A = psi\error_Ahat_mat(1:N,1); 
+
+% opts = spgSetParms('iterations',10000,'verbosity',0);
+opts = spgSetParms('iterations',10000,'verbosity',0,'optTol',1e-9,'bpTol',1e-9);
+
+% % solve with spgl1
+weights = get_matrix_weights(psi);
+Psiweights = psi*weights;
+% % sigma is truncation error of PCE (approximated)
+sigma =  cross_val_sigma(psi,error_bound_mat(1:N,1));
+c_spg = weights*spg_bpdn(Psiweights,error_bound_mat(1:N,1),sigma*norm(error_bound_mat(1:N,1)),opts);
+
+sigma_A =  cross_val_sigma(psi,error_Ahat_mat(1:N,1));
+c_spg_A = weights*spg_bpdn(Psiweights,error_Ahat_mat(1:N,1),sigma*norm(error_Ahat_mat(1:N,1)),opts);
+
+%%% Start validation
+
+clear psi;
+
+for isim=1:nsim_v
+    crow = piset(xi_rand(isim+N,:),index_pc);
+    psi(isim,:) = crow(1:P);
+end
+
+error_val_ls = norm(error_bound_mat(N+1:end,1)-psi*c_ref)/norm(error_bound_mat(N+1:end,1));
+error_val_spg = norm(error_bound_mat(N+1:end,1)-psi*c_spg)/norm(error_bound_mat(N+1:end,1));
+
+error_val_ls_A = norm(error_Ahat_mat(N+1:end,1)-psi*c_ref_A)/norm(error_Ahat_mat(N+1:end,1));
+error_val_spg_A = norm(error_Ahat_mat(N+1:end,1)-psi*c_spg_A)/norm(error_Ahat_mat(N+1:end,1));
+
+% % % PCE stats: 
+% fprintf('PCE Bound Errors: \n');
+% fprintf('LS: %d \n',error_val_ls);
+% fprintf('SPG: %d \n',error_val_spg);  
+
+PC_errors(:,i_qoi) = [error_val_ls; error_val_spg]; 
+
+% error is tiny even with p = 0... 
+1; 
+
+
+% Surface from PCE
+
+% u_lim = [-0.85,0]; 
+% nu_lim = [0,5];
+
+delta_u_vec = linspace(u_lim(1), u_lim(2), 60); 
+delta_nu_vec = linspace(nu_lim(1), nu_lim(2), 60); 
+
+
+[X,Y] = meshgrid(delta_u_vec,delta_nu_vec);
+Z = zeros(size(X)); 
+
+[xx,yy] = size(X); 
+% Transfrom to vector: 
+XX = X(:); YY = Y(:); 
+
+% Want -1 to 1 RV. 
+%     t1_lim = [0.005,0.6]; 
+%     t3_lim = [5,200];
+
+range_u = u_lim(2)-u_lim(1); 
+range_nu = nu_lim(2)-nu_lim(1); 
+
+XX_xi = (XX-u_lim(1))/range_u*2-1;
+YY_xi = (YY-nu_lim(1))/range_nu*2-1;
+xi_grid = [XX_xi,YY_xi]; 
+
+clear psi 
+
+for isim=1:length(XX)
+%     piset evaluates a multi dimensional pc basis at xi. (legendre 
+%     appropriate for  uniform RV expansion)
+    crow_ref = piset(xi_grid(isim,:),index_pc);
+    psi(isim,:) = crow_ref(1:P);
+end
+
+% use spg or ls
+
+if error_val_ls <= error_val_spg
+    c_use = c_ref; 
+    c_use_A = c_ref_A;  
+else
+    c_use = c_spg; 
+    c_use_A = c_spg_A; 
+end
+
+% estimate response surface
+ZZ = 100*psi*c_use;
+ZZ_A = 100*psi*c_use_A;
+
+X = 100*X; 
+Y = 100*Y; 
+
+% Reshape as matrix
+Z = reshape(ZZ,[xx,yy]);
+Z_A = reshape(ZZ_A,[xx,yy]);
+
+% calculate minimum values and compare to naive
+min_bound = min(Z(:));
+[i_bound,j_bound] = find(Z==min_bound);
+i_bound = i_bound(1); j_bound = j_bound(1); 
+
+Bi_from_bound = Z_A(i_bound,j_bound); 
+
+min_Bi = min(Z_A(:));
+[i_Bi,j_Bi] = find(Z_A==min_Bi);
+
+[~,j_nom] = find(X==0);
+[i_naive,i_meh] = find(Y==0);
+j_nom = j_nom(1); 
+i_naive = i_naive(1); 
+nom_bound = Z(i_naive,j_nom); 
+nom_Bi = Z_A(i_naive,j_nom); 
+
+e_low = NaN; 
+
+Nom_errors(:,i_qoi) = [e_low; nom_bound;nom_Bi]; % low, bound and bi
+Opt_errors(:,i_qoi) = [e_low; min_bound;Bi_from_bound]; % low, bound and bi
+
+Opt_delta(:,i_qoi) = [delta_nu_vec(i_bound); delta_u_vec(j_bound)]; % nu and then u
+
+% need low- fidelity here too. I should report the location as well. 
+pc_res_tab = array2table([nom_bound,nom_Bi;min_bound,Bi_from_bound],...
+    'VariableNames',{'Bound','Bi'},'RowNames',{'Nominal','Optimal'});
+
+% pc_res_tab = array2table([nom_bound,nom_Ahat;min_bound,Bi_from_bound],...
+%     'VariableNames',{'Low','Bound','Bi'},'RowNames',{'Nominal','Optimal'})
+
+% fprintf('PC validation error of %d percent for ls \n',error_val_ls*100);
+% fprintf('PC validation error of %d percent for spg \n',error_val_spg*100);
+c_low = min([Z(:);Z_A(:)]); 
+c_high = max([Z(:);Z_A(:)]); 
+    
+% make colorbar limits consistent (change back if only one plot is used. 
+figure
+contourf(Y,X,Z)
+colorbar
+hold on; 
+p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
+p2 = plot(100*delta_nu_vec(i_bound),100*delta_u_vec(j_bound),'rx','MarkerSize',8,'linewidth',LW);
+p3 = plot(100*delta_nu_vec(i_Bi),100*delta_u_vec(j_Bi),'rs','MarkerSize',8,'linewidth',LW);
+hold off
+legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
+xlabel('$\Delta \nu$','interpreter','latex','Fontsize',FS)
+ylabel('$\Delta U$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+grid on
+title(strcat(plot_label,' Error Bound'),'Interpreter','latex')
+% to make comparison to earlier contour
+% caxis([c_low,c_high])
+
+if save_on ==1
+    saveas(gcf,strcat('plots/LDC_',plot_save,'_bound'),'epsc')
+end
+
+figure
+contourf(Y,X,Z_A)
+hold on
+colorbar
+p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
+p2 = plot(100*delta_nu_vec(i_bound),100*delta_u_vec(j_bound),'rx','MarkerSize',8,'linewidth',LW);
+p3 = plot(100*delta_nu_vec(i_Bi),100*delta_u_vec(j_Bi),'rs','MarkerSize',8,'linewidth',LW);
+hold off
+legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg)   
+xlabel('$\Delta \nu$','interpreter','latex','Fontsize',FS)
+ylabel('$\Delta U$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+grid on
+title(strcat(plot_label,' Bi-fidelity Error'),'Interpreter','latex')
+% caxis([c_low,c_high])
+
+if save_on ==1
+    saveas(gcf,strcat('plots/LDC_',plot_save,'_bi'),'epsc')
+end
+
+% % PCE stats: 
+% fprintf('PCE Bound Errors: \n')
+% PC_errors*100)
+
+
+end
+
+pc_errors_tab = array2table(100*PC_errors,...
+    'VariableNames',{'U_mat','P_mat', 'U_mid', 'P_mid', 'P_top'},'RowNames',{'LS','SPG'})
+
+u_mat = array2table([Nom_errors(:,1)';Opt_errors(:,1)'],...
+    'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
+
+p_mat = array2table([Nom_errors(:,2)';Opt_errors(:,2)'],...
+    'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
+
+u_mid = array2table([Nom_errors(:,3)';Opt_errors(:,3)'],...
+    'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
+
+p_mid = array2table([Nom_errors(:,4)';Opt_errors(:,4)'],...
+    'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
+
+p_top = array2table([Nom_errors(:,5)';Opt_errors(:,5)'],...
+    'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
+
+Opt_delta_tab = array2table(Opt_delta',...
+    'VariableNames',{'nu', 'u'},'RowNames',{'U_mat','P_mat', 'U_mid', 'P_mid', 'P_top'})
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% QoI? 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+1; 
 
 if plot_QoI == 1
     
@@ -363,7 +647,7 @@ if plot_QoI == 1
     ylabel('$\vert P_{top} \vert$','interpreter','latex','Fontsize',FS)
     axis tight
     set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-    legend([p1,p2,p3],{'H','Naive L','Optimal L'},'interpreter', 'latex', 'fontsize', FS_leg)
+    legend([p1,p2,p3],{'H','Nominal L','Optimal L'},'interpreter', 'latex', 'fontsize', FS_leg)
     grid on; 
     
     load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/p_line_matrix_mid_32.mat');
@@ -384,225 +668,13 @@ if plot_QoI == 1
 %     ylabel('$\vert P_{mid} \vert$','interpreter','latex','Fontsize',FS)
 %     axis tight
 %     set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% %     legend([p1,p2,p3],{'H','Naive L','Trial L w'},'interpreter', 'latex', 'fontsize', FS_leg)
+% %     legend([p1,p2,p3],{'H','Nominal L','Trial L w'},'interpreter', 'latex', 'fontsize', FS_leg)
 %     grid on; 
     end
-end
 
-if plot_response == 1 
+
     
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% PCE fit to random points. 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if QoI == 0
-    load('PC_results_vel_mat')
-elseif QoI == 1
-    load('PC_results_P_mat')
-elseif QoI == 2
-%     load('PC_results_vel_midr_10')
-    load('PC_results_vel_mid')
-
-elseif QoI == 3
-    load('PC_results_P_mid')
-elseif QoI == 4
-    load('PC_results_P_top')
-end
-
-1; 
-
-N_total = length(xi_rand);
-
-N = 150; 
-nsim_v = N_total - N; 
-% Desired polynomial order of PCE
-d = 2; 
-p = 7; 
-
-index_pc = nD_polynomial_array(d,p); 
-
-P = size(index_pc,1);
-
-psi = zeros(N,P);
-
-n_reps = 1; 
-error_ls = zeros(n_reps,1); 
-error_spg = zeros(n_reps,1); 
-
-for i_rep = 1:n_reps
-
-for isim=1:N
-%     piset evaluates a multi dimensional pc basis at xi. (legendre 
-%     appropriate for  uniform RV expansion)
-    crow_ref = piset(xi_rand(isim,:),index_pc);
-    psi(isim,:) = crow_ref(1:P);
-end
-
-
-% Solve with least squares
-c_ref = psi\error_bound_mat(1:N,1); 
-c_ref_A = psi\error_Ahat_mat(1:N,1); 
-
-% opts = spgSetParms('iterations',10000,'verbosity',0);
-opts = spgSetParms('iterations',10000,'verbosity',0,'optTol',1e-9,'bpTol',1e-9);
-
-% % solve with spgl1
-weights = get_matrix_weights(psi);
-Psiweights = psi*weights;
-% % sigma is truncation error of PCE (approximated)
-sigma =  cross_val_sigma(psi,error_bound_mat(1:N,1));
-c_spg = weights*spg_bpdn(Psiweights,error_bound_mat(1:N,1),sigma*norm(error_bound_mat(1:N,1)),opts);
-
-sigma_A =  cross_val_sigma(psi,error_Ahat_mat(1:N,1));
-c_spg_A = weights*spg_bpdn(Psiweights,error_Ahat_mat(1:N,1),sigma*norm(error_Ahat_mat(1:N,1)),opts);
-
-
-%%% Start validation
-
-clear psi;
-
-for isim=1:nsim_v
-    crow = piset(xi_rand(isim+N,:),index_pc);
-    psi(isim,:) = crow(1:P);
-end
-
-error_val_ls = norm(error_bound_mat(N+1:end,1)-psi*c_ref)/norm(error_bound_mat(N+1:end,1));
-error_val_spg = norm(error_bound_mat(N+1:end,1)-psi*c_spg)/norm(error_bound_mat(N+1:end,1));
-
-error_val_ls_A = norm(error_Ahat_mat(N+1:end,1)-psi*c_ref_A)/norm(error_Ahat_mat(N+1:end,1));
-error_val_spg_A = norm(error_Ahat_mat(N+1:end,1)-psi*c_spg_A)/norm(error_Ahat_mat(N+1:end,1));
-
-
-error_ls(i_rep) = error_val_ls
-error_spg(i_rep) = error_val_spg
-
-end
-
-% % PCE stats: 
-fprintf('PCE Bound Errors: \n');
-fprintf('LS Mean: %d, LS Sd: %d \n',mean(error_ls), std(error_ls));
-fprintf('SPG Mean: %d SPG Sd: %d \n',mean(error_spg), std(error_spg));  
-
-% make a choive availble for which coefficients to use? for now use LS not
-% spg. 
-
-% Surface from PCE
-
-% u_lim = [-0.85,0]; 
-% nu_lim = [0,5];
-
-delta_u_vec = u_lim(1):0.01:u_lim(2); 
-delta_nu_vec = nu_lim(1):0.05:nu_lim(2);
-
-[X,Y] = meshgrid(delta_u_vec,delta_nu_vec);
-Z = zeros(size(X)); 
-
-[xx,yy] = size(X); 
-% Transfrom to vector: 
-XX = X(:); YY = Y(:); 
-
-% Want -1 to 1 RV. 
-%     t1_lim = [0.005,0.6]; 
-%     t3_lim = [5,200];
-
-range_u = u_lim(2)-u_lim(1); 
-range_nu = nu_lim(2)-nu_lim(1); 
-
-XX_xi = (XX-u_lim(1))/range_u*2-1;
-YY_xi = (YY-nu_lim(1))/range_nu*2-1;
-xi_grid = [XX_xi,YY_xi]; 
-
-clear psi 
-
-for isim=1:length(XX)
-%     piset evaluates a multi dimensional pc basis at xi. (legendre 
-%     appropriate for  uniform RV expansion)
-    crow_ref = piset(xi_grid(isim,:),index_pc);
-    psi(isim,:) = crow_ref(1:P);
-end
-
-if QoI == 3
-    c_use = c_spg; 
-    c_use_A = c_spg_A; 
-else
-    c_use = c_ref; 
-    c_use_A = c_ref_A;    
-end
-
-% estimate response surface
-ZZ = psi*c_use;
-ZZ_A = psi*c_use_A;
-
-% Reshape as matrix
-Z = reshape(ZZ,[xx,yy]);
-Z_A = reshape(ZZ_A,[xx,yy]);
-
-
-
-% calculate minimum values and compare to naive
-min_bound = min(Z(:));
-[i_bound,j_bound] = find(Z==min_bound);
-
-Ahat_from_bound = Z_A(i_bound,j_bound); 
-
-min_Ahat = min(Z_A(:));
-[i_Ahat,j_Ahat] = find(Z_A==min_Ahat);
-
-[i_meh,j_naive] = find(X==0);
-[i_naive,i_meh] = find(Y==0);
-j_naive = j_naive(1); 
-i_naive = i_naive(1); 
-naive_bound = Z(i_naive,j_naive); 
-naive_Ahat = Z_A(i_naive,j_naive); 
-
-% should I report the pc interpolated values of the true values? PC when
-% error is low 
-pc_res_tab = array2table([naive_bound,naive_Ahat;min_bound,Ahat_from_bound],...
-    'VariableNames',{'Bound','Bi'},'RowNames',{'Naive','Optimal'})
-
-fprintf('PC validation error of %d percent for ls \n',error_val_ls*100);
-fprintf('PC validation error of %d percent for spg \n',error_val_spg*100);
-c_low = min([Z(:);Z_A(:)]); 
-c_high = max([Z(:);Z_A(:)]); 
-
-% make colorbar limits consistent (change back if only one plot is used. 
-figure
-contourf(Y,X,Z)
-colorbar
-hold on; 
-p1 = plot(0,0,'rs','MarkerSize',8,'linewidth',LW);
-p2 = plot(delta_nu_vec(i_bound),delta_u_vec(j_bound),'ro','MarkerSize',8,'linewidth',LW);
-p3 = plot(delta_nu_vec(i_Ahat),delta_u_vec(j_Ahat),'rx','MarkerSize',8,'linewidth',LW);
-hold off
-legend([p1,p2,p3],{'Naive','Bound Min', '$\hat{A}$ Min'},'interpreter', 'latex', 'fontsize', FS_leg)
-xlabel('$\Delta \nu$','interpreter','latex','Fontsize',FS)
-ylabel('$\Delta u$','interpreter','latex','Fontsize',FS)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-grid on
-title('Error bound','Interpreter','latex')
-% to make comparison to earlier contour
-% caxis([c_low,c_high])
-
-% should I make a pce of Ahat too? Yes. 
-% validation error for the bound pce was quite excellent, 7.05e-4; 
-
-figure
-contourf(Y,X,Z_A)
-hold on
-colorbar
-p1 = plot(0,0,'rs','MarkerSize',8,'linewidth',LW);
-p2 = plot(delta_nu_vec(i_bound),delta_u_vec(j_bound),'ro','MarkerSize',8,'linewidth',LW);
-p3 = plot(delta_nu_vec(i_Ahat),delta_u_vec(j_Ahat),'rx','MarkerSize',8,'linewidth',LW);
-hold off
-legend([p1,p2,p3],{'Naive','Bound Min', '$\hat{A}$ Min'},'interpreter', 'latex', 'fontsize', FS_leg)   
-xlabel('$\Delta \nu$','interpreter','latex','Fontsize',FS)
-ylabel('$\Delta u$','interpreter','latex','Fontsize',FS)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-grid on
-title('Error A hat','Interpreter','latex')
-% caxis([c_low,c_high])
 
 
 
@@ -658,7 +730,7 @@ xlabel('$x$','interpreter','latex','Fontsize',FS)
 ylabel('$\vert P_{mid} \vert$','interpreter','latex','Fontsize',FS)
 
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-legend([p1,p2,p3],{'H','Naive L','Optimal L'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3],{'H','Nominal L','Optimal L'},'interpreter', 'latex', 'fontsize', FS_leg)
 grid on; 
 
 figure
@@ -682,6 +754,6 @@ load('nom_opt/Ahat_opt.mat')
 true_opt_Ahat = err_Ahat; 
 
 res_tab_data = array2table([true_naive_bound,true_naive_Ahat;true_opt_bound,true_opt_Ahat],...
-    'VariableNames',{'Bound','Bi'},'RowNames',{'Naive','Optimal'})
+    'VariableNames',{'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
 end
     
