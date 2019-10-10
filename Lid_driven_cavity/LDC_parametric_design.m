@@ -44,7 +44,7 @@ c6 = [0.3010, 0.7450, 0.9330];
 % High 200 samples 
 % how much of this time is spent interpolating? 
 % choose QoI
-QoI = 3; 
+QoI = 0; 
 % 0 is u_mat
 % 1 is P_mat
 % 2 is u_vec mid
@@ -58,8 +58,10 @@ QoI = 3;
 % line to set bounds of search
 % random search to construct response surface with pce. 
 point_test = 0; 
-line_search = 2;
-random_search = 0; % ie use PCE
+line_search = 0;
+random_search = 1; % ie use PCE
+
+nom_opt = 1; % Save data for nominal and optimal runs
 
 % QoI 3 needs special treatment, ie change range. 
 % Other parameters could explore further along decrease velocity? 
@@ -210,7 +212,7 @@ if line_search >= 1
     % start with variation +- 10 
     
     nx = 4; 
-    r = 3; 
+    r = 1; 
     n = r+2; 
     
     % r = 1, n = 3 seems okay for U and P fields, U mid and P top. 
@@ -340,44 +342,45 @@ end
 
 if random_search == 1
 
-n_samps = 200; 
+    % check error with 100 samples... 
+n_samps = 100; 
 
-% identify inputs to vary.. delta u and delta nu... what region to look in?
-%u_vec best value is -85%. vary from 0 to this? It goes down the other way
-% too.. Think this will be mitigated if i make it more viscous: 
-% nu best value is 500 % it breaks if nu goes far below 1. 
-
-% Identify limits
-% for results one:
-% u_lim = [-0.85,0]; 
-% nu_lim = [0,5];
-
-% for results two:
-% u_lim = [-0.99,0]; 
-% nu_lim = [0,7];
-
-% for mid? 
+% 0 is u_mat
+% 1 is P_mat
+% 2 is u_vec mid
+% 3 is p_vec mid
+% 4 is p_vec top
 
 if QoI == 0
     u_lim = [-0.6,0]; 
     nu_lim = [0,3.0];
-    r = 3; 
+    r = 1; 
+    n = r+2; 
+    save_label = 'u_field';
 elseif QoI == 1
     u_lim = [-0.6,0]; 
     nu_lim = [0,3.0];
-    r = 3; 
+    r = 1; 
+    n = r+2; 
+    save_label = 'P_field';
 elseif QoI == 2
     u_lim = [-0.6,0]; 
     nu_lim = [0,3.0];
-    r = 3; 
+    r = 1; 
+    n = r+2; 
+    save_label = 'u_mid';
 elseif QoI == 3
-    u_lim = [-0.5,0]; 
-    nu_lim = [0,0.6];
-    r = 3;    
+    u_lim = [-0.02,0]; 
+    nu_lim = [0,0.03];
+    r = 1;   
+    n = r+2; 
+    save_label = 'P_mid';
 elseif QoI == 4
     u_lim = [-0.6,0]; 
     nu_lim = [0,3.0];
-    r = 3;    
+    r = 1;    
+    n = r+2; 
+    save_label = 'P_top';
 end
 
 % LDC inputs
@@ -434,23 +437,43 @@ error_Ahat_mat = zeros(n_samps,1);
 efficacy_mat = zeros(n_samps,1);
 
 tic
-
-% look at weird behavior. 
-
-u_rand = [0, -0.3] ;
-nu_rand = [0, 0.3] ;
+% 
+% % look at weird behavior. - turns out I was using tolerance with r
+% limited at 3 and it stepped from 1 to 3. 
+% 
+% u_rand = [0, -0.3] ;
+% nu_rand = [0, 0.3] ;
 
 % save velocity and pressure field for these realizations? 
 
 % save field. 
 
-for i_t = 1:n_samps
-    i_t
-[error_bound, err_Ahat, efficacy] =  my_ldc_bound(QoI, nx,r,u_rand(i_t),nu_rand(i_t)); 
+if nom_opt == 1
+    if QoI == 0
+        u_rand = [0, 0];
+        nu_rand = [0, 3];
+    elseif QoI == 1
+        u_rand = [0, -0.6];
+        nu_rand = [0, 2.745];     
+    elseif QoI == 2
+        u_rand = [0, -0.6];
+        nu_rand = [0, 1.932];  
+    elseif QoI == 3 
+        u_rand = [0, -0.02];
+        nu_rand = [0, 0.03]; 
+    elseif QoI == 4
+        u_rand = [0, -0.6];
+        nu_rand = [0, 3];  
+    end
+end
 
-error_bound
-err_Ahat
-1; 
+for i_t = 1:1 %n_samps
+    
+[error_bound, err_Ahat, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand(i_t)); 
+
+% error_bound
+% err_Ahat
+% 1; 
 
 % error_bound = ahat_error_est/norm(Uf);
 % err_Ahat = norm(Uf-Uf(:,ix)*P_s)/norm(Uf);
@@ -460,6 +483,7 @@ error_bound_mat(i_t) = error_bound;
 error_Ahat_mat(i_t) =  err_Ahat; 
 efficacy_mat(i_t) = efficacy; 
 
+fprintf("Percent complete: %d \n",i_t/n_samps*100);   
 end
 
 % error_bound_mat
@@ -467,7 +491,9 @@ end
 % efficacy_mat
 xi_rand = xi_rand*2-1;
 
-save('PC_results/PC_results','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
+save(strcat('LDC_design/rand_',save_label),'error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
+
+% save('PC_results/PC_results','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
 
 % save('PC_results/PC_results_pressure_mid_2','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
 % save('PC_results/PC_results_vel_mid','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
