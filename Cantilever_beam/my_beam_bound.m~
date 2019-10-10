@@ -142,15 +142,17 @@ err_Ahat = norm(A-A(:,ix)*P_s)/norm(A);
 efficacy = error_bound/err_Ahat;
 
 % % Calculate tip error (optional) 
+
 1; 
 
-% % relative error of tip deflection
-% errors_Ahat_1 = (A-A(:,ix)*P_s);
-% tip_error = errors_Ahat_1(end,:)./A(end,:);
-% 
-% errors_L = (Uf-Uc);
-% tip_error_L = errors_L(end,:)./Uf(end,:);
+errors_Ahat = (A-A(:,ix)*P_s)*norm(Uf,'fro'); %/norm(Uf);
 
+tip_error = errors_Ahat(end,:)./Uf(end,:);
+
+errors_L = (Uf-Uc);
+tip_error_L = errors_L(end,:)./Uf(end,:);
+
+1; 
 % save('Beam_design/tip_error_nom_bi','tip_error')
 % save('Beam_design/tip_error_nom_L','tip_error_L')
 
