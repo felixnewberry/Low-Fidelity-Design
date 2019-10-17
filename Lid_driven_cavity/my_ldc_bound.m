@@ -108,62 +108,24 @@ error_bound = ahat_error_est/norm(A);
 err_Bi = norm(A-A(:,ix)*P_s)/norm(A);
 efficacy = error_bound/err_Bi;
 
-if QoI == 0
-    save_label = 'u_field';
-elseif QoI == 1
-    save_label = 'P_field';
-elseif QoI == 2
-    save_label = 'u_mid';
-elseif QoI == 3
-    save_label = 'P_mid';
-elseif QoI == 4
-    save_label = 'P_top';
-end
 
-Ub = Uf(:,ix)*P_s;
-save(strcat('LDC_design/',save_label, '_nom'),'Uc', 'Ub', 'sb', 'error_bound','err_Bi')
-
-% save(strcat(save_label, '_opt',Uc, Ub, sb, error_bound,err_Bi)
-
-% % save('Uc_opt','Uc')
-% % save('Ub_opt','Ub')
-% % save('sb_opt','sb')
-
-% % 
-% % % debug plot
-% % err_Bhat
-% % % 9.7e-4 for case 2 (good)
-% % % 2.8e-2 for case 1 (bad)
-% % error_bound
-% % 
-% % figure
-% % plot(Uc)
-% % 
-% % figure
-% % semilogy(sb)
-% % % rank 6 ... I can probably reduce R alot. 
-% % 
-% % 
-% % 
-% % 1; 
+% if QoI == 0
+%     save_label = 'u_field';
+% elseif QoI == 1
+%     save_label = 'P_field';
+% elseif QoI == 2
+%     save_label = 'u_mid';
+% elseif QoI == 3
+%     save_label = 'P_mid';
+% elseif QoI == 4
+%     save_label = 'P_top';
+% end
 % 
-% % Ub = Uf(:,ix)*P_s;
-% % 
-% % save('Uc_opt','Uc')
-% % save('Ub_opt','Ub')
-% % save('sb_opt','sb')
-% % save('bound_opt','error_bound')
-% % save('Ahat_opt','err_Ahat')
+% Ub = Uf(:,ix)*P_s;
+% % save(strcat('LDC_design/',save_label, '_nom'),'Uc', 'Ub', 'sb', 'error_bound','err_Bi')
+% save(strcat('LDC_design/',save_label, '_opt'),'Uc', 'Ub', 'sb', 'error_bound','err_Bi')
 % 
-% % save('Uc_nom','Uc')
-% % save('Ub_nom','Ub')
-% % save('sb_nom','sb')
-% % save('bound_nom','error_bound')
-% % save('Ahat_nom','err_Ahat')
-% 
-% % save a bunch of stuff, ie Uc, Bi, Sb _nom and _opt
-% 
-1; 
+% 1; 
 
 
 end

@@ -36,40 +36,6 @@ c4 = [0.4940, 0.1840, 0.5560];
 c5 = [0.4660, 0.6740, 0.1880]; 
 c6 = [0.3010, 0.7450, 0.9330]; 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Task Switches
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% % % make data for presentation
-% % plot_ghia = 0; 
-% % 
-% % plot_mesh = 0; 
-% % 
-% % 
-% % %QoI
-% % % choose QoI
-% % QoI = 0; 
-% % % 0 is u_mat
-% % % 1 is P_mat
-% % % 2 is u_vec mid
-% % % 3 is p_vec mid
-% % % 4 is p_vec top
-% % 
-% % % only works p_top at moment? 
-% % plot_QoI = 0; 
-% % % appropriate for slices ie, mid and top. 
-% % 
-% % % PCE optimal bound response surface
-% % plot_response = 0; 
-% % 
-% % plot_p_curious = 0; 
-% % % save bi-fidelity too to compute accurate error and report. Run p_mat now.
-% % % 
-% % 
-% % save_on = 1; 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  Plot ghia
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -333,22 +299,70 @@ if QoI == 0
     load('LDC_design/rand_u_field')
     plot_label = 'U Field'; 
     plot_save = 'u_field'; 
+    
+    Uf= load('u_meshes/u_field_matrix_32.mat');
+    Uf = Uf.u_field_matrix';
+    
+    % dim of nom and opt don't match f. fix. same for QoI 0, (nom and opt
+    % not yet available for qoi 3 or 4. 
+    % did I save over something?? Yes I did - look at github... crap??!
+    % these were saved on 10th october... 
+%     Uc_nom = load('LDC_design/u_field_nom.mat', 'Uc');
+%     Uc_nom = Uc_nom.Uc; 
+%     Uc_opt = load('LDC_design/u_field_opt.mat', 'Uc');
+%     Uc_opt = Uc_opt.Uc; 
+    
 elseif QoI == 1
     load('LDC_design/rand_P_field')
     plot_label = 'P Field'; 
     plot_save = 'P_field'; 
+    
+    Uf= load('u_meshes/p_field_matrix_32.mat');
+    Uf = Uf.p_field_matrix_32';
+    
+    Uc_nom = load('LDC_design/P_field_nom.mat', 'Uc');
+    Uc_nom = Uc_nom.Uc;
+    Uc_opt = load('LDC_design/P_field_opt.mat', 'Uc');
+    Uc_opt = Uc_opt.Uc; 
+    
 elseif QoI == 2
     load('LDC_design/rand_u_mid')
     plot_label = 'U Mid'; 
     plot_save = 'u_mid'; 
+    
+    Uf= load('u_meshes/u_matrix_32.mat');
+    Uf = Uf.u_matrix';
+    
+    Uc_nom = load('LDC_design/u_mid_nom.mat', 'Uc');
+    Uc_nom = Uc_nom.Uc; 
+    Uc_opt = load('LDC_design/u_mid_opt.mat', 'Uc');
+    Uc_opt = Uc_opt.Uc; 
+        
 elseif QoI == 3
     load('LDC_design/rand_P_mid')
     plot_label = 'P Mid'; 
     plot_save = 'P_mid'; 
+    
+    Uf= load('u_meshes/p_line_matrix_mid_32.mat');
+    Uf = Uf.p_line_matrix';
+    
+    Uc_nom = load('LDC_design/p_mid_nom.mat', 'Uc');
+    Uc_nom = Uc_nom.Uc; 
+    Uc_opt = load('LDC_design/p_mid_opt.mat', 'Uc');
+    Uc_opt = Uc_opt.Uc; 
+    
 elseif QoI == 4
     load('LDC_design/rand_P_top')
     plot_label = 'P Top'; 
     plot_save = 'P_Top'; 
+    
+    Uf= load('u_meshes/p_line_matrix_top_32.mat');
+    Uf = Uf.p_line_matrix';
+    
+    Uc_nom = load('LDC_design/p_top_nom.mat', 'Uc');
+    Uc_nom = Uc_nom.Uc; 
+    Uc_opt = load('LDC_design/p_top_opt.mat', 'Uc');
+    Uc_opt = Uc_opt.Uc; 
 end
 
 N_total = length(xi_rand);
@@ -491,16 +505,19 @@ i_naive = i_naive(1);
 nom_bound = Z(i_naive,j_nom); 
 nom_Bi = Z_A(i_naive,j_nom); 
 
-e_low = NaN; 
+1; 
 
-Nom_errors(:,i_qoi) = [e_low; nom_bound;nom_Bi]; % low, bound and bi
-Opt_errors(:,i_qoi) = [e_low; min_bound;Bi_from_bound]; % low, bound and bi
+nom_low = norm(Uc_nom-Uf)/norm(Uf); 
+opt_low = norm(Uc_opt-Uf)/norm(Uf); 
+
+Nom_errors(:,i_qoi) = [nom_low; nom_bound;nom_Bi]; % low, bound and bi
+Opt_errors(:,i_qoi) = [opt_low; min_bound;Bi_from_bound]; % low, bound and bi
 
 Opt_delta(:,i_qoi) = [delta_nu_vec(i_bound); delta_u_vec(j_bound)]; % nu and then u
 
-% need low- fidelity here too. I should report the location as well. 
-pc_res_tab = array2table([nom_bound,nom_Bi;min_bound,Bi_from_bound],...
-    'VariableNames',{'Bound','Bi'},'RowNames',{'Nominal','Optimal'});
+% % need low- fidelity here too. I should report the location as well. 
+% pc_res_tab = array2table([nom_bound,nom_Bi;min_bound,Bi_from_bound],...
+%     'VariableNames',{'Bound','Bi'},'RowNames',{'Nominal','Optimal'});
 
 % pc_res_tab = array2table([nom_bound,nom_Ahat;min_bound,Bi_from_bound],...
 %     'VariableNames',{'Low','Bound','Bi'},'RowNames',{'Nominal','Optimal'})
@@ -527,7 +544,7 @@ set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 grid on
 title(strcat(plot_label,' Error Bound'),'Interpreter','latex')
 % to make comparison to earlier contour
-% caxis([c_low,c_high])
+caxis([c_low,c_high])
 
 if save_on ==1
     saveas(gcf,strcat('plots/LDC_',plot_save,'_bound'),'epsc')
@@ -548,41 +565,34 @@ axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 grid on
 title(strcat(plot_label,' Bi-fidelity Error'),'Interpreter','latex')
-% caxis([c_low,c_high])
+caxis([c_low,c_high])
 
 if save_on ==1
     saveas(gcf,strcat('plots/LDC_',plot_save,'_bi'),'epsc')
 end
 
-% % PCE stats: 
-% fprintf('PCE Bound Errors: \n')
-% PC_errors*100)
+end
 
 pc_errors_tab = array2table(100*PC_errors,...
     'VariableNames',{'U_mat','P_mat', 'U_mid', 'P_mid', 'P_top'},'RowNames',{'LS','SPG'})
 
-
-Nom_errors = zeros(3,length(QoI_vec)); % low, bound and bi
-Opt_errors = zeros(3,length(QoI_vec)); % low, bound and bi
-Opt_delta = zeros(2, length(QoI_vec)); 
-
 u_mat = array2table([Nom_errors(:,1)';Opt_errors(:,1)'],...
     'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
 
-p_mat = array2table([Nom_errors(:,1)';Opt_errors(:,1)'],...
+p_mat = array2table([Nom_errors(:,2)';Opt_errors(:,2)'],...
     'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
 
-u_mid = array2table([Nom_errors(:,1)';Opt_errors(:,1)'],...
+u_mid = array2table([Nom_errors(:,3)';Opt_errors(:,3)'],...
     'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
 
-p_mid = array2table([Nom_errors(:,1)';Opt_errors(:,1)'],...
+p_mid = array2table([Nom_errors(:,4)';Opt_errors(:,4)'],...
     'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
 
-p = array2table([Nom_errors(:,1)';Opt_errors(:,1)'],...
+p_top = array2table([Nom_errors(:,5)';Opt_errors(:,5)'],...
     'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
-Nom_errors(:,1)'
-end
 
+Opt_delta_tab = array2table(Opt_delta',...
+    'VariableNames',{'nu', 'u'},'RowNames',{'U_mat','P_mat', 'U_mid', 'P_mid', 'P_top'})
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% QoI? 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -39,12 +39,14 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%% Choose optimization method and mode
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% run QoI 1,2,3,4 - then do the nom opt... - and check values first...
+
 % timed run: low fid 200 samples is 2.83 s (+0.9 if time from matlab rather
 % than python) high fid is 115 s. 40 times faster.
 % High 200 samples 
 % how much of this time is spent interpolating? 
 % choose QoI
-QoI = 0; 
+QoI = 4; 
 % 0 is u_mat
 % 1 is P_mat
 % 2 is u_vec mid
@@ -61,7 +63,7 @@ point_test = 0;
 line_search = 0;
 random_search = 1; % ie use PCE
 
-nom_opt = 1; % Save data for nominal and optimal runs
+nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
 
 % QoI 3 needs special treatment, ie change range. 
 % Other parameters could explore further along decrease velocity? 
@@ -467,7 +469,8 @@ if nom_opt == 1
     end
 end
 
-for i_t = 1:1 %n_samps
+% change for nom opt... in robust way 
+for i_t = 1:n_samps
     
 [error_bound, err_Ahat, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand(i_t)); 
 
@@ -491,15 +494,8 @@ end
 % efficacy_mat
 xi_rand = xi_rand*2-1;
 
-save(strcat('LDC_design/rand_',save_label),'error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
-
-% save('PC_results/PC_results','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
-
-% save('PC_results/PC_results_pressure_mid_2','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
-% save('PC_results/PC_results_vel_mid','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
-% save('PC_results/PC_results_P_top','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
-% save('PC_results/PC_results_P_mid','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
-% save('PC_results/PC_results_vel_mat','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
-% save('PC_results/PC_results_P_mat','error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
+if nom_opt ~= 1
+    save(strcat('LDC_design/rand_',save_label),'error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
+end
 
 end

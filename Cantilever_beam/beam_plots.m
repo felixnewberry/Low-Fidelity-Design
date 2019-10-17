@@ -140,7 +140,6 @@ caxis(100*[min([error_bound_mat(:); error_Bi_mat(:)]) max([error_bound_mat(:); e
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 % grid on
 set(gcf,'Position',size_1)
-% colormap('cividis') % cividis, inferno, fake_parula, magma, plasma, viridis 
 title('Error bound','Interpreter','latex')
 
 if save_on ==1
@@ -163,7 +162,6 @@ caxis(100*[min([error_bound_mat(:); error_Bi_mat(:)]) max([error_bound_mat(:); e
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 % grid on
 set(gcf,'Position',size_1)
-% colormap('cividis')
 title('Bi-fidelity error','Interpreter','latex')
 
 if save_on ==1
