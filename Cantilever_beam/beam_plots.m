@@ -21,7 +21,7 @@ size_2 = [0,0,1340,515];
 
 FS = 28;    % Font size axis
 FS_axis = 18; 
-LW_axis = 2; 
+LW_axis = 1; 
 
 % Colors
 c1 = [0, 0.4470, 0.7410];
