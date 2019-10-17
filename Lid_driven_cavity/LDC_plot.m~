@@ -505,7 +505,7 @@ i_naive = i_naive(1);
 nom_bound = Z(i_naive,j_nom); 
 nom_Bi = Z_A(i_naive,j_nom); 
 
-1; 
+% 1; 
 
 nom_low = norm(Uc_nom-Uf)/norm(Uf); 
 opt_low = norm(Uc_opt-Uf)/norm(Uf); 

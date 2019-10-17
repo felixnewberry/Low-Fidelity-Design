@@ -291,9 +291,12 @@ Nom_errors = zeros(3,length(QoI_vec)); % low, bound and bi
 Opt_errors = zeros(3,length(QoI_vec)); % low, bound and bi
 Opt_delta = zeros(2, length(QoI_vec)); 
 
-for i_qoi = 1:length(QoI_vec); 
+% skip u mat for now
+for i_qoi = 2:length(QoI_vec); 
 
+% i_qoi = 2; % 2, 4 or 5; 
 QoI = QoI_vec(i_qoi); 
+% QoI = 3; 
 
 if QoI == 0
     load('LDC_design/rand_u_field')
@@ -307,10 +310,10 @@ if QoI == 0
     % not yet available for qoi 3 or 4. 
     % did I save over something?? Yes I did - look at github... crap??!
     % these were saved on 10th october... 
-%     Uc_nom = load('LDC_design/u_field_nom.mat', 'Uc');
-%     Uc_nom = Uc_nom.Uc; 
-%     Uc_opt = load('LDC_design/u_field_opt.mat', 'Uc');
-%     Uc_opt = Uc_opt.Uc; 
+    Uc_nom = load('LDC_design/u_field_nom.mat', 'Uc');
+    Uc_nom = Uc_nom.Uc; 
+    Uc_opt = load('LDC_design/u_field_opt.mat', 'Uc');
+    Uc_opt = Uc_opt.Uc; 
     
 elseif QoI == 1
     load('LDC_design/rand_P_field')
@@ -346,9 +349,9 @@ elseif QoI == 3
     Uf= load('u_meshes/p_line_matrix_mid_32.mat');
     Uf = Uf.p_line_matrix';
     
-    Uc_nom = load('LDC_design/p_mid_nom.mat', 'Uc');
+    Uc_nom = load('LDC_design/P_mid_nom.mat', 'Uc');
     Uc_nom = Uc_nom.Uc; 
-    Uc_opt = load('LDC_design/p_mid_opt.mat', 'Uc');
+    Uc_opt = load('LDC_design/P_mid_opt.mat', 'Uc');
     Uc_opt = Uc_opt.Uc; 
     
 elseif QoI == 4
@@ -359,9 +362,9 @@ elseif QoI == 4
     Uf= load('u_meshes/p_line_matrix_top_32.mat');
     Uf = Uf.p_line_matrix';
     
-    Uc_nom = load('LDC_design/p_top_nom.mat', 'Uc');
+    Uc_nom = load('LDC_design/P_top_nom.mat', 'Uc');
     Uc_nom = Uc_nom.Uc; 
-    Uc_opt = load('LDC_design/p_top_opt.mat', 'Uc');
+    Uc_opt = load('LDC_design/P_top_opt.mat', 'Uc');
     Uc_opt = Uc_opt.Uc; 
 end
 
@@ -505,7 +508,7 @@ i_naive = i_naive(1);
 nom_bound = Z(i_naive,j_nom); 
 nom_Bi = Z_A(i_naive,j_nom); 
 
-1; 
+% 1; 
 
 nom_low = norm(Uc_nom-Uf)/norm(Uf); 
 opt_low = norm(Uc_opt-Uf)/norm(Uf); 

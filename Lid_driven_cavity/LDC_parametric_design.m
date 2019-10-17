@@ -63,7 +63,7 @@ point_test = 0;
 line_search = 0;
 random_search = 1; % ie use PCE
 
-nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
+nom_opt = 1; % Save data for nominal and optimal runs - have to edit bound too
 
 % QoI 3 needs special treatment, ie change range. 
 % Other parameters could explore further along decrease velocity? 
@@ -470,7 +470,19 @@ if nom_opt == 1
 end
 
 % change for nom opt... in robust way 
-for i_t = 1:n_samps
+if nom_opt == 1
+%     n_start = 1;
+%     n_end = 1; 
+    
+    n_start = 2;
+    n_end = 2; 
+else
+    n_start = 1;
+    n_end = n_samps;
+end
+
+
+for i_t = n_start:n_end
     
 [error_bound, err_Ahat, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand(i_t)); 
 
