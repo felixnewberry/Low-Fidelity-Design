@@ -68,15 +68,19 @@ QoI = float(content['QoI'])
 # u_matrix = np.zeros((200,66))
 
 if QoI == 0:
-    u_matrix = np.zeros((200,2178))
+    u_matrix = np.zeros((200,2178)) # 8450??
 elif QoI == 1:
     u_matrix = np.zeros((200,1089))
 elif QoI == 2:
     u_matrix = np.zeros((200,66))
 elif QoI == 3:
     u_matrix = np.zeros((200,33))
+elif QoI == 4:
+    u_matrix = np.zeros((200,33))
 else:
     u_matrix = np.zeros((200,33))
+# else:
+#     u_matrix = np.zeros((200,33))
 
 # Apply deltas to u and nu % want them to be multiplicative. :/
 nu_vec = nu_vec*(1+delta_nu)

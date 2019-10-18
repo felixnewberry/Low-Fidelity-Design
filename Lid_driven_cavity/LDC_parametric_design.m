@@ -46,12 +46,13 @@ c6 = [0.3010, 0.7450, 0.9330];
 % High 200 samples 
 % how much of this time is spent interpolating? 
 % choose QoI
-QoI = 4; 
+QoI = 5; 
 % 0 is u_mat
 % 1 is P_mat
 % 2 is u_vec mid
 % 3 is p_vec mid
 % 4 is p_vec top
+% 5 is p_vec mid (vertical)
 
 % % make data for presentation
 % plot_ghia = 0; 
@@ -63,7 +64,7 @@ point_test = 0;
 line_search = 0;
 random_search = 1; % ie use PCE
 
-nom_opt = 1; % Save data for nominal and optimal runs - have to edit bound too
+nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
 
 % QoI 3 needs special treatment, ie change range. 
 % Other parameters could explore further along decrease velocity? 
@@ -284,6 +285,8 @@ if line_search == 1
         save('LDC_design/line_p_mid_nu_3','error_bound_mat')
     elseif QoI == 4
         save('LDC_design/line_p_top_nu','error_bound_mat')
+    elseif QoI == 5
+        save('LDC_design/line_p_mid_vert_nu','error_bound_mat')
     end
 elseif line_search == 2
     plot_label = '$ \Delta U [\%]$';
@@ -298,6 +301,8 @@ elseif line_search == 2
         save('LDC_design/line_p_mid_u_3','error_bound_mat')
     elseif QoI == 4
         save('LDC_design/line_p_top_u','error_bound_mat')
+    elseif QoI == 5
+        save('LDC_design/line_p_mid_vert_u','error_bound_mat')
     end
 end
 
@@ -383,6 +388,12 @@ elseif QoI == 4
     r = 1;    
     n = r+2; 
     save_label = 'P_top';
+elseif QoI == 5
+    u_lim = [-0.6,0]; 
+    nu_lim = [0,3.0];
+    r = 1;    
+    n = r+2; 
+    save_label = 'P_mid_vert';
 end
 
 % LDC inputs

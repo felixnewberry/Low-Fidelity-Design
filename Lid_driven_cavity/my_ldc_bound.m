@@ -29,6 +29,10 @@ elseif QoI == 4
     % this is not right.
     Uf= load('u_meshes/p_line_matrix_top_32.mat');
     Uf = Uf.p_line_matrix';
+elseif QoI == 5
+    % this is not right.
+    Uf= load('u_meshes/p_line_matrix_mid_vert_32.mat');
+    Uf = Uf.p_line_matrix';
 end 
     
 % % load('home/felixnewberry/Documents/Research/10_low_fidelity_design/ensemble_inputs/x_all.mat');
@@ -119,11 +123,13 @@ elseif QoI == 3
     save_label = 'P_mid';
 elseif QoI == 4
     save_label = 'P_top';
+elseif QoI == 5
+    save_label = 'P_mid_vert';
 end
 
 Ub = Uf(:,ix)*P_s;
 % save(strcat('LDC_design/',save_label, '_nom'),'Uc', 'Ub', 'sb', 'error_bound','err_Bi')
-save(strcat('LDC_design/',save_label, '_opt'),'Uc', 'Ub', 'sb', 'error_bound','err_Bi')
+% save(strcat('LDC_design/',save_label, '_opt'),'Uc', 'Ub', 'sb', 'error_bound','err_Bi')
 
 1; 
 

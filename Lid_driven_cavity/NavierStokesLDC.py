@@ -195,11 +195,16 @@ def Navier_Stokes_LDC(u_top, nu, sample_i, nx, QoI):
         for i_coords in range(x_32.shape[0]):
             p_array_mid[i_coords] = p(x_32[i_coords][0],0.5)
         u_out = p_array_mid
-    else:
+    elif QoI == 4:
         p_array_top = np.zeros(x_32.shape[0])
         for i_coords in range(x_32.shape[0]):
             p_array_top[i_coords] = p(x_32[i_coords][0],1)
         u_out = p_array_top
+    else:
+        p_array_mid_vert = np.zeros(x_32.shape[0])
+        for i_coords in range(x_32.shape[0]):
+            p_array_mid_vert[i_coords] = p(0.5,x_32[i_coords][0])
+        u_out = p_array_mid_vert
 
     return u_out
 

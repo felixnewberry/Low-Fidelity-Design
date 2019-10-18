@@ -90,7 +90,8 @@ p1 = plot(u_ghia_100, y_ghia,'ro-','LineWidth',LW);
 ylabel('u velocity', 'interpreter', 'latex', 'fontsize', FS)
 xlabel('y', 'interpreter', 'latex', 'fontsize', FS)
 %legend('ghia et al', 'fenics')
-grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis); %box on; 
+axis tight;
 hold off
 
 subplot(2,1,2)
@@ -105,7 +106,8 @@ xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('v velocity', 'interpreter', 'latex', 'fontsize', FS)
 legend([p1,p2,p3,p4,p5],{'ghia et al','32','8','6','4'},...
        'interpreter', 'latex', 'fontsize', FS_leg/2)
-grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis); %box on; 
+axis tight;
 
 1; 
 
@@ -139,7 +141,8 @@ plot(yy_l, xx_l, 'k','LineWidth',LW/2)
 xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
 % grid on; 
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on; 
+axis tight;
 set(gcf,'Position',size_1)
 
 if save_on ==1
@@ -153,7 +156,8 @@ plot(yy_h, xx_h, 'k','LineWidth',LW/2)
 xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
 % grid on; 
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on; 
+axis tight;
 set(gcf,'Position',size_1)
 
 
@@ -196,6 +200,11 @@ delta_P_mid_nu_vec = delta_nu_vec;
 load('LDC_design/delta_P_mid_u_vec.mat')
 delta_P_mid_u_vec = delta_u_vec; 
 
+load('LDC_design/line_p_mid_vert_nu.mat')
+error_P_mid_vert_nu = error_bound_mat;
+load('LDC_design/line_p_mid_vert_u.mat')
+error_P_mid_vert_u = error_bound_mat;
+
 load('LDC_design/delta_nu_vec.mat')
 load('LDC_design/delta_u_vec.mat')
 
@@ -210,12 +219,13 @@ p1 = plot(100*delta_nu_vec,100*error_u_field_nu,'o-', 'Color',c1,'LineWidth',LW,
 p2 = plot(100*delta_nu_vec,100*error_P_field_nu,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
 p3 = plot(100*delta_nu_vec,100*error_u_mid_nu,'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
 p4 = plot(100*delta_nu_vec,100*error_P_top_nu,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+p5 = plot(100*delta_nu_vec,100*error_P_mid_vert_nu,'+-', 'Color',c5, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel('$\Delta \nu [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2,p3,p4],{'$u$ Field','$P$ Field','$u$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3,p4,p5],{'$u$ Field','$P$ Field','$u$ Mid','$P$ Top', '$P$ Mid Vert'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
 % grid on
 set(gcf,'Position',size_1)
 title('Line Search of $\nu$','Interpreter', 'latex')
@@ -232,12 +242,13 @@ p1 = plot(100*delta_u_vec,100*error_u_field_u,'o-', 'Color',c1,'LineWidth',LW,'M
 p2 = plot(100*delta_u_vec,100*error_P_field_u,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
 p3 = plot(100*delta_u_vec,100*error_u_mid_u,'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
 p4 = plot(100*delta_u_vec,100*error_P_top_u,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+p5 = plot(100*delta_u_vec,100*error_P_mid_vert_u,'+-', 'Color',c5, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel('$\Delta U [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2,p3,p4],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3,p4, p5],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top', '$P$ Mid Vert'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
 % grid on
 set(gcf,'Position',size_1)
 title('Line Search of $U$','Interpreter', 'latex')
@@ -253,7 +264,7 @@ xlabel('$\Delta U [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
 % grid on
 set(gcf,'Position',size_1)
 title('Line Search of $U$','Interpreter', 'latex')
@@ -269,7 +280,7 @@ xlabel('$\Delta \nu [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
 % grid on
 set(gcf,'Position',size_1)
 title('Line Search of $\nu$','Interpreter', 'latex')
@@ -283,7 +294,7 @@ end
 %%% PCE fit to random points. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-QoI_vec = [0:4]; 
+QoI_vec = [0:5]; 
 
 % I should save the PC error, and nominal and optimal (and low) errors too
 PC_errors= zeros(2,length(QoI_vec)); 
@@ -291,8 +302,8 @@ Nom_errors = zeros(3,length(QoI_vec)); % low, bound and bi
 Opt_errors = zeros(3,length(QoI_vec)); % low, bound and bi
 Opt_delta = zeros(2, length(QoI_vec)); 
 
-% skip u mat for now
-for i_qoi = 2:length(QoI_vec); 
+% skip u mat for now - fix?
+for i_qoi = 1:length(QoI_vec); 
 
 % i_qoi = 2; % 2, 4 or 5; 
 QoI = QoI_vec(i_qoi); 
@@ -366,6 +377,24 @@ elseif QoI == 4
     Uc_nom = Uc_nom.Uc; 
     Uc_opt = load('LDC_design/P_top_opt.mat', 'Uc');
     Uc_opt = Uc_opt.Uc; 
+    
+elseif QoI == 5
+    load('LDC_design/rand_P_mid_vert')
+    plot_label = 'P Mid Vert'; 
+    plot_save = 'P_Mid_Vert'; 
+    
+    Uf= load('u_meshes/p_line_matrix_mid_vert_32.mat');
+    Uf = Uf.p_line_matrix';
+    
+    Uc_nom = load('LDC_design/P_top_nom.mat', 'Uc');
+    Uc_nom = Uc_nom.Uc; 
+    Uc_opt = load('LDC_design/P_top_opt.mat', 'Uc');
+    Uc_opt = Uc_opt.Uc; 
+    
+%     Uc_nom = load('LDC_design/P_mid_vert_nom.mat', 'Uc');
+%     Uc_nom = Uc_nom.Uc; 
+%     Uc_opt = load('LDC_design/P_mid_vert_opt.mat', 'Uc');
+%     Uc_opt = Uc_opt.Uc; 
 end
 
 N_total = length(xi_rand);
@@ -548,6 +577,7 @@ grid on
 title(strcat(plot_label,' Error Bound'),'Interpreter','latex')
 % to make comparison to earlier contour
 caxis([c_low,c_high])
+set(gcf,'Position',size_1)
 
 if save_on ==1
     saveas(gcf,strcat('plots/LDC_',plot_save,'_bound'),'epsc')
@@ -569,6 +599,7 @@ set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 grid on
 title(strcat(plot_label,' Bi-fidelity Error'),'Interpreter','latex')
 caxis([c_low,c_high])
+set(gcf,'Position',size_1)
 
 if save_on ==1
     saveas(gcf,strcat('plots/LDC_',plot_save,'_bi'),'epsc')
@@ -577,7 +608,7 @@ end
 end
 
 pc_errors_tab = array2table(100*PC_errors,...
-    'VariableNames',{'U_mat','P_mat', 'U_mid', 'P_mid', 'P_top'},'RowNames',{'LS','SPG'})
+    'VariableNames',{'U_mat','P_mat', 'U_mid', 'P_mid', 'P_top','P_mid_vert'},'RowNames',{'LS','SPG'})
 
 u_mat = array2table([Nom_errors(:,1)';Opt_errors(:,1)'],...
     'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
@@ -595,7 +626,7 @@ p_top = array2table([Nom_errors(:,5)';Opt_errors(:,5)'],...
     'VariableNames',{'Low', 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
 
 Opt_delta_tab = array2table(Opt_delta',...
-    'VariableNames',{'nu', 'u'},'RowNames',{'U_mat','P_mat', 'U_mid', 'P_mid', 'P_top'})
+    'VariableNames',{'nu', 'u'},'RowNames',{'U_mat','P_mat', 'U_mid', 'P_mid', 'P_top','P_mid_vert'})
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% QoI? 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
