@@ -8,7 +8,7 @@ clear all
 close all
 clc
 
-save_on = 1; 
+save_on = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -510,8 +510,8 @@ nom_Bi = Z_A(i_naive,j_nom);
 
 % 1; 
 
-nom_low = norm(Uc_nom-Uf)/norm(Uf); 
-opt_low = norm(Uc_opt-Uf)/norm(Uf); 
+nom_low = 100*norm(Uc_nom-Uf)/norm(Uf); 
+opt_low = 100*norm(Uc_opt-Uf)/norm(Uf); 
 
 Nom_errors(:,i_qoi) = [nom_low; nom_bound;nom_Bi]; % low, bound and bi
 Opt_errors(:,i_qoi) = [opt_low; min_bound;Bi_from_bound]; % low, bound and bi
@@ -686,13 +686,6 @@ if plot_QoI == 1
 % %     legend([p1,p2,p3],{'H','Nominal L','Trial L w'},'interpreter', 'latex', 'fontsize', FS_leg)
 %     grid on; 
     end
-
-
-    
-
-
-
-
 
 end
 
