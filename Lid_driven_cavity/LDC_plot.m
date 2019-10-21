@@ -8,7 +8,7 @@ clear all
 close all
 clc
 
-save_on = 0; 
+save_on = 1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -772,62 +772,108 @@ Opt_delta_tab = array2table(Opt_delta',...
 
 % Plot pressure along top
 
-
-
+% load u
 % Load top pressure
-Uf= load('u_meshes/p_line_matrix_top_32.mat');
-Uf = Uf.p_line_matrix';
+Uf_u= load('u_meshes/u_matrix_32.mat');
+Uf_u = Uf_u.u_matrix';
 
-Uc_nom = load('LDC_design/P_top_nom.mat', 'Uc');
-Uc_nom = Uc_nom.Uc; 
-Uc_opt = load('LDC_design/P_top_opt.mat', 'Uc');
-Uc_opt = Uc_opt.Uc; 
+Uc_nom_u = load('LDC_design/u_mid_nom.mat', 'Uc','Ub','sb');
+Ub_nom_u = Uc_nom_u.Ub; 
+sb_nom_u = Uc_nom_u.sb; 
+Uc_nom_u = Uc_nom_u.Uc; 
 
+Uc_opt_u = load('LDC_design/u_mid_opt.mat', 'Uc','Ub','sb');
+Ub_opt_u = Uc_opt_u.Ub; 
+sb_opt_u = Uc_opt_u.sb; 
+Uc_opt_u = Uc_opt_u.Uc; 
 
+error_b_nom_u = vecnorm(Ub_nom_u-Uf_u);
+error_b_opt_u = vecnorm(Ub_opt_u-Uf_u);
 
-% Plot Range to have indication: 
-Uc_mean = mean(Uc_nom,2)';
-Uc_max = max(Uc_nom,[],2)';
-Uc_min = min(Uc_nom,[],2)';
+[~, index_max_u] = max(abs(error_b_nom_u - error_b_opt_u)); 
+norm(Ub_opt_u(:,index_max_u) - Uf_u(:,index_max_u))
+norm(Ub_nom_u(:,index_max_u) - Uf_u(:,index_max_u))
 
-Uf_mean = mean(Uf,2)'; 
-Uf_max = max(Uf,[],2)';
-Uf_min = min(Uf,[],2)';
-Uf_yy = [Uf_min,fliplr(Uf_max)];
+x_highfidelity = x_32(:,1); 
 
-%     r = 10; nx = 4; 
-%     [error_bound,err_Ahat,efficacy] = my_ldc_field_bound(nx,r, -0.9, 5);
+plot_index = index_max_u; 
 
-Ucc_mean = mean(Uc_opt,2)'; 
-Ucc_max = max(Uc_opt,[],2)';
-Ucc_min = min(Uc_opt,[],2)';
-Ucc_yy = [Ucc_min,fliplr(Ucc_max)];
-
-x_highfidelity = x_32(:,1)'; 
-xx = [x_highfidelity,fliplr(x_highfidelity)];
-
-% plot H, Nominal L, Nominal B, Optimal L, Optimal B
+% % plot H, Nominal L, Nominal B
+% plot u or v? 
+plot_uv = 1:33; 
+% plot_uv = 34:66; 
 figure 
+p1 = plot(x_highfidelity,abs(Uf_u(plot_uv,plot_index)),'color',c1,'LineWidth',LW);
 hold on
-p1 = semilogy(x_highfidelity,abs(Uf_mean),'color',c1,'LineWidth',LW);
-hold on
-p2 = semilogy(x_highfidelity,abs(Uc_mean),':','color',c2,'LineWidth',LW);
-
-% p3 = semilogy(x_highfidelity,abs(Ucc_mean),'--','color',c3,'LineWidth',LW);
-set(gca, 'YScale', 'log')
+p2 = plot(x_highfidelity,abs(Uc_nom_u(plot_uv,plot_index)),':','color',c2,'LineWidth',LW);
+p3 = plot(x_highfidelity,abs(Ub_nom_u(plot_uv,plot_index)),'-.','color',c3,'LineWidth',LW);
 hold off
 xlabel('$x$','interpreter','latex','Fontsize',FS)
 ylabel('$\vert P_{top} \vert$','interpreter','latex','Fontsize',FS)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-legend([p1,p2,p3],{'H','Nominal L','Optimal L'},'interpreter', 'latex', 'fontsize', FS_leg)
-title(strcat(plot_label,'Top Pressure'),'Interpreter','latex')
+legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B', 'Optimal L', 'Optimal B'},'interpreter', 'latex', 'fontsize', FS_leg)
+title('Mid Velocity Realization','Interpreter','latex')
 set(gcf,'Position',size_1)
 
-% Identify worst performing bi-fidelity estimate? 
-% For now just the first sample
+if save_on ==1
+    saveas(gcf,'Plots/LDC_U_realization_1','epsc')
+end
 
-plot_index = 1; 
+% % plot H, Nominal L, Nominal B, Optimal L, Optimal B
+
+% Improvement difficult to dicern... 
+
+% plot u or v? 
+plot_uv = 1:33; 
+% plot_uv = 34:66; 
+figure 
+p1 = plot(x_highfidelity,abs(Uf_u(plot_uv,plot_index)),'color',c1,'LineWidth',LW);
+hold on
+p2 = plot(x_highfidelity,abs(Uc_nom_u(plot_uv,plot_index)),':','color',c2,'LineWidth',LW);
+p3 = plot(x_highfidelity,abs(Ub_nom_u(plot_uv,plot_index)),'-.','color',c3,'LineWidth',LW);
+p4 = plot(x_highfidelity,abs(Uc_opt_u(plot_uv,plot_index)),':','color',c4,'LineWidth',LW);
+p5 = plot(x_highfidelity,abs(Ub_opt_u(plot_uv,plot_index)),'--','color',c5,'LineWidth',LW);
+hold off
+xlabel('$x$','interpreter','latex','Fontsize',FS)
+ylabel('$\vert P_{top} \vert$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B', 'Optimal L', 'Optimal B'},'interpreter', 'latex', 'fontsize', FS_leg)
+title('Mid Velocity Realization','Interpreter','latex')
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/LDC_U_realization_2','epsc')
+end
+
+% Load top pressure
+Uf= load('u_meshes/p_line_matrix_top_32.mat');
+Uf = Uf.p_line_matrix';
+
+Uc_nom = load('LDC_design/P_top_nom.mat', 'Uc','Ub','sb');
+Ub_nom = Uc_nom.Ub; 
+sb_nom = Uc_nom.sb; 
+Uc_nom = Uc_nom.Uc; 
+
+Uc_opt = load('LDC_design/P_top_opt.mat', 'Uc','Ub','sb');
+Ub_opt = Uc_opt.Ub; 
+sb_opt = Uc_opt.sb; 
+Uc_opt = Uc_opt.Uc; 
+
+error_b_nom = vecnorm(Ub_nom-Uf);
+error_b_opt = vecnorm(Ub_opt-Uf);
+
+% Quite unimpressive to plot. 
+[~, index_max] = max(abs(error_b_nom- error_b_opt)); 
+norm(Ub_opt(:,index_max) - Uf(:,index_max))
+norm(Ub_nom(:,index_max) - Uf(:,index_max))
+
+x_highfidelity = x_32(:,1)'; 
+
+% look at coefficients too? 
+% plot_index = 1; 
+plot_index = index_max; 
 
 % % plot H, Nominal L, Nominal B
 figure 
@@ -842,6 +888,129 @@ ylabel('$\vert P_{top} \vert$','interpreter','latex','Fontsize',FS)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 legend([p1,p2,p3],{'H','Nominal L','Nominal B'},'interpreter', 'latex', 'fontsize', FS_leg)
-title(strcat(plot_label,'Top Pressure'),'Interpreter','latex')
+title('Top Pressure Realization','Interpreter','latex')
 set(gcf,'Position',size_1)
-    
+
+if save_on ==1
+    saveas(gcf,'Plots/LDC_P_realization_1','epsc')
+end
+
+% % plot H, Nominal L, Nominal B, Optimal L, Optimal B
+
+% Improvement difficult to dicern... 
+figure 
+p1 = plot(x_highfidelity,abs(Uf(:,plot_index)),'color',c1,'LineWidth',LW);
+hold on
+p2 = semilogy(x_highfidelity,abs(Uc_nom(:,plot_index)),':','color',c2,'LineWidth',LW);
+p3 = semilogy(x_highfidelity,abs(Ub_nom(:,plot_index)),'--','color',c3,'LineWidth',LW);
+p4 = semilogy(x_highfidelity,abs(Uc_opt(:,plot_index)),':','color',c4,'LineWidth',LW);
+p5 = semilogy(x_highfidelity,abs(Ub_opt(:,plot_index)),'-.','color',c5,'LineWidth',LW);
+set(gca, 'YScale', 'log')
+hold off
+xlabel('$x$','interpreter','latex','Fontsize',FS)
+ylabel('$\vert P_{top} \vert$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B', 'Optimal L', 'Optimal B'},'interpreter', 'latex', 'fontsize', FS_leg)
+title('Top Pressure Realization','Interpreter','latex')
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/LDC_P_realization_2','epsc')
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Plot histogram of errors... 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Vizualize  data
+n_hist = 20; 
+
+figure
+hold on
+h1 = histogram(abs(error_b_nom),n_hist,'FaceColor',c1);
+h2 = histogram(abs(error_b_opt),n_hist,'FaceColor',c2);
+hold off
+legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+xlabel('bi-fidelity error','interpreter','latex','Fontsize',FS)
+ylabel('frequency','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/LDC_P_Top_hist','epsc')
+end
+
+figure
+hold on
+h1 = histogram(abs(error_b_nom_u),n_hist,'FaceColor',c1);
+h2 = histogram(abs(error_b_opt_u),n_hist,'FaceColor',c2);
+hold off
+legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+xlabel('bi-fidelity error','interpreter','latex','Fontsize',FS)
+ylabel('frequency','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/LDC_U_mid_hist','epsc')
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Plot eigenvalue decay 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+sv_L_nom = svd(Uc_nom); 
+sv_L_Opt = svd(Uc_opt); 
+
+i_lim = 5; 
+
+% normalized
+figure
+p1 = semilogy(sv_L_nom(1:i_lim)/sv_L_nom(1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+hold on
+p2 = semilogy(sv_L_Opt(1:i_lim)/sv_L_Opt(1),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel('Index $i$','interpreter','latex','Fontsize',FS)
+ylabel('Normalized Singular Values','interpreter','latex','Fontsize',FS)
+legend([p1,p2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% grid on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'plots/LDC_P_sv_normalized','epsc')
+end
+
+min_y = min(sv_L_Opt(1:i_lim)/sv_L_Opt(1)); 
+
+
+sv_L_nom_u = svd(Uc_nom_u); 
+sv_L_Opt_u = svd(Uc_opt_u); 
+
+% normalized
+figure
+p1 = semilogy(sv_L_nom_u(1:i_lim)/sv_L_nom_u(1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+hold on
+p2 = semilogy(sv_L_Opt_u(1:i_lim)/sv_L_Opt_u(1),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel('Index $i$','interpreter','latex','Fontsize',FS)
+ylabel('Normalized Singular Values','interpreter','latex','Fontsize',FS)
+legend([p1,p2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% grid on
+set(gcf,'Position',size_1)
+ylim([min_y, 1])
+
+
+if save_on ==1
+    saveas(gcf,'plots/LDC_U_sv_normalized','epsc')
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Look at coefficients? 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
