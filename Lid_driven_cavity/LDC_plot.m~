@@ -785,10 +785,21 @@ Uc_opt = Uc_opt.Uc;
 
 
 
+load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/p_line_matrix_int_4.mat');
+Uc = p_line_matrix'; 
+% Uc = [u_field_matrix,p_field_matrix]';
+Uc_orig = Uc; 
+
+load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/p_line_matrix_top_32.mat');
+Uf = p_line_matrix'; 
+
+load('Uc_trial')
+Uc_opt = Uc_trial; 
+
 % Plot Range to have indication: 
-Uc_mean = mean(Uc_nom,2)';
-Uc_max = max(Uc_nom,[],2)';
-Uc_min = min(Uc_nom,[],2)';
+Uc_mean = mean(Uc_orig,2)';
+Uc_max = max(Uc_orig,[],2)';
+Uc_min = min(Uc_orig,[],2)';
 
 Uf_mean = mean(Uf,2)'; 
 Uf_max = max(Uf,[],2)';
@@ -798,22 +809,24 @@ Uf_yy = [Uf_min,fliplr(Uf_max)];
 %     r = 10; nx = 4; 
 %     [error_bound,err_Ahat,efficacy] = my_ldc_field_bound(nx,r, -0.9, 5);
 
+
+
 Ucc_mean = mean(Uc_opt,2)'; 
 Ucc_max = max(Uc_opt,[],2)';
 Ucc_min = min(Uc_opt,[],2)';
 Ucc_yy = [Ucc_min,fliplr(Ucc_max)];
 
+1; 
+load('ensemble_inputs/x_32.mat');
 x_highfidelity = x_32(:,1)'; 
 xx = [x_highfidelity,fliplr(x_highfidelity)];
 
-% plot H, Nominal L, Nominal B, Optimal L, Optimal B
-figure 
+figure
 hold on
-p1 = semilogy(x_highfidelity,abs(Uf_mean),'color',c1,'LineWidth',LW);
+p1 = semilogy(x_highfidelity,abs(Uf_mean),'b','LineWidth',LW);
 hold on
-p2 = semilogy(x_highfidelity,abs(Uc_mean),':','color',c2,'LineWidth',LW);
-
-% p3 = semilogy(x_highfidelity,abs(Ucc_mean),'--','color',c3,'LineWidth',LW);
+p2 = semilogy(x_highfidelity,abs(Uc_mean),'r','LineWidth',LW);
+p3 = semilogy(x_highfidelity,abs(Ucc_mean),'g','LineWidth',LW);
 set(gca, 'YScale', 'log')
 hold off
 xlabel('$x$','interpreter','latex','Fontsize',FS)
@@ -821,27 +834,29 @@ ylabel('$\vert P_{top} \vert$','interpreter','latex','Fontsize',FS)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 legend([p1,p2,p3],{'H','Nominal L','Optimal L'},'interpreter', 'latex', 'fontsize', FS_leg)
-title(strcat(plot_label,'Top Pressure'),'Interpreter','latex')
-set(gcf,'Position',size_1)
+grid on; 
 
-% Identify worst performing bi-fidelity estimate? 
-% For now just the first sample
+load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/p_line_matrix_mid_32.mat');
+Uf_mid = p_line_matrix'; 
+Uf_mean_mid = mean(Uf_mid,2)'; 
 
-plot_index = 1; 
+% use for new QoI stuff. 
+%     
+%     figure
+%     hold on
+%     p1 = semilogy(x_highfidelity,abs(Uf_mean_mid),'b','LineWidth',LW);
+%     hold on
+% %     p2 = semilogy(x_highfidelity,abs(Uc_mean),'r','LineWidth',LW);
+% %     p3 = semilogy(x_highfidelity,abs(Ucc_mean),'g','LineWidth',LW);
+%     set(gca, 'YScale', 'log')
+%     hold off
+%     xlabel('$x$','interpreter','latex','Fontsize',FS)
+%     ylabel('$\vert P_{mid} \vert$','interpreter','latex','Fontsize',FS)
+%     axis tight
+%     set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% %     legend([p1,p2,p3],{'H','Nominal L','Trial L w'},'interpreter', 'latex', 'fontsize', FS_leg)
+%     grid on; 
 
-% % plot H, Nominal L, Nominal B
-figure 
-p1 = plot(x_highfidelity,abs(Uf(:,plot_index)),'color',c1,'LineWidth',LW);
-hold on
-p2 = semilogy(x_highfidelity,abs(Uc_nom(:,plot_index)),':','color',c2,'LineWidth',LW);
-p3 = semilogy(x_highfidelity,abs(Ub_nom(:,plot_index)),'--','color',c3,'LineWidth',LW);
-set(gca, 'YScale', 'log')
-hold off
-xlabel('$x$','interpreter','latex','Fontsize',FS)
-ylabel('$\vert P_{top} \vert$','interpreter','latex','Fontsize',FS)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-legend([p1,p2,p3],{'H','Nominal L','Nominal B'},'interpreter', 'latex', 'fontsize', FS_leg)
-title(strcat(plot_label,'Top Pressure'),'Interpreter','latex')
-set(gcf,'Position',size_1)
+
+
     
