@@ -8,7 +8,7 @@ clear all
 close all
 clc
 
-save_on = 1; 
+save_on = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -22,7 +22,7 @@ FS_leg = 16; % Font size legend
 size_1 = [0,0,445,345]; 
 size_2 = [0,0,1340,515]; 
 
-size_square = [0,0,670,670]; 
+size_square = [0,0,445,445]; 
 
 FS = 28;    % Font size axis
 FS_axis = 18; 
@@ -174,9 +174,13 @@ ylabel('y','interpreter', 'latex', 'fontsize', FS)
 axis([0,1,0,1])
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf, 'Position', size_1)
-
+% set(gcf, 'Position', size_square)
 legend([p1,p2],{'QoI 1','QoI 2'},'interpreter', 'latex', 'fontsize', FS_leg)
 
+pbaspect([1 1 1])
+if save_on ==1
+    saveas(gcf,'Plots/LDC_Geom','epsc')
+end
 1; 
 
 % % Option 2: try use streamslice to determine where to start streamlines: 
@@ -258,7 +262,7 @@ set(gcf,'Position',size_1)
 
 
 if save_on ==1
-    saveas(gcf,'plots/mesh_high','epsc')
+    saveas(gcf,'Plots/mesh_high','epsc')
 end
 
 1; 
@@ -329,7 +333,7 @@ set(gcf,'Position',size_1)
 title('Line Search of $\nu$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_nu_most','epsc')
+    saveas(gcf,'Plots/LDC_nu_most','epsc')
 end
 
 figure
@@ -347,7 +351,7 @@ set(gcf,'Position',size_1)
 title('Line Search of $\nu$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_nu_QoI1_2','epsc')
+    saveas(gcf,'Plots/LDC_nu_QoI1_2','epsc')
 end
 
 
@@ -370,7 +374,7 @@ set(gcf,'Position',size_1)
 title('Line Search of $U$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_u_most','epsc')
+    saveas(gcf,'Plots/LDC_u_most','epsc')
 end
 
 % plot u change for different QoI, ie u_mid, u_field, p_field, p_top
@@ -388,7 +392,7 @@ set(gcf,'Position',size_1)
 title('Line Search of $U$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_u_QoI1_2','epsc')
+    saveas(gcf,'Plots/LDC_u_QoI1_2','epsc')
 end
 
 % plot u change for QoI P Mid
@@ -403,7 +407,7 @@ set(gcf,'Position',size_1)
 title('Line Search of $U$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_u_P_mid','epsc')
+    saveas(gcf,'Plots/LDC_u_P_mid','epsc')
 end
 
 % plot nu change for QoI P Mid
@@ -418,7 +422,7 @@ set(gcf,'Position',size_1)
 title('Line Search of $\nu$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_nu_P_mid','epsc')
+    saveas(gcf,'Plots/LDC_nu_P_mid','epsc')
 end
 
 
@@ -711,7 +715,7 @@ caxis([c_low,c_high])
 set(gcf,'Position',size_1)
 
 if save_on ==1
-    saveas(gcf,strcat('plots/LDC_',plot_save,'_bound'),'epsc')
+    saveas(gcf,strcat('Plots/LDC_',plot_save,'_bound'),'epsc')
 end
 
 figure
@@ -732,7 +736,7 @@ caxis([c_low,c_high])
 set(gcf,'Position',size_1)
 
 if save_on ==1
-    saveas(gcf,strcat('plots/LDC_',plot_save,'_bi'),'epsc')
+    saveas(gcf,strcat('Plots/LDC_',plot_save,'_bi'),'epsc')
 end
 
 end
@@ -982,7 +986,7 @@ set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_P_sv_normalized','epsc')
+    saveas(gcf,'Plots/LDC_P_sv_normalized','epsc')
 end
 
 min_y = min(sv_L_Opt(1:i_lim)/sv_L_Opt(1)); 
@@ -1008,7 +1012,7 @@ ylim([min_y, 1])
 
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_U_sv_normalized','epsc')
+    saveas(gcf,'Plots/LDC_U_sv_normalized','epsc')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
