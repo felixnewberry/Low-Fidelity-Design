@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-save_on = 1; 
+save_on = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -402,12 +402,12 @@ tip_error_opt_L = tip_error_L;
 
 figure
 hold on
-h1 = histogram(abs(tip_error_nom_bi),n_hist,'FaceColor',c1);
-h2 = histogram(abs(tip_error_opt_bi),n_hist,'FaceColor',c2);
+h1 = histogram(abs(100*tip_error_nom_bi),n_hist,'FaceColor',c1);
+h2 = histogram(abs(100*tip_error_opt_bi),n_hist,'FaceColor',c2);
 hold off
 legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
-xlabel('bi-fidelity error','interpreter','latex','Fontsize',FS)
-ylabel('frequency','interpreter','latex','Fontsize',FS)
+xlabel('Relative Error $[\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Frequency','interpreter','latex','Fontsize',FS)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 % grid on

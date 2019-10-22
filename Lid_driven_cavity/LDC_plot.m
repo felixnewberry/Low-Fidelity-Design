@@ -791,8 +791,8 @@ Ub_opt_u = Uc_opt_u.Ub;
 sb_opt_u = Uc_opt_u.sb; 
 Uc_opt_u = Uc_opt_u.Uc; 
 
-error_b_nom_u = vecnorm(Ub_nom_u-Uf_u);
-error_b_opt_u = vecnorm(Ub_opt_u-Uf_u);
+error_b_nom_u = vecnorm(Ub_nom_u-Uf_u)./vecnorm(Uf_u);
+error_b_opt_u = vecnorm(Ub_opt_u-Uf_u)./vecnorm(Uf_u);
 
 [~, index_max_u] = max(abs(error_b_nom_u - error_b_opt_u)); 
 norm(Ub_opt_u(:,index_max_u) - Uf_u(:,index_max_u))
@@ -865,8 +865,8 @@ Ub_opt = Uc_opt.Ub;
 sb_opt = Uc_opt.sb; 
 Uc_opt = Uc_opt.Uc; 
 
-error_b_nom = vecnorm(Ub_nom-Uf);
-error_b_opt = vecnorm(Ub_opt-Uf);
+error_b_nom = vecnorm(Ub_nom-Uf)./vecnorm(Uf);
+error_b_opt = vecnorm(Ub_opt-Uf)./vecnorm(Uf);
 
 % Quite unimpressive to plot. 
 [~, index_max] = max(abs(error_b_nom- error_b_opt)); 
@@ -932,15 +932,16 @@ n_hist = 20;
 
 figure
 hold on
-h1 = histogram(abs(error_b_nom),n_hist,'FaceColor',c1);
-h2 = histogram(abs(error_b_opt),n_hist,'FaceColor',c2);
+h1 = histogram(abs(100*error_b_nom),n_hist,'FaceColor',c1);
+h2 = histogram(abs(100*error_b_opt),n_hist,'FaceColor',c2);
 hold off
 legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
-xlabel('bi-fidelity error','interpreter','latex','Fontsize',FS)
-ylabel('frequency','interpreter','latex','Fontsize',FS)
+xlabel('Relative Error $[\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Frequency','interpreter','latex','Fontsize',FS)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
+title('P Top','Interpreter','latex')
 
 if save_on ==1
     saveas(gcf,'Plots/LDC_P_Top_hist','epsc')
@@ -948,18 +949,19 @@ end
 
 figure
 hold on
-h1 = histogram(abs(error_b_nom_u),n_hist,'FaceColor',c1);
-h2 = histogram(abs(error_b_opt_u),n_hist,'FaceColor',c2);
+h1 = histogram(abs(100*error_b_nom_u),n_hist,'FaceColor',c1);
+h2 = histogram(abs(100*error_b_opt_u),n_hist,'FaceColor',c2);
 hold off
 legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
-xlabel('bi-fidelity error','interpreter','latex','Fontsize',FS)
-ylabel('frequency','interpreter','latex','Fontsize',FS)
+xlabel('Relative Error $[\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Frequency','interpreter','latex','Fontsize',FS)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
+title('U Mid','Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,'Plots/LDC_U_mid_hist','epsc')
+    saveas(gcf,'Plots/LDC_u_mid_hist','epsc')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
