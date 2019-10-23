@@ -130,8 +130,9 @@ def Navier_Stokes_LDC(u_top, nu, sample_i, nx, QoI):
     # umfpack (Unsymmetric MultiFrontal sparse LU factorization)
     #petsc PETSc built in LU solver
     #cg Conjugate Gradient method - no good
-
+# try mumps..
     prm['newton_solver']['linear_solver'] = "umfpack"
+    # prm['newton_solver']['linear_solver'] = "mumps"
 
     a = solver.solve()
 
@@ -200,11 +201,16 @@ def Navier_Stokes_LDC(u_top, nu, sample_i, nx, QoI):
         for i_coords in range(x_32.shape[0]):
             p_array_top[i_coords] = p(x_32[i_coords][0],1)
         u_out = p_array_top
-    else:
+    elif QoI == 5:
         p_array_mid_vert = np.zeros(x_32.shape[0])
         for i_coords in range(x_32.shape[0]):
             p_array_mid_vert[i_coords] = p(0.5,x_32[i_coords][0])
         u_out = p_array_mid_vert
+    else:
+        p_array_top = np.zeros(x_32.shape[0])
+        for i_coords in range(x_32.shape[0]):
+            p_array_top[i_coords] = p(x_32[i_coords][0],0)
+        u_out = p_array_top
 
     return u_out
 
