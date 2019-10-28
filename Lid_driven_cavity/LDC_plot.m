@@ -134,23 +134,48 @@ y = x;
 u = u_out(1:end/2);
 v = u_out(end/2+1:end);
 
+
 u_mat = reshape(u,nx+1,nx+1)'; 
 v_mat = reshape(v,nx+1,nx+1)'; 
 
 u_mag = sqrt(u_mat.^2 +v_mat.^2);
 
-
-figure
-contourf(x,y,u_mag)
-xlabel('x','interpreter', 'latex', 'fontsize', FS)
-ylabel('y','interpreter', 'latex', 'fontsize', FS)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-set(gcf, 'Position', size_1)
-
 x_1 = linspace(0,1.0,11);
 y_1 = 1.0*ones(1, length(x_1)); 
 y_2 = 0.5*ones(1, length(x_1)); 
+
+
+step_quiv = 10; 
+
+figure
+[c,h]=contourf(x,y,u_mag);
+set(h, 'edgecolor','none');
+hold on
+
+quiver(x(1:step_quiv:end),y(1:step_quiv:end),u_mat(1:step_quiv:end,1:step_quiv:end), v_mat(1:step_quiv:end,1:step_quiv:end),'Color',c3)
+
+% plot qoi
+p1 = plot(x_1, y_2,'-.','color',c2,'LineWidth',LW+1);
+p2 = plot(x_1, y_1,'--','color',c1,'LineWidth',LW+1);
+
+X_arrow = [0.35 0.7];
+Y_arrow = [0.95   0.95];
+hh = annotation('arrow',X_arrow,Y_arrow,'Color','r');
+set(hh, 'LineWidth', LW)
+
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf, 'Position', size_square)
+pbaspect([1 1 1])
+
+
+% try quiver... 
+% select step size: 
+
+
 
 % Option1, standard. 
 figure
@@ -173,49 +198,20 @@ xlabel('x','interpreter', 'latex', 'fontsize', FS)
 ylabel('y','interpreter', 'latex', 'fontsize', FS)
 axis([0,1,0,1])
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-set(gcf, 'Position', size_1)
-% set(gcf, 'Position', size_square)
+% set(gcf, 'Position', size_1)
+set(gcf, 'Position', size_square)
 legend([p1,p2],{'QoI 1','QoI 2'},'interpreter', 'latex', 'fontsize', FS_leg)
 
 pbaspect([1 1 1])
 if save_on ==1
-    saveas(gcf,'Plots/LDC_Geom','epsc')
+    saveas(gcf,'plots/LDC_Geom','epsc')
 end
-1; 
-
-% % Option 2: try use streamslice to determine where to start streamlines: 
-% figure
-% s1 = streamline(x,y, u_mat, v_mat,x_stream(1), y_stream(1),[0.1,150]); 
-% axis([0,1,0,1])
-% set(s1, 'LineWidth', LW) %LW/2 ?
-% 
-% hold on
-% 
-% % plot(x_1, y_1,'-+r','LineWidth',LW)
-% 
-% % X_arrow = [0.35 0.7];
-% % Y_arrow = [0.95   0.95];
-% % hh = annotation('arrow',X_arrow,Y_arrow,'Color','r');
-% % set(hh, 'LineWidth', LW)
-% 
-% hold off
-% xlabel('x','interpreter', 'latex', 'fontsize', FS)
-% ylabel('y','interpreter', 'latex', 'fontsize', FS)
-% axis([0,1,0,1])
-% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% set(gcf, 'Position', size_1)
-
-% Option two: load data from current implementation: have to run on
-% ubuntu... or use U_mat data... 
-
-
-1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot the mesh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 n_l = 4; 
-n_h = 32; 
+n_h = 64; 
 
 x_l  = linspace(0,1,n_l); 
 x_h  = linspace(0,1,n_h); 
@@ -262,7 +258,7 @@ set(gcf,'Position',size_1)
 
 
 if save_on ==1
-    saveas(gcf,'Plots/mesh_high','epsc')
+    saveas(gcf,'plots/mesh_high','epsc')
 end
 
 1; 
@@ -270,45 +266,16 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot line search
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% %%% r = 1, n = 3 ... 
 
-%%% r = 1, n = 3 ... 
-load('LDC_design/line_u_field_nu.mat')
-error_u_field_nu = error_bound_mat;
-load('LDC_design/line_u_field_u.mat')
-error_u_field_u = error_bound_mat;
+load('LDC_design/line_qoi_nu_1.mat')
+delta_nu_vec = delta_vec; 
+error_bound_nu = error_bound_mat; 
 
-load('LDC_design/line_P_field_nu.mat')
-error_P_field_nu = error_bound_mat;
-load('LDC_design/line_P_field_u.mat')
-error_P_field_u = error_bound_mat;
-
-load('LDC_design/line_u_mid_nu.mat')
-error_u_mid_nu = error_bound_mat;
-load('LDC_design/line_u_mid_u.mat')
-error_u_mid_u = error_bound_mat;
-
-load('LDC_design/line_p_mid_nu_2.mat')
-error_P_mid_nu = error_bound_mat;
-load('LDC_design/line_p_mid_u_2.mat')
-error_P_mid_u = error_bound_mat;
-
-load('LDC_design/line_p_top_nu.mat')
-error_P_top_nu = error_bound_mat;
-load('LDC_design/line_p_top_u.mat')
-error_P_top_u = error_bound_mat;
-
-load('LDC_design/delta_P_mid_nu_vec.mat')
-delta_P_mid_nu_vec = delta_nu_vec; 
-load('LDC_design/delta_P_mid_u_vec.mat')
-delta_P_mid_u_vec = delta_u_vec; 
-
-load('LDC_design/line_p_mid_vert_nu.mat')
-error_P_mid_vert_nu = error_bound_mat;
-load('LDC_design/line_p_mid_vert_u.mat')
-error_P_mid_vert_u = error_bound_mat;
-
-load('LDC_design/delta_nu_vec.mat')
-load('LDC_design/delta_u_vec.mat')
+load('LDC_design/line_qoi_u_1.mat')
+delta_u_vec = delta_vec; 
+error_bound_u = error_bound_mat; 
 
 
 % I should probably write script so all qoi can be extracted together? 
@@ -317,15 +284,15 @@ load('LDC_design/delta_u_vec.mat')
 % plot nu change for different QoI, ie u_mid, u_field, p_field, p_top
 figure
 hold on
-p1 = plot(100*delta_nu_vec,100*error_u_field_nu,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
-p2 = plot(100*delta_nu_vec,100*error_P_field_nu,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot(100*delta_nu_vec,100*error_u_mid_nu,'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
-p4 = plot(100*delta_nu_vec,100*error_P_top_nu,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
-p5 = plot(100*delta_nu_vec,100*error_P_mid_vert_nu,'+-', 'Color',c5, 'LineWidth',LW,'MarkerSize',MS); 
+p1 = plot(100*delta_nu_vec,100*error_bound_nu(1,:),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+p2 = plot(100*delta_nu_vec,100*error_bound_nu(2,:),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_nu_vec,100*error_bound_nu(3,:),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
+p4 = plot(100*delta_nu_vec,100*error_bound_nu(4,:),'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+p5 = plot(100*delta_nu_vec,100*error_bound_nu(5,:),'+-', 'Color',c5, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel('$\Delta \nu [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2,p3,p4,p5],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top', '$P$ Mid Vert'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Base', '$P$ Vert'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
 % grid on
@@ -336,37 +303,19 @@ if save_on ==1
     saveas(gcf,'Plots/LDC_nu_most','epsc')
 end
 
-figure
-hold on
-p1 = plot(100*delta_nu_vec,100*error_u_mid_nu,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
-p2 = plot(100*delta_nu_vec,100*error_P_top_nu,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
-hold off
-xlabel('$\Delta \nu [\%]$','interpreter','latex','Fontsize',FS)
-ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2],{'$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
-% grid on
-set(gcf,'Position',size_1)
-title('Line Search of $\nu$','Interpreter', 'latex')
-
-if save_on ==1
-    saveas(gcf,'Plots/LDC_nu_QoI1_2','epsc')
-end
-
 
 % plot u change for different QoI, ie u_mid, u_field, p_field, p_top
 figure
 hold on
-p1 = plot(100*delta_u_vec,100*error_u_field_u,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
-p2 = plot(100*delta_u_vec,100*error_P_field_u,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot(100*delta_u_vec,100*error_u_mid_u,'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
-p4 = plot(100*delta_u_vec,100*error_P_top_u,'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
-p5 = plot(100*delta_u_vec,100*error_P_mid_vert_u,'+-', 'Color',c5, 'LineWidth',LW,'MarkerSize',MS); 
+p1 = plot(100*delta_u_vec,100*error_bound_u(1,:),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+p2 = plot(100*delta_u_vec,100*error_bound_u(2,:),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_u_vec,100*error_bound_u(3,:),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
+p4 = plot(100*delta_u_vec,100*error_bound_u(4,:),'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+p5 = plot(100*delta_u_vec,100*error_bound_u(5,:),'+-', 'Color',c5, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel('$\Delta U [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2,p3,p4, p5],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top', '$P$ Mid Vert'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3,p4, p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Base', '$P$ Vert'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
 % grid on
@@ -377,54 +326,115 @@ if save_on ==1
     saveas(gcf,'Plots/LDC_u_most','epsc')
 end
 
-% plot u change for different QoI, ie u_mid, u_field, p_field, p_top
+% Notes on line search: 
+% U Mid: bumpy. Minima in both directions. 
+% U Vert: smooth. Only decrease U and only increase nu. This could be a
+% smaller region. 
+% P Mid: Jagged. Why?? Best perfroming may be the nominal values. 
+% P Base: Also minima in both directions
+% P vert: Minima in both directions 
+
+
+% Should I do random samples, or a grid search? 20*20 grid would be 400
+% 200 random samples first? 
+
+% nah, 20 and by 20 grid. Plot surfaces, then maybe look into random. 
+
+1; 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Grid search
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+load('LDC_design/grid_search_1.mat')
+
+% exclude 0s - these are nans. 
+
+error_bound_mat(error_bound_mat==0) = nan;
+
+% Find grid minima - bound and bi
+[min_bound, min_bound_i] = min(error_bound_mat,[],[2,3],'linear'); 
+[~, i_1, i_2] = ind2sub(size(error_bound_mat),min_bound_i); 
+% index location is currently wrong 1731... 
+u_bound = delta_u_vec(i_1); 
+nu_bound = delta_nu_vec(i_2); 
+
+% Find grid minima - bound and bi
+[min_bi, min_bi_i] = min(error_Bi_mat,[],[2,3],'linear'); 
+[~, ii_1, ii_2] = ind2sub(size(error_Bi_mat),min_bi_i); 
+% index location is currently wrong 1731... 
+u_bi = delta_u_vec(ii_1); 
+nu_bi = delta_nu_vec(ii_2); 
+
+
+%%% Plot response surface 
+% Step through each qoi 
+qoi_vec = 1:5; 
+
+plot_label = ["$U$ Mid","$U$ Vert", "$P$ Mid", "$P$ Base", "$P$ Vert"]; 
+plot_save = ["u_Mid","U_Vert", "P_Mid", "P_Base", "P_Vert"]; 
+
+for i_qoi = 1:length(qoi_vec)
+
 figure
 hold on
-p1 = plot(100*delta_u_vec,100*error_u_mid_u,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
-p2 = plot(100*delta_u_vec,100*error_P_top_u,'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+contourf(100*delta_nu_vec,100*delta_u_vec,100*reshape(error_bound_mat(i_qoi,:,:),length(delta_nu_vec), length(delta_u_vec)))
+colorbar
+% 5, 0.2
+p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
+p2 = plot(100*nu_bound(i_qoi),100*u_bound(i_qoi),'rx','MarkerSize',8,'linewidth',LW);
+p3 = plot(100*nu_bi(i_qoi),100*u_bi(i_qoi),'rs','MarkerSize',8,'linewidth',LW);
 hold off
-xlabel('$\Delta U [\%]$','interpreter','latex','Fontsize',FS)
-ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2],{'$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
+xlabel('$\Delta \nu $ [\%]','interpreter','latex','Fontsize',FS)
+ylabel('$\Delta u$ [\%]','interpreter','latex','Fontsize',FS)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+caxis(100*[min(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[])) max(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[]))])
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% grid on
 set(gcf,'Position',size_1)
-title('Line Search of $U$','Interpreter', 'latex')
+title(strcat(plot_label(i_qoi),' Error bound'),'Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,'Plots/LDC_u_QoI1_2','epsc')
+    saveas(gcf,strcat('plots/LDC_', plot_save(i_qoi), '_bound'),'epsc')
 end
 
-% plot u change for QoI P Mid
 figure
-p1 = plot(100*delta_P_mid_u_vec,100*error_P_mid_u,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
-xlabel('$\Delta U [\%]$','interpreter','latex','Fontsize',FS)
-ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-% legend([p1,p2,p3,p4],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
+hold on
+contourf(100*delta_nu_vec,100*delta_u_vec,100*reshape(error_Bi_mat(i_qoi,:,:),length(delta_nu_vec), length(delta_u_vec)))
+colorbar
+% 5, 0.2
+p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
+p2 = plot(100*nu_bound(i_qoi),100*u_bound(i_qoi),'rx','MarkerSize',8,'linewidth',LW);
+p3 = plot(100*nu_bi(i_qoi),100*u_bi(i_qoi),'rs','MarkerSize',8,'linewidth',LW);
+hold off
+legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
+xlabel('$\Delta \nu $ [\%]','interpreter','latex','Fontsize',FS)
+ylabel('$\Delta u$ [\%]','interpreter','latex','Fontsize',FS)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+caxis(100*[min(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[])) max(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[]))])
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% grid on
 set(gcf,'Position',size_1)
-title('Line Search of $U$','Interpreter', 'latex')
+title(strcat(plot_label(i_qoi),' Bi-fidelity Error'),'Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,'Plots/LDC_u_P_mid','epsc')
+    saveas(gcf,strcat('plots/LDC_', plot_save(i_qoi), '_bi'),'epsc')
 end
 
-% plot nu change for QoI P Mid
-figure
-p1 = plot(100*delta_P_mid_nu_vec,100*error_P_mid_nu,'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
-xlabel('$\Delta \nu [\%]$','interpreter','latex','Fontsize',FS)
-ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-% legend([p1,p2,p3,p4],{'$U$ Field','$P$ Field','$U$ Mid','$P$ Top'},'interpreter', 'latex', 'fontsize', FS_leg)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
-set(gcf,'Position',size_1)
-title('Line Search of $\nu$','Interpreter', 'latex')
-
-if save_on ==1
-    saveas(gcf,'Plots/LDC_nu_P_mid','epsc')
 end
 
+load('LDC_design/nominal_all_qoi')
+nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low; 
+
+1; 
+
+%%% Print out the bound and bi for the nominal and optimal
+results_mat = [nom_bound, nom_bi, min_bound, min_bi]'; 
+results_tab = array2table(results_mat,...
+    'VariableNames',{ 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
+
+1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PCE fit to random points. 

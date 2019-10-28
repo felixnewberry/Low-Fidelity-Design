@@ -46,13 +46,19 @@ c6 = [0.3010, 0.7450, 0.9330];
 % High 200 samples 
 % how much of this time is spent interpolating? 
 % choose QoI
-QoI = 5; 
-% 0 is u_mat
-% 1 is P_mat
-% 2 is u_vec mid
-% 3 is p_vec mid
-% 4 is p_vec top
-% 5 is p_vec mid (vertical)
+% QoI = 5; 
+
+% record Bound:bi:low
+% 0 is u mid v 
+% 1 is u vert u 
+% 2 is P mid
+% 3 is P base           
+% 4 is P vert
+
+
+% P base: tiny error with nominal settings... check mesh indpendence for
+% mid, tip and vert. and field.. 
+
 
 % % make data for presentation
 % plot_ghia = 0; 
@@ -60,9 +66,10 @@ QoI = 5;
 % use the test to tune r
 % line to set bounds of search
 % random search to construct response surface with pce. 
-point_test = 0; 
-line_search = 0;
-random_search = 1; % ie use PCE
+point_test = 1; 
+line_search = 0; % 1 for nu, 2 for u
+grid_search = 0; % ie use PCE
+random_search = 0; % ie use PCE
 
 nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
 
@@ -152,9 +159,8 @@ load('LDC_data/x_all.mat');
 
 
 % random inputs, xi_mat, nu_vec, u_top_vec
-load('LDC_data/xi_mat.mat');
-load('LDC_data/nu_vec.mat');
-load('LDC_data/u_top_vec.mat');
+% load('LDC_data/xi_mat.mat');
+load('LDC_data/u_nu_vec.mat');
 
 % % Results
 % load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/u_matrix_32.mat');
@@ -188,20 +194,34 @@ if point_test == 1
 %     Uc = u_mat_4 ;
 %     Uc = p_field_matrix'; 
     
-    [error_bound,err_Ahat,efficacy] = my_ldc_bound(QoI, nx,n, r, 0, 0);
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0);
     
-%     % 200 samples r = 10. 
-%     % err_Ahat nx = 8 = 1.55% % error_low is 2.72 % 1.20821 s
-%     % err_Ahat nx = 6 = 1.58% % error_low is 5.94 
-%     % err_Ahat nx = 4 = 1.67% % error_low is 18.58 
     
-    % bi-fid estimate still
-    % good!
+    [err_low*100, error_bound*100, err_bi*100]
     
-    error_bound
-    err_Ahat
-%    	error_low = norm(Uf-Uc)/norm(Uf)
-    
+    save('LDC_design/nominal_all_qoi', 'error_bound', 'err_bi', 'err_low'); 
+
+    % with r = 1 and n = 3: 
+% Nominal settings  L, Bo, Bi
+% 0 is u mid v      43.3, 5.31, 4.43
+% 1 is u vert u     13.3, 1.64, 1.32
+% 2 is P mid        57.5, 11.5, 9.4
+% 3 is P base       42.5, 5.5, 4.01    
+% 4 is P vert       82.0, 11.8, 6.23
+
+% If I increase the rv magnitude..
+% 0 is u mid v      43.6, 10.15, 6.59
+% 1 is u vert u     13.8, 3.24, 2.0
+% 2 is P mid        57.4, 31.68, 21.6
+% 3 is P base       43.5, 13.5, 7.01    
+% 4 is P vert       82.8, 27.38, 11.9
+
+% If r = 2, n = 4: - bi-fidelity is <5 % for all QoI. 
+% Still applicable if limited number or runs. 
+
+% Explore these two scenarious, and if promising then push RVs even
+% further.. 
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -217,33 +237,27 @@ if line_search >= 1
     nx = 4; 
     r = 1; 
     n = r+2; 
+        
     
-    % r = 1, n = 3 seems okay for U and P fields, U mid and P top. 
-    % what's appropriate for P mid? 
+%     delta_u_vec = -0.6:0.02:0.0;
+%     delta_nu_vec = 0.0:0.1:3;
+    
 
-    % accidentily ran all samples as n = r+1... 
-    % calibrate now. 
     
-%     delta_u_top_vec = -0.75:0.02:0.75;
-%     delta_nu_vec = -0.1:0.02:0.1;
     % broke: %     p1 = semilogy(1:length(s),s,'-ob','LineWidth',LW);
     
     if line_search == 1
-        delta_nu_vec = 0.0:0.1:3;
-        
-        if QoI == 3 
-            delta_nu_vec = [0.0:0.002:0.03];
-        end
-        
+%         delta_nu_vec = -0.5:0.5:3;
+        delta_nu_vec = -0.7:0.1:3;
+%         delta_nu_vec = -0.75:0.05:-0.7; % -0.8 - newton solver does not converge. same at -0.75
+
+
         delta_u_vec = zeros(length(delta_nu_vec), 1); 
     elseif line_search == 2
-        delta_u_vec = [-0.6:0.02:0.0];
+%         delta_u_vec = -0.6:0.3:0.0;
+%         delta_u_vec = -0.8:0.1:1.6;
+       delta_u_vec = -0.8:0.1:2.4;
         
-        if QoI == 3 
-%             delta_u_vec = [-0.02:0.001:0.0];
-            delta_u_vec = [-0.4, -0.02, 0.0];
-        end
-            
         delta_nu_vec = zeros(length(delta_u_vec), 1); 
     end
     
@@ -252,22 +266,23 @@ if line_search >= 1
 %     save('LDC_design/delta_u_vec','delta_u_vec')
 %     save('LDC_design/delta_P_mid_nu_vec','delta_nu_vec')
 %     save('LDC_design/delta_P_mid_u_vec','delta_u_vec')
-    
-    error_bound_mat = zeros(1,length(delta_nu_vec)); 
-    error_Bi_mat = zeros(1,length(delta_nu_vec));    
+%     
+    error_bound_mat = zeros(5,length(delta_nu_vec)); 
+    error_Bi_mat = zeros(5,length(delta_nu_vec));    
     
     
     for i_param = 1:length(delta_nu_vec)
 
-        [error_bound,err_Ahat,efficacy] = my_ldc_bound(QoI, nx,n, r,delta_u_vec(i_param),delta_nu_vec(i_param));
+        [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,delta_u_vec(i_param),delta_nu_vec(i_param));
 
-        error_bound_mat(i_param) = error_bound; 
-        error_Bi_mat(i_param) = err_Ahat; 
+        error_bound_mat(:,i_param) = error_bound; 
+        error_Bi_mat(:,i_param) = err_bi; 
         
         fprintf("Percent complete: %d \n",i_param/length(delta_nu_vec)*100);       
     end
-    
-1; 
+%     
+ 1; 
+ 
 
 
 
@@ -275,44 +290,27 @@ if line_search >= 1
 if line_search == 1
     plot_label = '$ \Delta \nu [\%]$';
     delta_vec = delta_nu_vec; 
-    if QoI == 0
-        save('LDC_design/line_u_field_nu','error_bound_mat')
-    elseif QoI == 1
-        save('LDC_design/line_P_field_nu','error_bound_mat')
-    elseif QoI == 2
-        save('LDC_design/line_u_mid_nu','error_bound_mat')
-    elseif QoI == 3
-        save('LDC_design/line_p_mid_nu_3','error_bound_mat')
-    elseif QoI == 4
-        save('LDC_design/line_p_top_nu','error_bound_mat')
-    elseif QoI == 5
-        save('LDC_design/line_p_mid_vert_nu','error_bound_mat')
-    end
+    save('LDC_design/line_qoi_nu_1','error_bound_mat', 'delta_vec')
 elseif line_search == 2
     plot_label = '$ \Delta U [\%]$';
     delta_vec = delta_u_vec; 
-    if QoI == 0
-        save('LDC_design/line_u_field_u','error_bound_mat')
-    elseif QoI == 1
-        save('LDC_design/line_P_field_u','error_bound_mat')
-    elseif QoI == 2
-        save('LDC_design/line_u_mid_u','error_bound_mat')
-    elseif QoI == 3
-        save('LDC_design/line_p_mid_u_3','error_bound_mat')
-    elseif QoI == 4
-        save('LDC_design/line_p_top_u','error_bound_mat')
-    elseif QoI == 5
-        save('LDC_design/line_p_mid_vert_u','error_bound_mat')
-    end
+    save('LDC_design/line_qoi_u_1','error_bound_mat', 'delta_vec')
 end
 
+1; 
 % Plot error bound 
 figure
 hold on
-p1 = plot(100*delta_vec,100*error_bound_mat,'ob-', 'LineWidth',LW,'MarkerSize',MS); 
+p1 = plot(100*delta_vec,100*error_bound_mat(1,:), 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+hold on
+p2 = plot(100*delta_vec,100*error_bound_mat(2,:),'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_vec,100*error_bound_mat(3,:), 'Color',c3,'LineWidth',LW,'MarkerSize',MS); 
+p4 = plot(100*delta_vec,100*error_bound_mat(4,:), 'Color',c4,'LineWidth',LW,'MarkerSize',MS); 
+p5 = plot(100*delta_vec,100*error_bound_mat(5,:), 'Color',c5,'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Base', '$P$ Vert'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
@@ -322,11 +320,17 @@ grid on
 % Plot bi-fidelity error 
 figure
 hold on
-p1 = plot(100*delta_vec,100*error_Bi_mat,'sr-', 'LineWidth',LW); 
+p1 = plot(100*delta_vec,100*error_Bi_mat(1,:), 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+hold on
+p2 = plot(100*delta_vec,100*error_Bi_mat(2,:),'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_vec,100*error_Bi_mat(3,:), 'Color',c3,'LineWidth',LW,'MarkerSize',MS); 
+p4 = plot(100*delta_vec,100*error_Bi_mat(4,:), 'Color',c4,'LineWidth',LW,'MarkerSize',MS); 
+p5 = plot(100*delta_vec,100*error_Bi_mat(5,:), 'Color',c5,'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bi $[\%]$','interpreter','latex','Fontsize',FS)
 axis tight
+legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Base', '$P$ Vert'},'interpreter', 'latex', 'fontsize', FS_leg)
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
 grid on
@@ -345,6 +349,45 @@ grid on
     % err_Ahat nx = 8 = 1.55% % error_low is 2.72 % 1.20821 s
     % err_Ahat nx = 6 = 1.58% % error_low is 5.94 
     % err_Ahat nx = 4 = 1.67% % error_low is 18.58 
+    
+    % LINE PLOT TAKE AWAYS... 
+end
+
+if grid_search == 1
+    
+    nx = 4; 
+    r = 1; 
+    n = r+2; 
+    
+    u_lim = [-0.8,2.4]; 
+    nu_lim = [-0.7,3.0];
+    
+    n_grid = 20; 
+    
+    delta_nu_vec = linspace(nu_lim(1),nu_lim(2),n_grid); 
+    delta_u_vec = linspace(u_lim(1),u_lim(2),n_grid); 
+    
+    error_bound_mat = zeros(5,length(delta_nu_vec),length(delta_u_vec)); 
+    error_Bi_mat = zeros(5,length(delta_nu_vec),length(delta_u_vec)); 
+    
+    for i_nu = 1:length(delta_nu_vec)
+        for i_u = 1:length(delta_u_vec)
+            
+            [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,delta_u_vec(i_u),delta_nu_vec(i_nu));
+            error_bound_mat(:,i_nu, i_u) = error_bound; 
+            error_Bi_mat(:,i_nu, i_u) = err_bi; 
+            
+            1; 
+            
+        end 
+        fprintf("Percent complete: %d \n",i_nu/length(delta_nu_vec)*100);  
+    end
+    
+    % need to think of a good check on data for runs that didn't
+    % complete... - just have u_matrix deleted after each call to error
+    % bound. 
+%         save('LDC_design/grid_search_1','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
+
 end
 
 if random_search == 1
@@ -495,7 +538,7 @@ end
 
 for i_t = n_start:n_end
     
-[error_bound, err_Ahat, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand(i_t)); 
+[error_bound, err_bi, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand(i_t)); 
 
 % error_bound
 % err_Ahat
@@ -506,7 +549,7 @@ for i_t = n_start:n_end
 % efficacy = error_bound/err_Ahat;
 
 error_bound_mat(i_t) = error_bound; 
-error_Ahat_mat(i_t) =  err_Ahat; 
+error_Ahat_mat(i_t) =  err_bi; 
 efficacy_mat(i_t) = efficacy; 
 
 fprintf("Percent complete: %d \n",i_t/n_samps*100);   

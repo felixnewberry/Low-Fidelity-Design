@@ -37,7 +37,7 @@ set_log_level(LogLevel.WARNING)
 #content = sciio.loadmat('./nx.mat')
 #nx = int(content['nx'])
 
-def Navier_Stokes_LDC(u_top, nu, sample_i, nx, QoI):
+def Navier_Stokes_LDC(u_top, nu, nx):
     # Inputs:
     # u_top - velocity of top plate
     # nu - viscosity of fluid
@@ -124,15 +124,15 @@ def Navier_Stokes_LDC(u_top, nu, sample_i, nx, QoI):
     prm = solver.parameters
     prm['newton_solver']['absolute_tolerance'] = 1E-8
     prm['newton_solver']['relative_tolerance'] = 1E-7
-    prm['newton_solver']['maximum_iterations'] = 400
+    prm['newton_solver']['maximum_iterations'] = 1000
     prm['newton_solver']['relaxation_parameter'] = 1.0
 
     # umfpack (Unsymmetric MultiFrontal sparse LU factorization)
     #petsc PETSc built in LU solver
     #cg Conjugate Gradient method - no good
 # try mumps..
-    prm['newton_solver']['linear_solver'] = "umfpack"
-    # prm['newton_solver']['linear_solver'] = "mumps"
+    # prm['newton_solver']['linear_solver'] = "umfpack"
+    prm['newton_solver']['linear_solver'] = "mumps"
 
     a = solver.solve()
 
@@ -147,72 +147,44 @@ def Navier_Stokes_LDC(u_top, nu, sample_i, nx, QoI):
     # y_8 = x[x[:,:][:,0]==0.5]
     # x_8 = x[x[:,:][:,1]==0.5]
 
+    # y_64 = x[x[:,:][:,0]==0.0]
+    # x_64 = x[x[:,:][:,1]==0.0]
+
     # If I do interpolate:
     # Load 32 coordinates and interpolate x and y velocites mid slices of domain.
 
     # timing test
     #####################################################################
-    # Load 32 coordinates and interpolate x and y velocites mid slices of domain.
+    # Load 64 coordinates and interpolate u and p slices
 
-    content = sciio.loadmat('./LDC_data/x_32.mat')
-    x_32 = content['x_32']
-    content = sciio.loadmat('./LDC_data/y_32.mat')
-    y_32 = content['y_32']
+    content = sciio.loadmat('./LDC_data/x_64.mat')
+    x_64 = content['x_64']
 
-    if QoI == 0:
-        u_y_array = np.zeros(x_32.shape[0]*x_32.shape[0])
-        u_x_array = np.zeros(x_32.shape[0]*x_32.shape[0])
-        # u_coords_array = np.zeros((x_32.shape[0]*x_32.shape[0],2))
-        i_coords = int(0)
-        for i_x in range(x_32.shape[0]):
-            for i_y in range(x_32.shape[0]):
-                u_y_array[i_coords] = u(x_32[i_x][0],y_32[i_y][1])[1]
-                u_x_array[i_coords] = u(x_32[i_x][0],y_32[i_y][1])[0]
-                #
-                # u_coords_array[i_coords,:] = (x_32[i_x][0],y_32[i_y][1])
-                i_coords += 1
-        u_out = np.concatenate((u_x_array,u_y_array))
-    elif QoI == 1:
-        p_array = np.zeros(x_32.shape[0]*x_32.shape[0])
-        # u_coords_array = np.zeros((x_32.shape[0]*x_32.shape[0],2))
-        i_coords = int(0)
-        for i_x in range(x_32.shape[0]):
-            for i_y in range(x_32.shape[0]):
-                # u_coords_array[i_coords,:] = (x_32[i_x][0],y_32[i_y][1])
-                p_array[i_coords] = p(x_32[i_x][0],y_32[i_y][1])
-                i_coords += 1
-        u_out = p_array
-    elif QoI == 2:
-        u_y_array = np.zeros(x_32.shape[0])
-        u_x_array = np.zeros(x_32.shape[0])
-        for i_coords in range(x_32.shape[0]):
-            u_y_array[i_coords] = u(x_32[i_coords])[1]
-            u_x_array[i_coords] = u(y_32[i_coords])[0]
-        # stack arrays together? Alternative is to just use y velocity.
-        u_out = np.concatenate((u_x_array,u_y_array))
-        # u_out = u_x_array
-    elif QoI == 3:
-        p_array_mid = np.zeros(x_32.shape[0])
-        for i_coords in range(x_32.shape[0]):
-            p_array_mid[i_coords] = p(x_32[i_coords][0],0.5)
-        u_out = p_array_mid
-    elif QoI == 4:
-        p_array_top = np.zeros(x_32.shape[0])
-        for i_coords in range(x_32.shape[0]):
-            p_array_top[i_coords] = p(x_32[i_coords][0],1)
-        u_out = p_array_top
-    elif QoI == 5:
-        p_array_mid_vert = np.zeros(x_32.shape[0])
-        for i_coords in range(x_32.shape[0]):
-            p_array_mid_vert[i_coords] = p(0.5,x_32[i_coords][0])
-        u_out = p_array_mid_vert
-    else:
-        p_array_top = np.zeros(x_32.shape[0])
-        for i_coords in range(x_32.shape[0]):
-            p_array_top[i_coords] = p(x_32[i_coords][0],0)
-        u_out = p_array_top
 
-    return u_out
+    u_y_array = np.zeros(x_64.shape[0])
+    # u_x_array = np.zeros(x_64.shape[0])
+    for i_coords in range(x_64.shape[0]):
+        u_y_array[i_coords] = u(x_64[i_coords][0],0.5)[1]
+
+    u_x_array = np.zeros(x_64.shape[0])
+    # u_x_array = np.zeros(x_64.shape[0])
+    for i_coords in range(x_64.shape[0]):
+        u_x_array[i_coords] = u(0.5,x_64[i_coords][0])[0]
+
+    p_array_mid = np.zeros(x_64.shape[0])
+    for i_coords in range(x_64.shape[0]):
+        p_array_mid[i_coords] = p(x_64[i_coords][0],0.5)
+
+
+    p_array_vert = np.zeros(x_64.shape[0])
+    for i_coords in range(x_64.shape[0]):
+        p_array_vert[i_coords] = p(0.5,x_64[i_coords][0])
+
+    p_array_base = np.zeros(x_64.shape[0])
+    for i_coords in range(x_64.shape[0]):
+        p_array_base[i_coords] = p(x_64[i_coords][0],0)
+
+    return u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base
 
     ## for Saby
     #return u_coords_array, u_x_array, u_y_array, u_mag #, p_array
