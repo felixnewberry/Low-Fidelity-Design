@@ -66,8 +66,8 @@ c6 = [0.3010, 0.7450, 0.9330];
 % use the test to tune r
 % line to set bounds of search
 % random search to construct response surface with pce. 
-point_test = 0; 
-line_search = 2; % 1 for nu, 2 for u
+point_test = 1; 
+line_search =0; % 1 for nu, 2 for u
 grid_search = 0; % ie use PCE
 random_search = 0; % ie use PCE
 
@@ -188,7 +188,7 @@ load('LDC_data/u_nu_vec.mat');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if point_test == 1
-    nx = 4; 
+    nx = 8; 
     r = 1; 
     n = r+2; 
     
@@ -202,6 +202,7 @@ if point_test == 1
     
 %     save('LDC_design/nominal_all_qoi', 'error_bound', 'err_bi', 'err_low'); 
 %     save('LDC_design/nominal_all_qoi_2', 'error_bound', 'err_bi', 'err_low'); 
+    save('LDC_design/nominal_all_qoi_2_n8', 'error_bound', 'err_bi', 'err_low'); 
 
     % with r = 1 and n = 3: 
 % Nominal settings  L, Bo, Bi
@@ -236,7 +237,8 @@ if line_search >= 1
     % Available hyper-parameters are varying nu and u_top. 
     % start with variation +- 10 
     
-    nx = 4; 
+    nx = 8; 
+%     r = 1; 
     r = 1; 
     n = r+2; 
         
@@ -293,13 +295,15 @@ if line_search == 1
     plot_label = '$ \Delta \nu [\%]$';
     delta_vec = delta_nu_vec; 
 %     save('LDC_design/line_qoi_nu_1','error_bound_mat', 'delta_vec')
-    save('LDC_design/line_qoi_nu_2','error_bound_mat', 'delta_vec')
+%     save('LDC_design/line_qoi_nu_2','error_bound_mat', 'delta_vec')
+    save('LDC_design/line_qoi_nu_2_n8','error_bound_mat', 'delta_vec')
 
 elseif line_search == 2
     plot_label = '$ \Delta U [\%]$';
     delta_vec = delta_u_vec; 
 %     save('LDC_design/line_qoi_u_1','error_bound_mat', 'delta_vec')
-    save('LDC_design/line_qoi_u_2','error_bound_mat', 'delta_vec')
+%     save('LDC_design/line_qoi_u_2','error_bound_mat', 'delta_vec')
+    save('LDC_design/line_qoi_u_2_n8','error_bound_mat', 'delta_vec')
 
 end
 
@@ -361,7 +365,7 @@ end
 
 if grid_search == 1
     
-    nx = 4; 
+    nx = 8; 
     r = 1; 
     n = r+2; 
     
@@ -392,7 +396,7 @@ if grid_search == 1
     % need to think of a good check on data for runs that didn't
     % complete... - just have u_matrix deleted after each call to error
     % bound. 
-%         save('LDC_design/grid_search_2','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
+        save('LDC_design/grid_search_2_n8','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
 
 end
 

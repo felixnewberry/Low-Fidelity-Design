@@ -282,14 +282,17 @@ end
 % 
 % %%% r = 1, n = 3 ... 
 
-load('LDC_design/line_qoi_nu_1.mat')
+% load('LDC_design/line_qoi_nu_1.mat')
 % load('LDC_design/line_qoi_nu_2.mat')
+load('LDC_design/line_qoi_nu_2_n8.mat')
+
 
 delta_nu_vec = delta_vec; 
 error_bound_nu = error_bound_mat; 
 
-load('LDC_design/line_qoi_u_1.mat')
+% load('LDC_design/line_qoi_u_1.mat')
 % load('LDC_design/line_qoi_u_2.mat')
+load('LDC_design/line_qoi_u_2_n8.mat')
 
 delta_u_vec = delta_vec; 
 error_bound_u = error_bound_mat; 
@@ -364,7 +367,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % load('LDC_design/grid_search_1.mat')
-load('LDC_design/grid_search_2.mat')
+% load('LDC_design/grid_search_2.mat')
+load('LDC_design/grid_search_2_n8.mat')
 
 % exclude 0s - these are nans. 
 
@@ -443,7 +447,9 @@ end
 end
 
 % load('LDC_design/nominal_all_qoi')
-load('LDC_design/nominal_all_qoi_2')
+% load('LDC_design/nominal_all_qoi_2')
+load('LDC_design/nominal_all_qoi_2_n8')
+
 
 nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low; 
 
