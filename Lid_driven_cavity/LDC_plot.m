@@ -320,7 +320,9 @@ set(gcf,'Position',size_large)
 title('Line Search of $\nu$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_1_nu','epsc')
+%     saveas(gcf,'plots/LDC_1_nu','epsc')
+%     saveas(gcf,'plots/LDC_2_nu','epsc')
+    saveas(gcf,'plots/LDC_2_nu_8','epsc')
 end
 
 
@@ -343,7 +345,9 @@ set(gcf,'Position',size_large)
 title('Line Search of $U$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/LDC_1_u','epsc')
+%     saveas(gcf,'plots/LDC_1_u','epsc')
+%     saveas(gcf,'plots/LDC_2_u','epsc')
+    saveas(gcf,'plots/LDC_2_u_n8','epsc')
 end
 
 % Notes on line search: 
@@ -418,7 +422,10 @@ set(gcf,'Position',size_1)
 title(strcat(plot_label(i_qoi),' Error bound'),'Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bound'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bound'),'epsc')
+
 end
 
 figure
@@ -441,7 +448,10 @@ set(gcf,'Position',size_1)
 title(strcat(plot_label(i_qoi),' Bi-fidelity Error'),'Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bi'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bi'),'epsc')
+
 end
 
 end
