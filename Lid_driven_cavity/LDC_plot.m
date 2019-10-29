@@ -239,7 +239,7 @@ ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
 % grid on; 
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on; 
 axis tight;
-set(gcf,'Position',size_1)
+set(gcf,'Position',size_square)
 
 if save_on ==1
     saveas(gcf,'plots/mesh_low','epsc')
@@ -254,7 +254,7 @@ ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
 % grid on; 
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on; 
 axis tight;
-set(gcf,'Position',size_1)
+set(gcf,'Position',size_square)
 
 
 if save_on ==1
@@ -269,11 +269,15 @@ end
 % 
 % %%% r = 1, n = 3 ... 
 
-load('LDC_design/line_qoi_nu_1.mat')
+% load('LDC_design/line_qoi_nu_1.mat')
+load('LDC_design/line_qoi_nu_2.mat')
+
 delta_nu_vec = delta_vec; 
 error_bound_nu = error_bound_mat; 
 
-load('LDC_design/line_qoi_u_1.mat')
+% load('LDC_design/line_qoi_u_1.mat')
+load('LDC_design/line_qoi_u_2.mat')
+
 delta_u_vec = delta_vec; 
 error_bound_u = error_bound_mat; 
 
@@ -347,6 +351,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 load('LDC_design/grid_search_1.mat')
+load('LDC_design/grid_search_2.mat')
 
 % exclude 0s - these are nans. 
 
@@ -359,7 +364,7 @@ error_bound_mat(error_bound_mat==0) = nan;
 u_bound = delta_u_vec(i_1); 
 nu_bound = delta_nu_vec(i_2); 
 
-% Find grid minima - bound and bi
+% Find grid minima - boun1d and bi
 [min_bi, min_bi_i] = min(error_Bi_mat,[],[2,3],'linear'); 
 [~, ii_1, ii_2] = ind2sub(size(error_Bi_mat),min_bi_i); 
 % index location is currently wrong 1731... 
