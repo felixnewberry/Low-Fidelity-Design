@@ -432,14 +432,13 @@ end
 load('LDC_design/nominal_all_qoi')
 nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low; 
 
-1; 
-
 %%% Print out the bound and bi for the nominal and optimal
-results_mat = [nom_bound, nom_bi, min_bound, min_bi]'; 
+results_mat = [nom_bound, nom_bi, min_bound, min_bi]'*100; 
 results_tab = array2table(results_mat,...
-    'VariableNames',{ 'Bound','Bi'},'RowNames',{'Nominal','Optimal'})
-
+    'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Base', 'P_Vert' },'RowNames',{'Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi'});
+results_tab
 1; 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PCE fit to random points. 
