@@ -23,6 +23,7 @@ size_1 = [0,0,445,345];
 size_2 = [0,0,1340,515]; 
 
 size_square = [0,0,445,445]; 
+size_large = [0,0,668,518]; 
 
 FS = 28;    % Font size axis
 FS_axis = 18; 
@@ -116,11 +117,11 @@ set(gcf,'Position',size_1)
 %%% Plot contour and then streamlines
 
 
-load('stream_coords')
+load('LDC_data/stream_coords')
 x_stream = x; 
 y_stream = y; 
 
-load 'u_out_plot.mat'
+load 'LDC_data/u_out_plot.mat'
 
 n_cell_x = 128; %CHANGE TO 128.
 nx = n_cell_x;
@@ -167,10 +168,15 @@ xlabel('x','interpreter', 'latex', 'fontsize', FS)
 ylabel('y','interpreter', 'latex', 'fontsize', FS)
 axis tight
 xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf, 'Position', size_square)
 pbaspect([1 1 1])
 
+if save_on ==1
+    saveas(gcf,'plots/LDC_Geom_contour','epsc')
+end
 
 % try quiver... 
 % select step size: 
@@ -196,7 +202,9 @@ set(hh, 'LineWidth', LW)
 hold off
 xlabel('x','interpreter', 'latex', 'fontsize', FS)
 ylabel('y','interpreter', 'latex', 'fontsize', FS)
-axis([0,1,0,1])
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 % set(gcf, 'Position', size_1)
 set(gcf, 'Position', size_square)
@@ -204,7 +212,7 @@ legend([p1,p2],{'QoI 1','QoI 2'},'interpreter', 'latex', 'fontsize', FS_leg)
 
 pbaspect([1 1 1])
 if save_on ==1
-    saveas(gcf,'plots/LDC_Geom','epsc')
+    saveas(gcf,'plots/LDC_Geom_stream','epsc')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -237,8 +245,11 @@ plot(yy_l, xx_l, 'k','LineWidth',LW/2)
 xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
 % grid on; 
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on; 
 axis tight;
+
 set(gcf,'Position',size_square)
 
 if save_on ==1
@@ -246,14 +257,16 @@ if save_on ==1
 end
 
 figure
-plot(xx_h, yy_h, 'k','LineWidth',LW/2)
+plot(xx_h, yy_h, 'k','LineWidth',LW/4)
 hold on; 
-plot(yy_h, xx_h, 'k','LineWidth',LW/2)
+plot(yy_h, xx_h, 'k','LineWidth',LW/4)
 xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
 % grid on; 
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on; 
 axis tight;
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
 set(gcf,'Position',size_square)
 
 
@@ -269,14 +282,14 @@ end
 % 
 % %%% r = 1, n = 3 ... 
 
-% load('LDC_design/line_qoi_nu_1.mat')
-load('LDC_design/line_qoi_nu_2.mat')
+load('LDC_design/line_qoi_nu_1.mat')
+% load('LDC_design/line_qoi_nu_2.mat')
 
 delta_nu_vec = delta_vec; 
 error_bound_nu = error_bound_mat; 
 
-% load('LDC_design/line_qoi_u_1.mat')
-load('LDC_design/line_qoi_u_2.mat')
+load('LDC_design/line_qoi_u_1.mat')
+% load('LDC_design/line_qoi_u_2.mat')
 
 delta_u_vec = delta_vec; 
 error_bound_u = error_bound_mat; 
@@ -300,11 +313,11 @@ legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Base', '$P$ Vert'},
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
 % grid on
-set(gcf,'Position',size_1)
+set(gcf,'Position',size_large)
 title('Line Search of $\nu$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'Plots/LDC_nu_most','epsc')
+    saveas(gcf,'plots/LDC_1_nu','epsc')
 end
 
 
@@ -323,11 +336,11 @@ legend([p1,p2,p3,p4, p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Base', '$P$ Vert'}
 axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
 % grid on
-set(gcf,'Position',size_1)
+set(gcf,'Position',size_large)
 title('Line Search of $U$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'Plots/LDC_u_most','epsc')
+    saveas(gcf,'plots/LDC_1_u','epsc')
 end
 
 % Notes on line search: 
@@ -350,7 +363,7 @@ end
 %%% Grid search
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-load('LDC_design/grid_search_1.mat')
+% load('LDC_design/grid_search_1.mat')
 load('LDC_design/grid_search_2.mat')
 
 % exclude 0s - these are nans. 
@@ -401,7 +414,7 @@ set(gcf,'Position',size_1)
 title(strcat(plot_label(i_qoi),' Error bound'),'Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,strcat('plots/LDC_', plot_save(i_qoi), '_bound'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
 end
 
 figure
@@ -424,18 +437,20 @@ set(gcf,'Position',size_1)
 title(strcat(plot_label(i_qoi),' Bi-fidelity Error'),'Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,strcat('plots/LDC_', plot_save(i_qoi), '_bi'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
 end
 
 end
 
-load('LDC_design/nominal_all_qoi')
+% load('LDC_design/nominal_all_qoi')
+load('LDC_design/nominal_all_qoi_2')
+
 nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low; 
 
 %%% Print out the bound and bi for the nominal and optimal
-results_mat = [nom_bound, nom_bi, min_bound, min_bi]'*100; 
+results_mat = [nom_low, nom_bound, nom_bi, min_bound, min_bi]'*100; 
 results_tab = array2table(results_mat,...
-    'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Base', 'P_Vert' },'RowNames',{'Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi'});
+    'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Base', 'P_Vert' },'RowNames',{'Nom Low','Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi'});
 results_tab
 1; 
 
