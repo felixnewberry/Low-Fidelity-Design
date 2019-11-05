@@ -202,7 +202,7 @@ delta_u = 0.2;
 nu_vec = nu_nom*(1+delta_nu*(rand(n_samples,1)*2-1)); 
 u_top_vec = u_nom*(1+delta_u*(rand(n_samples,1)*2-1)); 
 
-save('LDC_data/u_nu_vec_2','nu_vec', 'u_top_vec')
+% save('LDC_data/u_nu_vec_2','nu_vec', 'u_top_vec')
 
 figure
 p1 = semilogy(nx_vec(1:end-1),error_mat(1,:),'-s','Color',c1,'LineWidth',LW);

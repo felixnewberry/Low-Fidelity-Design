@@ -211,13 +211,21 @@ if point_test == 1
 % it still does not converge. 
 
 % example where the bound fails with standard RVs. What is going wrong? 
-    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.7263, 0.2737);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.7263, 0.2737);
+%     [err_low*100, error_bound*100, err_bi*100]
 
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0);
 
     
+    % u mid best
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.5579, 0.2737);
+    % p base best
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0.2175, 1.8316);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0);
+
     [err_low*100, error_bound*100, err_bi*100]
-    
+
+        
 % It would be excellent if It could run at a higher Re. 
 % For instance the corner of region investigatged is: u + 2.4 nu - 0.7 
 % standard implementation is u +- 10 % and nu +- 5 %. 
