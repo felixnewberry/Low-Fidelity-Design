@@ -8,7 +8,7 @@ clear all
 close all
 clc
 
-save_on = 1; 
+save_on = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -282,17 +282,17 @@ end
 % 
 % %%% r = 1, n = 3 ... 
 
-% load('LDC_design/line_qoi_nu_1.mat')
+load('LDC_design/line_qoi_nu_1.mat')
 % load('LDC_design/line_qoi_nu_2.mat')
-load('LDC_design/line_qoi_nu_2_n8.mat')
+% load('LDC_design/line_qoi_nu_2_n8.mat')
 
 
 delta_nu_vec = delta_vec; 
 error_bound_nu = error_bound_mat; 
 
-% load('LDC_design/line_qoi_u_1.mat')
+load('LDC_design/line_qoi_u_1.mat')
 % load('LDC_design/line_qoi_u_2.mat')
-load('LDC_design/line_qoi_u_2_n8.mat')
+% load('LDC_design/line_qoi_u_2_n8.mat')
 
 delta_u_vec = delta_vec; 
 error_bound_u = error_bound_mat; 
@@ -385,12 +385,14 @@ error_bound_mat(error_bound_mat==0) = nan;
 u_bound = delta_u_vec(i_2); 
 nu_bound = delta_nu_vec(i_1); 
 
-% Find grid minima - boun1d and bi
+% Find grid minima - bound and bi
 [min_bi, min_bi_i] = min(error_Bi_mat,[],[2,3],'linear'); 
 [~, ii_1, ii_2] = ind2sub(size(error_Bi_mat),min_bi_i); 
 % index location is currently wrong 1731... 
 u_bi = delta_u_vec(ii_2); 
 nu_bi = delta_nu_vec(ii_1); 
+
+min_bi_opt = error_Bi_mat(min_bound_i); 
 
 
 %%% Plot response surface 
@@ -424,7 +426,7 @@ title(strcat(plot_label(i_qoi),' Error bound'),'Interpreter','latex')
 if save_on ==1
 %     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bound'),'epsc')
 %     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
-    saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bound'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bound'),'epsc')
 
 end
 
@@ -450,7 +452,7 @@ title(strcat(plot_label(i_qoi),' Bi-fidelity Error'),'Interpreter','latex')
 if save_on ==1
 %     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bi'),'epsc')
 %     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
-    saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bi'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bi'),'epsc')
 
 end
 
@@ -464,9 +466,15 @@ load('LDC_design/nominal_all_qoi_2_n8')
 nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low; 
 
 %%% Print out the bound and bi for the nominal and optimal
-results_mat = [nom_low, nom_bound, nom_bi, min_bound, min_bi]'*100; 
+
+% Should do the actual bi-fidelity found at the optimal point. 
+% min_bi - result if its the minimum of the bi-fidelity data. 
+% min_bi_opt - bi found from min locatin of bound. 
+% results_mat = [nom_low, nom_bound, nom_bi, min_bound, min_bi]'*100; 
+results_mat = [nom_low, nom_bound, nom_bi, min_bound, min_bi_opt, min_bi]'*100; 
+
 results_tab = array2table(results_mat,...
-    'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Base', 'P_Vert' },'RowNames',{'Nom Low','Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi'});
+    'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Base', 'P_Vert' },'RowNames',{'Nom Low','Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi','Best Bi'});
 results_tab
 1; 
 

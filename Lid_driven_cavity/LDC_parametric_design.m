@@ -209,7 +209,9 @@ if point_test == 1
 % iterations - no change. 
 % If I change absolute and relative tolerance from -8 and -7 to -6 and -6
 % it still does not converge. 
-    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 2.5, 0);
+
+% example where the bound fails with standard RVs. What is going wrong? 
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.7263, 0.2737);
 
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0);
 
