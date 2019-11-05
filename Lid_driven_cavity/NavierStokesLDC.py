@@ -124,7 +124,7 @@ def Navier_Stokes_LDC(u_top, nu, nx):
     prm = solver.parameters
     prm['newton_solver']['absolute_tolerance'] = 1E-8
     prm['newton_solver']['relative_tolerance'] = 1E-7
-    prm['newton_solver']['maximum_iterations'] = 1000
+    prm['newton_solver']['maximum_iterations'] = 10000
     prm['newton_solver']['relaxation_parameter'] = 1.0
 
     # umfpack (Unsymmetric MultiFrontal sparse LU factorization)

@@ -7,20 +7,20 @@ function [error_bound_vec,err_Bi_vec,err_low_vec] = my_ldc_bound(nx, n, r, delta
 %%% first check standard. Have to change nu and u in python later to check
 %%% new one. 
 % use new RVs: twice the range
-
-xi = load('LDC_data/xi_mat_2.mat');
-xi = xi.xi_2; 
-
-load('u_meshes/u_64_f_2', 'u_matrix_0', 'u_matrix_1', 'u_matrix_2',...
-    'u_matrix_3', 'u_matrix_4')
-
-% %%% use original random variables
-% xi = load('LDC_data/xi_mat.mat');
-% xi = xi.xi; 
 % 
-% % load high fidelity original 
-% load('u_meshes/u_64_f_standard', 'u_matrix_0', 'u_matrix_1',...
-%     'u_matrix_2', 'u_matrix_3', 'u_matrix_4')
+% xi = load('LDC_data/xi_mat_2.mat');
+% xi = xi.xi_2; 
+
+% load('u_meshes/u_64_f_2', 'u_matrix_0', 'u_matrix_1', 'u_matrix_2',...
+%     'u_matrix_3', 'u_matrix_4')
+
+%%% use original random variables
+xi = load('LDC_data/xi_mat.mat');
+xi = xi.xi; 
+
+% load high fidelity original 
+load('u_meshes/u_64_f_standard', 'u_matrix_0', 'u_matrix_1',...
+    'u_matrix_2', 'u_matrix_3', 'u_matrix_4')
 
 %%%
 Uf_all = cat(3,u_matrix_0, u_matrix_1, u_matrix_2, u_matrix_3, u_matrix_4);
@@ -46,6 +46,8 @@ err_low_vec = zeros(length(Qoi_vec),1);
 
 % save './ensemble_inputs/nx.mat' 'nx' 
 save('LDC_data/inputs_vec.mat', 'nx', 'delta_u', 'delta_nu') ;
+
+1; 
 
 tic
 % Call python/fenics

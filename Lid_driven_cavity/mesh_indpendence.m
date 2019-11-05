@@ -65,6 +65,8 @@ QoI_vec = 0:7;
 % P vert
 
 % need to check out p base and p vert
+error_mat = zeros(8,6); 
+
 for i_qoi = 1:length(QoI_vec)
     QoI = QoI_vec(i_qoi); 
     
@@ -136,9 +138,48 @@ set(gcf,'Position',size_1)
 title(strcat(plot_label,' Convergence'),'Interpreter','latex')
     
 results = [nx_vec(1:end-1);100*error']'
+
+error_mat(i_qoi,:) = 100*error'; 
 end
 
-% use 64 for high. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Fix data
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% load('u_meshes/u_mesh_all')
+% 
+% error_mat_2 = zeros(5,6); 
+% 
+% for i_qoi = 1:5
+%     if i_qoi == 1
+%         u_matrix = u_matrix_0; 
+%     elseif i_qoi == 2
+%         u_matrix = u_matrix_1; 
+%     elseif i_qoi == 3 
+%         u_matrix = u_matrix_2; 
+%     elseif i_qoi == 4 
+%         u_matrix = u_matrix_3; 
+%     elseif i_qoi == 5
+%         u_matrix = u_matrix_4; 
+%     end
+%     
+%     error = zeros(length(nx_vec)-1,1); 
+%     for i = 1:length(nx_vec)-1
+%         error(i) = norm(u_matrix(i,:)-u_matrix(end,:))/norm(u_matrix(end,:));
+%     end
+% 
+%     error_mat_2(i_qoi,:) = 100*error'; 
+% end
+% 
+% % compare error_mat and error_mat_2
+% % rows correspond to u_field p_field, u_mid, p_mid p_top p_vert p_base
+% % u_vert
+% % u mid, u vert, p mid, p vert, p base
+% 
+% % just need to edit p_mid
+% 
+% load('u_meshes/u_mesh_P_mid')
+% 
+% 1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Generate high-fidelity data: first save x_64... 
@@ -163,4 +204,25 @@ u_top_vec = u_nom*(1+delta_u*(rand(n_samples,1)*2-1));
 
 save('LDC_data/u_nu_vec_2','nu_vec', 'u_top_vec')
 
+figure
+p1 = semilogy(nx_vec(1:end-1),error_mat(1,:),'-s','Color',c1,'LineWidth',LW);
+hold on;
+p2 = semilogy(nx_vec(1:end-1),error_mat(2,:),'--s','Color',c2,'LineWidth',LW);
+p3 = semilogy(nx_vec(1:end-1),error_mat(3,:),':o','Color',c3,'LineWidth',LW);
+p4 = semilogy(nx_vec(1:end-1),error_mat(4,:),'-.d','Color',c4,'LineWidth',LW);
+p5 = semilogy(nx_vec(1:end-1),error_mat(5,:),':v','Color',c5,'LineWidth',LW);
+p6 = semilogy(nx_vec(1:end-1),error_mat(6,:),'--<','Color',c6,'LineWidth',LW);
+p7 = semilogy(nx_vec(1:end-1),error_mat(7,:),'-.>','LineWidth',LW);
+p8 = semilogy(nx_vec(1:end-1),error_mat(8,:),':*','LineWidth',LW);
+hold off; 
+ylabel('Relative Error $[\%]$', 'interpreter', 'latex', 'fontsize', FS)
+xlabel('$nx$', 'interpreter', 'latex', 'fontsize', FS)
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis); %box on; 
+axis tight;
+set(gcf,'Position',size_1)
+legend([p1,p2,p3,p4,p5,p6,p7,p8],{'U Field','P Field','U Mid','P Mid','P Top', 'P Vert', 'P Base', 'U Vert'},...
+       'interpreter', 'latex', 'fontsize', FS_leg/2)
+% title(strcat(plot_label,' Convergence'),'Interpreter','latex')
 
+% P vert and P mid are the same ... one is mistaken... 
+% FIx P mid and P vert and then fix the solver. Do this tuesday morning. 

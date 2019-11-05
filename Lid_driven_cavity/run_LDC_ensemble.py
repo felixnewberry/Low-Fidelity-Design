@@ -23,8 +23,8 @@ from NavierStokesLDC import Navier_Stokes_LDC
 
 # Load Random Variables
 
-content = loadmat('./LDC_data/u_nu_vec_2.mat')
-# content = loadmat('./LDC_data/u_nu_vec.mat')
+# content = loadmat('./LDC_data/u_nu_vec_2.mat')
+content = loadmat('./LDC_data/u_nu_vec.mat')
 
 u_lid_vec = content['u_top_vec']
 nu_vec = content['nu_vec']

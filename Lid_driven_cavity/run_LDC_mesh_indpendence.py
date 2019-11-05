@@ -44,8 +44,13 @@ QoI = float(1)
 # interpolate solution to 256 ..
 # For now interpolate to 32.
 
+u_matrix_0 = np.zeros((len(nx_vec),65))
+u_matrix_1 = np.zeros((len(nx_vec),65))
+u_matrix_2 = np.zeros((len(nx_vec),65))
+u_matrix_3 = np.zeros((len(nx_vec),65))
+u_matrix_4 = np.zeros((len(nx_vec),65))
 
-u_matrix = np.zeros((len(nx_vec),65))
+# u_matrix = np.zeros((len(nx_vec),65))
 # 65, 4225, 8450
 # else:
 #     u_matrix = np.zeros((200,33))
@@ -57,12 +62,18 @@ for i in range(len(nx_vec)): #200
     #sample_i = int(Nan_vec[0,i])
     nx = int(nx_vec[i])
     print(nx)
-    u_array_samp = Navier_Stokes_LDC(u_lid, nu, sample_i, nx, QoI)
+    # u_array_samp = Navier_Stokes_LDC(u_lid, nu, sample_i, nx, QoI)
+    u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base = Navier_Stokes_LDC(u_lid, nu, nx)
 
-    u_matrix[i,:] = u_array_samp
+    u_matrix_0[i,:] = u_y_array
+    u_matrix_1[i,:] = u_x_array
+    u_matrix_2[i,:] = p_array_mid
+    u_matrix_3[i,:] = p_array_vert
+    u_matrix_4[i,:] = p_array_base
 
 # Save QoI
-scipy.io.savemat('./u_meshes/u_mesh_u_vert.mat', mdict={'u_matrix':u_matrix})
+
+scipy.io.savemat('./u_meshes/u_mesh_all.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4})
 
 end = time.time()
 print(end-start)
