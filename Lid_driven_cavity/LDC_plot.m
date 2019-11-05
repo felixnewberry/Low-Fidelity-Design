@@ -370,8 +370,8 @@ end
 %%% Grid search
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-load('LDC_design/grid_search_1.mat')
-% load('LDC_design/grid_search_2.mat')
+% load('LDC_design/grid_search_1.mat')
+load('LDC_design/grid_search_2.mat')
 % load('LDC_design/grid_search_2_n8.mat')
 
 % exclude 0s - these are nans. 
@@ -422,8 +422,8 @@ set(gcf,'Position',size_1)
 title(strcat(plot_label(i_qoi),' Error bound'),'Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bound'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bound'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
 %     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bound'),'epsc')
 
 end
@@ -448,16 +448,16 @@ set(gcf,'Position',size_1)
 title(strcat(plot_label(i_qoi),' Bi-fidelity Error'),'Interpreter','latex')
 
 if save_on ==1
-    saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bi'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bi'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
 %     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bi'),'epsc')
 
 end
 
 end
 
-load('LDC_design/nominal_all_qoi')
-% load('LDC_design/nominal_all_qoi_2')
+% load('LDC_design/nominal_all_qoi')
+load('LDC_design/nominal_all_qoi_2')
 % load('LDC_design/nominal_all_qoi_2_n8')
 
 
