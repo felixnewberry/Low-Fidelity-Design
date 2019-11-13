@@ -1,4 +1,4 @@
-function [error_bound_vec,err_Bi_vec,err_low_vec] = my_ldc_bound(nx, n, r, delta_u, delta_nu)
+function [error_bound_vec,err_Bi_vec,err_low_vec] = my_ldc_bound(nx, n, r, delta_u, delta_nu_0, delta_nu_1)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% LDC details
@@ -45,7 +45,7 @@ err_low_vec = zeros(length(Qoi_vec),1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % save './ensemble_inputs/nx.mat' 'nx' 
-save('LDC_data/inputs_vec.mat', 'nx', 'delta_u', 'delta_nu') ;
+save('LDC_data/inputs_vec.mat', 'nx', 'delta_u', 'delta_nu_0','delta_nu_1') ;
 
 1; 
 

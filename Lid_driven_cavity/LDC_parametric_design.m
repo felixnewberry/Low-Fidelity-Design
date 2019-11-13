@@ -64,9 +64,9 @@ c6 = [0.3010, 0.7450, 0.9330];
 % use the test to tune r
 % line to set bounds of search
 % random search to construct response surface with pce. 
-point_test = 1; 
+point_test = 0; 
 line_search = 0; % 1 for nu, 2 for u
-grid_search = 0; % 
+grid_search = 1; % 
 random_search = 0; % ie use PCE
 
 nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
@@ -203,7 +203,7 @@ if point_test == 1
 
 % u then nu
 % corner case
-%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 2.4, -0.7);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 2.4, -0.7, -0.7);
     
 % I can run 2.4, 0. But not 2.5. If I increase from 1000 to 2000 newton
 % iterations - no change. 
@@ -211,17 +211,19 @@ if point_test == 1
 % it still does not converge. 
 
 % example where the bound fails with standard RVs. What is going wrong? 
-%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.7263, 0.2737);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.7263, 0.2737, 0.2737);
 %     [err_low*100, error_bound*100, err_bi*100]
 
-%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0, 0);
 
     
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, -0.1, 0.1);
+
     % u mid best
-    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.5579, 0.2737);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.5579, 0.2737, 0.2737);
     % p base best
-%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0.2175, 1.8316);
-%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0.2175, 1.8316, 1.8316);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0, 0);
 
     [err_low*100, error_bound*100, err_bi*100]
 
@@ -289,37 +291,52 @@ if line_search >= 1
     
     if line_search == 1
 %         delta_nu_vec = -0.5:0.5:3;
-        delta_nu_vec = -0.7:0.1:3;
+        delta_nu_vec_0 = -0.7:0.1:3;
+        delta_nu_vec_1 = delta_nu_vec_0; 
 %         delta_nu_vec = -0.75:0.05:-0.7; % -0.8 - newton solver does not converge. same at -0.75
 
 
-        delta_u_vec = zeros(length(delta_nu_vec), 1); 
+        delta_u_vec = zeros(length(delta_nu_vec_0), 1); 
     elseif line_search == 2
 %         delta_u_vec = -0.6:0.3:0.0;
 %         delta_u_vec = -0.8:0.1:1.6;
        delta_u_vec = -0.8:0.1:2.4;
         
-        delta_nu_vec = zeros(length(delta_u_vec), 1); 
+        delta_nu_vec_0 = zeros(length(delta_u_vec), 1); 
+        delta_nu_vec_1 = delta_nu_vec_0; 
+    elseif line_search == 3
+%         delta_nu_vec_0 = -0.5:0.1:0.5;
+        delta_nu_vec_0 = -0.9:0.1:3;
+
+        delta_nu_vec_1 = zeros(length(delta_nu_vec_0), 1); 
+        delta_u_vec = delta_nu_vec_1; 
+    elseif line_search == 4
+%         delta_nu_vec_0 = -0.5:0.1:0.5;
+        delta_nu_vec_1 = -0.9:0.1:3;
+
+        delta_nu_vec_0 = zeros(length(delta_nu_vec_1), 1); 
+        delta_u_vec = delta_nu_vec_1; 
     end
     
+    n_samps = length(delta_nu_vec_0); 
     
 %     save('LDC_design/delta_nu_vec','delta_nu_vec')
 %     save('LDC_design/delta_u_vec','delta_u_vec')
 %     save('LDC_design/delta_P_mid_nu_vec','delta_nu_vec')
 %     save('LDC_design/delta_P_mid_u_vec','delta_u_vec')
 %     
-    error_bound_mat = zeros(5,length(delta_nu_vec)); 
-    error_Bi_mat = zeros(5,length(delta_nu_vec));    
+    error_bound_mat = zeros(5,n_samps); 
+    error_Bi_mat = zeros(5,n_samps);    
     
     
-    for i_param = 1:length(delta_nu_vec)
+    for i_param = 1:n_samps
 
-        [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,delta_u_vec(i_param),delta_nu_vec(i_param));
+        [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,delta_u_vec(i_param),delta_nu_vec_0(i_param), delta_nu_vec_1(i_param));
 
         error_bound_mat(:,i_param) = error_bound; 
         error_Bi_mat(:,i_param) = err_bi; 
         
-        fprintf("Percent complete: %d \n",i_param/length(delta_nu_vec)*100);       
+        fprintf("Percent complete: %d \n",i_param/n_samps*100);       
     end
 %     
  1; 
@@ -330,18 +347,29 @@ if line_search >= 1
 
 if line_search == 1
     plot_label = '$ \Delta \nu [\%]$';
-    delta_vec = delta_nu_vec; 
+    delta_vec = delta_nu_vec_0; 
 %     save('LDC_design/line_qoi_nu_1','error_bound_mat', 'delta_vec')
 %     save('LDC_design/line_qoi_nu_2','error_bound_mat', 'delta_vec')
-    save('LDC_design/line_qoi_nu_2_n8','error_bound_mat', 'delta_vec')
+%     save('LDC_design/line_qoi_nu_2_n8','error_bound_mat', 'delta_vec')
 
 elseif line_search == 2
     plot_label = '$ \Delta U [\%]$';
     delta_vec = delta_u_vec; 
 %     save('LDC_design/line_qoi_u_1','error_bound_mat', 'delta_vec')
 %     save('LDC_design/line_qoi_u_2','error_bound_mat', 'delta_vec')
-    save('LDC_design/line_qoi_u_2_n8','error_bound_mat', 'delta_vec')
-
+%     save('LDC_design/line_qoi_u_2_n8','error_bound_mat', 'delta_vec')
+elseif line_search == 3
+    plot_label = '$ \Delta \nu_0 [\%]$';
+    delta_vec = delta_nu_vec_0; 
+%     save('LDC_design/line_qoi_u_1','error_bound_mat', 'delta_vec')
+%     save('LDC_design/line_qoi_u_2','error_bound_mat', 'delta_vec')
+    save('LDC_design/line_qoi_nu_y_n4_2','error_bound_mat', 'delta_vec')
+elseif line_search == 4
+    plot_label = '$ \Delta \nu_1 [\%]$';
+    delta_vec = delta_nu_vec_1; 
+%     save('LDC_design/line_qoi_u_1','error_bound_mat', 'delta_vec')
+%     save('LDC_design/line_qoi_u_2','error_bound_mat', 'delta_vec')
+    save('LDC_design/line_qoi_nu_y1_n4_2','error_bound_mat', 'delta_vec')
 end
 
 1; 
@@ -414,19 +442,24 @@ if grid_search == 1
     delta_nu_vec = linspace(nu_lim(1),nu_lim(2),n_grid); 
     delta_u_vec = linspace(u_lim(1),u_lim(2),n_grid); 
     
-
+    delta_u_vec = zeros(1, length(delta_nu_vec)); 
+    delta_nu_vec_0 = delta_nu_vec; 
+    delta_nu_vec_1 = delta_nu_vec; 
     
     error_bound_mat = zeros(5,length(delta_nu_vec),length(delta_u_vec)); 
     error_Bi_mat = zeros(5,length(delta_nu_vec),length(delta_u_vec)); 
     
-    for i_nu = 1:length(delta_nu_vec)
-        for i_u = 1:length(delta_u_vec)
+%     for i_nu = 1:length(delta_nu_vec)
+%         for i_u = 1:length(delta_u_vec)
             
-            delta_u_vec(i_u)
-            delta_nu_vec(i_nu)
+    for i_nu = 1:length(delta_nu_vec_0)
+        for i_u = 1:length(delta_nu_vec_1)
+            
+%             delta_u_vec(i_u)
+%             delta_nu_vec(i_nu)
    
             
-            [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,delta_u_vec(i_u),delta_nu_vec(i_nu));
+            [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,delta_u_vec(i_u),delta_nu_vec_0(i_nu),delta_nu_vec_0(i_u));
             error_bound_mat(:,i_nu, i_u) = error_bound; 
             error_Bi_mat(:,i_nu, i_u) = err_bi; 
             
@@ -440,7 +473,8 @@ if grid_search == 1
     % complete... - just have u_matrix deleted after each call to error
     % bound. 
 %         save('LDC_design/grid_search_2_n8','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
-        save('LDC_design/grid_search_test','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
+%         save('LDC_design/grid_search_test','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
+%         save('LDC_design/grid_search_nu_linear_test','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec_0','delta_nu_vec_1')
 
 end
 
@@ -592,7 +626,7 @@ end
 
 for i_t = n_start:n_end
     
-[error_bound, err_bi, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand(i_t)); 
+[error_bound, err_bi, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand(i_t),nu_rand(i_t)); 
 
 % error_bound
 % err_Ahat

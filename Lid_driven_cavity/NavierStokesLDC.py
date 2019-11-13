@@ -37,7 +37,7 @@ set_log_level(LogLevel.WARNING)
 #content = sciio.loadmat('./nx.mat')
 #nx = int(content['nx'])
 
-def Navier_Stokes_LDC(u_top, nu, nx):
+def Navier_Stokes_LDC(u_top, nu_0, nu_1, nx):
     # Inputs:
     # u_top - velocity of top plate
     # nu - viscosity of fluid
@@ -49,8 +49,9 @@ def Navier_Stokes_LDC(u_top, nu, nx):
 
     #print("u_top =: " + str(u_top(0)))
     #print("nu =: " + str(nu(0)))
+    # nu is linear from nu_0 at y = 0 to nu_1 at y = 1
 
-    #nx = int(32)
+
     ny = nx
 
     n_points = nx+1
@@ -61,6 +62,11 @@ def Navier_Stokes_LDC(u_top, nu, nx):
     # skew mesh towards walls (as in Oasis)
     x[:] = (x - 0.5) * 2
     x[:] = 0.5*(np.cos(np.pi*(x-1) / 2) + 1)
+
+    # define nu as a function of y
+    # nu = Expression('1 + x[0]*x[0] + 2*x[1]*x[1]', degree=2)
+    #nx = int(32)
+    nu = Expression('nu_0 + (nu_1-nu_0)*x[1]', nu_1= nu_1, nu_0=nu_0, degree=1)
 
     V1 = VectorElement("Lagrange",mesh.ufl_cell(),2)
     P1 = FiniteElement("Lagrange",mesh.ufl_cell(),1)

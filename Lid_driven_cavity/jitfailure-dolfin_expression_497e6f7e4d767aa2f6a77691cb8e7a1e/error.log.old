@@ -1,0 +1,14 @@
+/tmp/tmp9pkpxw63/dolfin_expression_497e6f7e4d767aa2f6a77691cb8e7a1e.cpp: In member function ‘virtual void dolfin::dolfin_expression_497e6f7e4d767aa2f6a77691cb8e7a1e::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmp9pkpxw63/dolfin_expression_497e6f7e4d767aa2f6a77691cb8e7a1e.cpp:61:23: error: ‘nu_0’ was not declared in this scope
+           values[0] = nu_0 + (nu_1-nu_2)*x[1];
+                       ^~~~
+/tmp/tmp9pkpxw63/dolfin_expression_497e6f7e4d767aa2f6a77691cb8e7a1e.cpp:61:31: error: ‘nu_1’ was not declared in this scope
+           values[0] = nu_0 + (nu_1-nu_2)*x[1];
+                               ^~~~
+/tmp/tmp9pkpxw63/dolfin_expression_497e6f7e4d767aa2f6a77691cb8e7a1e.cpp:61:36: error: ‘nu_2’ was not declared in this scope
+           values[0] = nu_0 + (nu_1-nu_2)*x[1];
+                                    ^~~~
+/tmp/tmp9pkpxw63/dolfin_expression_497e6f7e4d767aa2f6a77691cb8e7a1e.cpp:61:36: note: suggested alternative: ‘dup2’
+           values[0] = nu_0 + (nu_1-nu_2)*x[1];
+                                    ^~~~
+                                    dup2
