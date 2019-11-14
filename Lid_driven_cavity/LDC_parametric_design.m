@@ -66,8 +66,8 @@ c6 = [0.3010, 0.7450, 0.9330];
 % random search to construct response surface with pce. 
 point_test = 0; 
 line_search = 0; % 1 for nu, 2 for u
-grid_search = 1; % 
-random_search = 0; % ie use PCE
+grid_search = 0; % 
+random_search = 1; % ie use PCE
 
 nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
 
@@ -481,104 +481,44 @@ end
 if random_search == 1
 
     % check error with 100 samples... 
-n_samps = 100; 
+n_samps = 500; 
 
-% 0 is u_mat
-% 1 is P_mat
-% 2 is u_vec mid
-% 3 is p_vec mid
-% 4 is p_vec top
 
-if QoI == 0
-    u_lim = [-0.6,0]; 
-    nu_lim = [0,3.0];
-    r = 1; 
-    n = r+2; 
-    save_label = 'u_field';
-elseif QoI == 1
-    u_lim = [-0.6,0]; 
-    nu_lim = [0,3.0];
-    r = 1; 
-    n = r+2; 
-    save_label = 'P_field';
-elseif QoI == 2
-    u_lim = [-0.6,0]; 
-    nu_lim = [0,3.0];
-    r = 1; 
-    n = r+2; 
-    save_label = 'u_mid';
-elseif QoI == 3
-    u_lim = [-0.02,0]; 
-    nu_lim = [0,0.03];
-    r = 1;   
-    n = r+2; 
-    save_label = 'P_mid';
-elseif QoI == 4
-    u_lim = [-0.6,0]; 
-    nu_lim = [0,3.0];
-    r = 1;    
-    n = r+2; 
-    save_label = 'P_top';
-elseif QoI == 5
-    u_lim = [-0.6,0]; 
-    nu_lim = [0,3.0];
-    r = 1;    
-    n = r+2; 
-    save_label = 'P_mid_vert';
-end
 
 % LDC inputs
 nx = 4; 
-% r = 10; 
 
-% r = 2; % try this for mid-plane
+
+nx = 4; 
+r = 1; 
+n = r+2; 
+
+u_lim = [-0.8,2.4]; 
+nu_lim = [-0.7,3.0];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PCE fit to random points. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 N_total = n_samps;
 
-% N = 150; 
-% nsim_v = N_total - N; 
-% % Desired polynomial order of PCE
-% d = 2; 
-% p = 7; 
-
-% index_pc = nD_polynomial_array(d,p); 
-
-% P = size(index_pc,1);
-
-
-% psi = zeros(N,P);
-
-% n_reps = 1; 
-% error_ls = zeros(n_reps,1); 
-% error_spg = zeros(n_reps,1); 
-
-% Save outputs to file because this is expensive. 
-
-
-
-% for i_rep = 1:n_reps
-
-% These samples are to explore u_L and nu_L
 % xi_samples is constant for Uf and Uc
 % new set of random samples: 
-xi_rand = rand(n_samps,2);
+xi_rand = rand(n_samps,3);
 
 % load test
 % load('xi_rand_test')
 
 
 u_rand = u_lim(1)+ (u_lim(2)-u_lim(1)).*xi_rand(:,1); 
-nu_rand = nu_lim(1)+ (nu_lim(2)-nu_lim(1)).*xi_rand(:,2); 
+nu_rand_0 = nu_lim(1)+ (nu_lim(2)-nu_lim(1)).*xi_rand(:,2); 
+nu_rand_1 = nu_lim(1)+ (nu_lim(2)-nu_lim(1)).*xi_rand(:,2); 
 
 % n_samps = 2; 
 
-results = zeros(n_samps,3); 
-error_bound_mat = zeros(n_samps,1); 
-error_Ahat_mat = zeros(n_samps,1);
-efficacy_mat = zeros(n_samps,1);
+results_mat = zeros(n_samps,3,5); 
+% error_bound_mat = zeros(n_samps,1); 
+% error_Ahat_mat = zeros(n_samps,1);
+% efficacy_mat = zeros(n_samps,1);
 
 tic
 % 
@@ -595,19 +535,19 @@ tic
 if nom_opt == 1
     if QoI == 0
         u_rand = [0, 0];
-        nu_rand = [0, 3];
+        nu_rand_0 = [0, 3];
     elseif QoI == 1
         u_rand = [0, -0.6];
-        nu_rand = [0, 2.745];     
+        nu_rand_0 = [0, 2.745];     
     elseif QoI == 2
         u_rand = [0, -0.6];
-        nu_rand = [0, 1.932];  
+        nu_rand_0 = [0, 1.932];  
     elseif QoI == 3 
         u_rand = [0, -0.02];
-        nu_rand = [0, 0.03]; 
+        nu_rand_0 = [0, 0.03]; 
     elseif QoI == 4
         u_rand = [0, -0.6];
-        nu_rand = [0, 3];  
+        nu_rand_0 = [0, 3];  
     end
 end
 
@@ -626,8 +566,8 @@ end
 
 for i_t = n_start:n_end
     
-[error_bound, err_bi, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand(i_t),nu_rand(i_t)); 
-
+% [error_bound, err_bi, efficacy] =  my_ldc_bound(QoI, nx,n, r,u_rand(i_t),nu_rand_0(i_t),nu_rand_0(i_t)); 
+[error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,u_rand(i_t),nu_rand_0(i_t), nu_rand_1(i_t));
 % error_bound
 % err_Ahat
 % 1; 
@@ -636,9 +576,8 @@ for i_t = n_start:n_end
 % err_Ahat = norm(Uf-Uf(:,ix)*P_s)/norm(Uf);
 % efficacy = error_bound/err_Ahat;
 
-error_bound_mat(i_t) = error_bound; 
-error_Ahat_mat(i_t) =  err_bi; 
-efficacy_mat(i_t) = efficacy; 
+results_mat(i_t,:,:) = [error_bound,err_bi,err_low]'; 
+
 
 fprintf("Percent complete: %d \n",i_t/n_samps*100);   
 end
@@ -649,7 +588,8 @@ end
 xi_rand = xi_rand*2-1;
 
 if nom_opt ~= 1
-    save(strcat('LDC_design/rand_',save_label),'error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
+%     save(strcat('LDC_design/rand_',save_label),'error_bound_mat','error_Ahat_mat','efficacy_mat', 'u_lim','nu_lim','xi_rand');
+save(strcat('LDC_design/rand_','nu_linear_2'),'results_mat','u_lim','nu_lim','xi_rand');
 end
 
 end
