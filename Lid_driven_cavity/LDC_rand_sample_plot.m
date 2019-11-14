@@ -39,7 +39,7 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%% Random search 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-load('LDC_design/rand_nu_linear')
+load('LDC_design/rand_nu_linear_2')
 
 load('LDC_design/nominal_all_qoi_2')
 % err_bi and error_bound nominal values - plot these. 

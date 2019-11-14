@@ -511,7 +511,7 @@ xi_rand = rand(n_samps,3);
 
 u_rand = u_lim(1)+ (u_lim(2)-u_lim(1)).*xi_rand(:,1); 
 nu_rand_0 = nu_lim(1)+ (nu_lim(2)-nu_lim(1)).*xi_rand(:,2); 
-nu_rand_1 = nu_lim(1)+ (nu_lim(2)-nu_lim(1)).*xi_rand(:,2); 
+nu_rand_1 = nu_lim(1)+ (nu_lim(2)-nu_lim(1)).*xi_rand(:,3); 
 
 % n_samps = 2; 
 
