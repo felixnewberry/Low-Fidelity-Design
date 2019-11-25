@@ -1,0 +1,327 @@
+
+
+clear all
+close all
+clc
+
+save_on = 0; 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Plot settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+LW = 2;     % Line width
+MS = 8;     % Marker Size
+FS_leg = 16; % Font size legend
+
+
+size_1 = [0,0,445,345]; 
+size_2 = [0,0,1340,515]; 
+
+size_square = [0,0,445,445]; 
+size_large = [0,0,668,518]; 
+
+FS = 28;    % Font size axis
+FS_axis = 18; 
+LW_axis = 1; 
+
+MyMarkerSize = 8; 
+
+% Colors
+c1 = [0, 0.4470, 0.7410];
+c2 = [0.8500, 0.3250, 0.0980];
+c3 = [0.9290, 0.6940, 0.1250]; 
+c4 = [0.4940, 0.1840, 0.5560];
+c5 = [0.4660, 0.6740, 0.1880]; 
+c6 = [0.3010, 0.7450, 0.9330]; 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% QoI Plots
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% U Mid
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+load('u_meshes/u_64_f_2.mat')
+
+% 200 samples. 65 points
+Uf_u = u_matrix_0'; 
+
+
+% best u mid is at u 1.5579, 0.2737
+% best p base (not found with routine bound method) is u +0.2175 nu +1.8316
+
+% Plot velocity through mid plane 
+% Maybe do for completeness
+
+% Plot pressure along top
+
+% need to change nominal and optimal rv 2. Then plot this again. 
+% Difference will still likely be difficult to see. 
+
+% plot the pressure differce too just to find out? Check which pressure. 
+
+Uc_nom_u = load('LDC_design/u_mid_nom_2.mat', 'Uc','Ub','sb');
+Ub_nom_u = Uc_nom_u.Ub; 
+sb_nom_u = Uc_nom_u.sb; 
+Uc_nom_u = Uc_nom_u.Uc; 
+
+Uc_opt_u = load('LDC_design/u_mid_opt_2.mat', 'Uc','Ub','sb');
+Ub_opt_u = Uc_opt_u.Ub; 
+sb_opt_u = Uc_opt_u.sb; 
+Uc_opt_u = Uc_opt_u.Uc; 
+
+error_b_nom_u = vecnorm(Ub_nom_u-Uf_u)./vecnorm(Uf_u);
+error_b_opt_u = vecnorm(Ub_opt_u-Uf_u)./vecnorm(Uf_u);
+
+[~, index_max_u] = max(abs(error_b_nom_u - error_b_opt_u)); 
+norm(Ub_opt_u(:,index_max_u) - Uf_u(:,index_max_u))
+norm(Ub_nom_u(:,index_max_u) - Uf_u(:,index_max_u))
+
+1; 
+
+load 'x_64.mat'
+
+x_highfidelity = x_64(:,1); 
+
+plot_index = index_max_u; 
+
+% % plot H, Nominal L, Nominal B
+% plot u or v? 
+% plot_uv = 1:33; 
+% plot_uv = 34:66; 
+
+
+
+
+figure 
+p1 = plot(x_highfidelity,Uf_u(:,plot_index),'color',c1,'LineWidth',LW);
+hold on
+p2 = plot(x_highfidelity,Uc_nom_u(:,plot_index),':','color',c2,'LineWidth',LW);
+p3 = plot(x_highfidelity,Ub_nom_u(:,plot_index),'-.','color',c3,'LineWidth',LW);
+p4 = plot(x_highfidelity,Uc_opt_u(:,plot_index),':','color',c4,'LineWidth',LW);
+p5 = plot(x_highfidelity,Ub_opt_u(:,plot_index),'-.','color',c5,'LineWidth',LW);
+hold off
+xlabel('$x$','interpreter','latex','Fontsize',FS)
+ylabel('$ U_{mid}$','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B', 'Optimal L', 'Optimal B'},'interpreter', 'latex', 'fontsize', FS_leg)
+% legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B', 'Optimal L', 'Optimal B'},'interpreter', 'latex', 'fontsize', FS_leg)
+title('Mid Velocity Realization','Interpreter','latex')
+set(gcf,'Position',size_large)
+
+if save_on ==1
+    saveas(gcf,'plots/LDC_U_mid_realization','epsc')
+end
+1; 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% P Base
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% plot base pressure
+
+Uf_pb = u_matrix_3'; 
+
+Uc_nom_pb = load('LDC_design/P_base_nom_2.mat', 'Uc','Ub','sb');
+Ub_nom_pb = Uc_nom_pb.Ub; 
+sb_nom_pb = Uc_nom_pb.sb; 
+Uc_nom_pb = Uc_nom_pb.Uc; 
+
+Uc_opt_pb = load('LDC_design/P_base_opt_2.mat', 'Uc','Ub','sb');
+Ub_opt_pb = Uc_opt_pb.Ub; 
+sb_opt_pb = Uc_opt_pb.sb; 
+Uc_opt_pb = Uc_opt_pb.Uc; 
+
+error_b_nom_pb = vecnorm(Ub_nom_pb-Uf_pb)./vecnorm(Uf_pb);
+error_b_opt_pb = vecnorm(Ub_opt_pb-Uf_pb)./vecnorm(Uf_pb);
+
+[~, index_max_pb] = max(abs(error_b_nom_pb - error_b_opt_pb)); 
+norm(Ub_opt_pb(:,index_max_pb) - Uf_pb(:,index_max_pb))
+norm(Ub_nom_pb(:,index_max_pb) - Uf_pb(:,index_max_pb))
+
+load 'x_64.mat'
+
+x_highfidelity = x_64(:,1); 
+
+plot_index = index_max_pb; 
+
+1; 
+
+
+
+
+figure 
+p1 = plot(x_highfidelity,Uf_pb(:,plot_index),'color',c1,'LineWidth',LW);
+hold on
+p2 = plot(x_highfidelity,Uc_nom_pb(:,plot_index),':','color',c2,'LineWidth',LW);
+p3 = plot(x_highfidelity,Ub_nom_pb(:,plot_index),'-.','color',c3,'LineWidth',LW);
+p4 = plot(x_highfidelity,Uc_opt_pb(:,plot_index),':','color',c4,'LineWidth',LW);
+p5 = plot(x_highfidelity,Ub_opt_pb(:,plot_index),'-.','color',c5,'LineWidth',LW);
+hold off
+xlabel('$x$','interpreter','latex','Fontsize',FS)
+ylabel('$P_{base} $','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B', 'Optimal L', 'Optimal B'},'interpreter', 'latex', 'fontsize', FS_leg)
+% legend([p1,p2,p3,p4,p5],{'H','Nominal L','Nominal B', 'Optimal L', 'Optimal B'},'interpreter', 'latex', 'fontsize', FS_leg)
+title('Base Pressure Realization','Interpreter','latex')
+set(gcf,'Position',size_large)
+
+if save_on ==1
+    saveas(gcf,'plots/LDC_P_base_realization','epsc')
+end
+
+% first plot high-fidelity - then figure out the rest. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% P Field
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+load('u_meshes/u_matrix_high.mat')
+
+p_field_high = u_matrix_5; 
+u_field_x_high = u_matrix_6; 
+u_field_y_high = u_matrix_7; 
+
+load('u_meshes/u_matrix_low.mat')
+
+p_field_low = u_matrix_5; 
+u_field_x_low = u_matrix_6; 
+u_field_y_low = u_matrix_7; 
+
+nx = 64; 
+% for now do 1st sample. 
+
+x = x_64; 
+y = x; 
+% should I use contour - filled? yeah. 
+
+u_mat = reshape(u_field_x_high(1,:),nx+1,nx+1)'; 
+v_mat = reshape(u_field_y_high(1,:),nx+1,nx+1)'; 
+
+u_mag = sqrt(u_mat.^2 +v_mat.^2);
+
+figure
+[c,h]=contourf(x,y,u_mag);
+set(h, 'edgecolor','none');
+hold on
+
+quiver(x(1:step_quiv:end),y(1:step_quiv:end),u_mat(1:step_quiv:end,1:step_quiv:end), v_mat(1:step_quiv:end,1:step_quiv:end),'Color',c3)
+
+% plot qoi
+p1 = plot(x_1, y_2,'-.','color',c2,'LineWidth',LW+1);
+p2 = plot(x_1, y_1,'--','color',c1,'LineWidth',LW+1);
+
+X_arrow = [0.35 0.7];
+Y_arrow = [0.95   0.95];
+hh = annotation('arrow',X_arrow,Y_arrow,'Color','r');
+set(hh, 'LineWidth', LW)
+
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf, 'Position', size_square)
+pbaspect([1 1 1])
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% U Field
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%
+
+% 
+% % results_mat is 500x3x5 error_bound, bi and low. 
+% 
+% 
+% 
+% %%% Plot samples
+% 
+% figure
+% plot3(xi_rand(:,1), xi_rand(:,2), xi_rand(:,3), 'o','MarkerSize',MyMarkerSize)
+% 
+% % sanatize input by replacing zeros (runs that didn't complete) with NaNs. 
+% % exclude 0s - these are nans. 
+% results_mat(results_mat==0) = nan;
+% 
+% n_samp = length(results_mat); 
+% 
+% % order in terms of bound to see predictive measure. Different for each
+% % qoi. 
+% 
+% 
+% %%% Plot the nominal, bound and bi - possibly ordered. 
+% 
+% % Step through each qoi 
+% qoi_vec = 1:5; 
+% 
+% plot_label = ["$U$ Mid","$U$ Vert", "$P$ Mid", "$P$ Base", "$P$ Vert"]; 
+% plot_save = ["u_Mid","U_Vert", "P_Mid", "P_Base", "P_Vert"]; 
+% 
+% min_bound = zeros(5,1); 
+% min_bi_opt = zeros(5,1);  
+% min_bi = zeros(5,1); 
+% 
+% for i_qoi = 1:length(qoi_vec)
+% [~,idx]  = sort(results_mat(:,1,i_qoi));
+% results_sort = results_mat(idx,:,i_qoi); 
+% 
+% 
+% min_bound(i_qoi) = results_sort(1,1);
+% min_bi_opt(i_qoi) = results_sort(1,2);
+% min_bi(i_qoi) = min(results_sort(:,2));
+% 
+% figure
+% p1 = plot(100*results_sort(:,1),'x','Color',c1,'MarkerSize',MyMarkerSize);
+% hold on
+% p2 = plot(100*results_sort(:,2),'o','Color',c2,'MarkerSize',MyMarkerSize);
+% p3 = plot(100*error_bound(i_qoi)*ones(n_samp,1),'-','Color',c1,'linewidth',LW);
+% p4 = plot(100*err_bi(i_qoi)*ones(n_samp,1),'-','Color',c2,'linewidth',LW);
+% hold off
+% legend([p3,p4,p1,p2],{'Nom Bound','Nom Bi', 'Samp Bound', 'Samp Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
+% xlabel('Sample $i$','interpreter','latex','Fontsize',FS)
+% ylabel('Error [\%]','interpreter','latex','Fontsize',FS)
+% axis tight
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% set(gcf,'Position',size_large)
+% title(strcat(plot_label(i_qoi), ' Samples'),'Interpreter','latex')
+% 
+% 
+% if save_on ==1
+%     saveas(gcf,strcat('Plots_png/LDC_2_rand_samp_', plot_save(i_qoi),'.png'))
+% 
+% end
+% end
+% 
+% % Plot all 5 qoi then 
+% % create table
+% 
+% % Just taking the minimum bound for U mid, P Vert (minimal inprovement), U
+% % Vert and P mid will work well 
+% % For P Base it appears that some measure of robustness may be necessary to
+% % locate the best peforming bound that also has the most trust. 
+% 
+% % Ie, what if I take the 200 best peforming and plot them? Tentative idea.
+% % Entire method really relies on the bound response surface behaing
+% % similarly to the bi. In this case it doesn't really. 
+% 
+% nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low; 
+% 
+% results_mat_nu_linear = [nom_low, nom_bound, nom_bi, min_bound, min_bi_opt, min_bi]'*100; 
+% 
+% results_tab_nu_linear = array2table(results_mat_nu_linear,...
+%     'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Base', 'P_Vert' },'RowNames',{'Nom Low','Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi','Best Bi'});
+% results_tab_nu_linear
+% 1; 
+
+
+
+

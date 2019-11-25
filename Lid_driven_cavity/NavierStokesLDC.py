@@ -136,7 +136,7 @@ def Navier_Stokes_LDC(u_top, nu_0, nu_1, nx):
     # umfpack (Unsymmetric MultiFrontal sparse LU factorization)
     #petsc PETSc built in LU solver
     #cg Conjugate Gradient method - no good
-# try mumps..
+    # try mumps..
     # prm['newton_solver']['linear_solver'] = "umfpack"
     prm['newton_solver']['linear_solver'] = "mumps"
 
@@ -190,7 +190,21 @@ def Navier_Stokes_LDC(u_top, nu_0, nu_1, nx):
     for i_coords in range(x_64.shape[0]):
         p_array_base[i_coords] = p(x_64[i_coords][0],0)
 
-    return u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base
+
+    ######################
+    p_field = np.zeros(x_64.shape[0]**2)
+    u_x_field = np.zeros(x_64.shape[0]**2)
+    u_y_field = np.zeros(x_64.shape[0]**2)
+
+    for i_x in range(x_64.shape[0]):
+        for i_y in range(x_64.shape[0]):
+            p_field[i_x*x_64.shape[0]+i_y] = p(x_64[i_x][0],x_64[i_y][0])
+            u_x_field[i_x*x_64.shape[0]+i_y] = u(x_64[i_x][0],x_64[i_y][0])[0]
+            u_y_field[i_x*x_64.shape[0]+i_y] = u(x_64[i_x][0],x_64[i_y][0])[1]
+
+    ######################
+
+    return u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base, p_field, u_x_field, u_y_field
 
     ## for Saby
     #return u_coords_array, u_x_array, u_y_array, u_mag #, p_array

@@ -64,10 +64,10 @@ c6 = [0.3010, 0.7450, 0.9330];
 % use the test to tune r
 % line to set bounds of search
 % random search to construct response surface with pce. 
-point_test = 0; 
+point_test = 1; 
 line_search = 0; % 1 for nu, 2 for u
 grid_search = 0; % 
-random_search = 1; % ie use PCE
+random_search = 0; % ie use PCE
 
 nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
 
@@ -214,10 +214,10 @@ if point_test == 1
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.7263, 0.2737, 0.2737);
 %     [err_low*100, error_bound*100, err_bi*100]
 
-%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0, 0);
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0, 0);
 
     
-    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, -0.1, 0.1);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, -0.1, 0.1);
 
     % u mid best
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.5579, 0.2737, 0.2737);
