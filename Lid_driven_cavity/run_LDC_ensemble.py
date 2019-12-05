@@ -91,9 +91,9 @@ for i in range(200): #200
 
 # scipy.io.savemat('./u_meshes/u_matrix.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4})
 
-scipy.io.savemat('./u_meshes/u_matrix.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
+# scipy.io.savemat('./u_meshes/u_matrix.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
 
-# scipy.io.savemat('./u_meshes/u_matrix_low.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
+scipy.io.savemat('./u_meshes/u_matrix_low_1.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
 
 end = time.time()
 print(end-start)
