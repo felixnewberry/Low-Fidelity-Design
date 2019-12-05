@@ -216,7 +216,7 @@ if point_test == 1
 
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0, 0);
 
-    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0, -0.5);
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0, 0);
 
 
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, -0.1, 0.1);

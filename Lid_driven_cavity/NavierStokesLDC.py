@@ -64,19 +64,19 @@ def Navier_Stokes_LDC(u_top, nu_0, nu_1, nx):
     x[:] = 0.5*(np.cos(np.pi*(x-1) / 2) + 1)
 
     # nu varies linearly from nu_0 to nu_1
-    # nu = Expression('nu_0 + (nu_1-nu_0)*x[1]', nu_1= nu_1, nu_0=nu_0, degree=1)
+    nu = Expression('nu_0 + (nu_1-nu_0)*x[1]', nu_1= nu_1, nu_0=nu_0, degree=1)
 
     # nu sigmoid depression centered at vortex.
     # vortex center is 0.6215, 0.7357
     # sigmoid that is 1 at origin and 0 at about -0.75 is defined as:
     # nu_new = (1+s)*nu_old where s = 1/(1+exp(-(15x+5))) where x is distance from vortex.
 
-    sig_tight = 10;
-    sig_center = 0.5;
-    vort_x = 0.6215;
-    vort_y = 0.7357;
-
-    nu = Expression('nu_0*(1+nu_1/(1+exp(sig_tight*((sqrt(pow(x[0]-vort_x,2)+pow(x[1]-vort_y,2)))-sig_center))))', nu_0=nu_0,nu_1=nu_1,sig_tight=sig_tight,vort_x=vort_x, vort_y=vort_y, sig_center=sig_center, degree=2)
+    # sig_tight = 10;
+    # sig_center = 0.5;
+    # vort_x = 0.6215;
+    # vort_y = 0.7357;
+    #
+    # nu = Expression('nu_0*(1+nu_1/(1+exp(sig_tight*((sqrt(pow(x[0]-vort_x,2)+pow(x[1]-vort_y,2)))-sig_center))))', nu_0=nu_0,nu_1=nu_1,sig_tight=sig_tight,vort_x=vort_x, vort_y=vort_y, sig_center=sig_center, degree=2)
 
     V1 = VectorElement("Lagrange",mesh.ufl_cell(),2)
     P1 = FiniteElement("Lagrange",mesh.ufl_cell(),1)
