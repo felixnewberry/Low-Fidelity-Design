@@ -75,7 +75,11 @@ for i in range(200): #200
     #
     #u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base = Navier_Stokes_LDC(u_lid, nu_0, nu_1, nx)
 
-    u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base, p_field, u_x_field, u_y_field = Navier_Stokes_LDC(u_lid, nu_0, nu_1, nx)
+    # linearly varying nu
+    # u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base, p_field, u_x_field, u_y_field = Navier_Stokes_LDC(u_lid, nu_0, nu_1, nx)
+
+    # sigmoid nu
+    u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base, p_field, u_x_field, u_y_field = Navier_Stokes_LDC(u_lid, nu_0, delta_nu_1, nx)
 
     u_matrix_0[i,:] = u_y_array
     u_matrix_1[i,:] = u_x_array
@@ -91,9 +95,9 @@ for i in range(200): #200
 
 # scipy.io.savemat('./u_meshes/u_matrix.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4})
 
-# scipy.io.savemat('./u_meshes/u_matrix.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
+scipy.io.savemat('./u_meshes/u_matrix.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
 
-scipy.io.savemat('./u_meshes/u_matrix_low_1.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
+scipy.io.savemat('./u_meshes/u_matrix_low_2.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
 
 end = time.time()
 print(end-start)
