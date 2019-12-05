@@ -6,6 +6,10 @@ clc
 
 save_on = 1; 
 
+% save_folder = 'plots_qoi';
+% save_folder = 'plots_qoi_nump5';
+save_folder = 'plots_qoi_nums';
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,7 +195,9 @@ p_field_h = u_matrix_5;
 u_field_x_h = u_matrix_6; 
 u_field_y_h = u_matrix_7; 
 
-load('u_meshes/u_matrix_low.mat')
+% load('u_meshes/u_matrix_low.mat')
+load('u_meshes/u_matrix_low_2.mat')
+
 
 p_field_l = u_matrix_5; 
 u_field_x_l = u_matrix_6; 
@@ -284,7 +290,7 @@ colorbar
 title('$U_H$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_U_mag','png')
+    saveas(gcf,strcat(save_folder,'/LDC_U_mag'),'png')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -333,7 +339,7 @@ colorbar
 title('$u_H$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_u_field','png')
+    saveas(gcf,strcat(save_folder,'/LDC_u_field'),'png')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -381,7 +387,7 @@ colorbar
 title('$v_H$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_v_field','png')
+    saveas(gcf,strcat(save_folder,'/LDC_v_field'),'png')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -431,7 +437,7 @@ colorbar
 title('$P_H$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_P','png')
+    saveas(gcf,strcat(save_folder,'/LDC_P'),'png')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -523,7 +529,7 @@ set(gcf,'Position',size_2)
 title('u absolute error $\sigma$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_u_error','png')
+    saveas(gcf,strcat(save_folder,'/LDC_u_error'),'png')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -572,7 +578,7 @@ title('v absolute error $\sigma$','Interpreter', 'latex')
 set(gcf,'Position',size_2)
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_v_error','png')
+    saveas(gcf,strcat(save_folder,'/LDC_v_error'),'png')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -623,7 +629,7 @@ title('P absolute error $\sigma$','Interpreter', 'latex')
 
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_P_error_trun','png')
+    saveas(gcf,strcat(save_folder,'/LDC_P_error_trun'),'png')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -677,7 +683,7 @@ colorbar
 title('$\omega_H$ ','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_vort','png')
+    saveas(gcf,strcat(save_folder,'/LDC_vort'),'png')
 end
 
 % figure
@@ -751,5 +757,5 @@ title('$\omega$ absolute error $\sigma$','Interpreter', 'latex')
 set(gcf,'Position',size_2)
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_vort_error','png')
+    saveas(gcf,strcat(save_folder,'/LDC_vort_error'),'png')
 end
