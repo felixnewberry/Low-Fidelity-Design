@@ -4,7 +4,7 @@ clear all
 close all
 clc
 
-save_on = 1; 
+save_on = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -445,9 +445,7 @@ error_u = u_field_x_l - u_field_x_h;
 error_v = u_field_y_l - u_field_y_h; 
 error_p = p_field_l - p_field_h; 
 
-vort_h = curl(u_field_x_h,u_field_y_h);
-vort_l = curl(u_field_x_l,u_field_y_l);
-error_vort = vort_l- vort_h; 
+error_vort = curl(u_field_x_l,u_field_y_l)-curl(u_field_x_h,u_field_y_h);
 
 % mean and sd of 200 samples
 e_mat_u_mean = reshape(mean(error_u),nx+1,nx+1); 
@@ -460,15 +458,12 @@ e_mat_p_sd = reshape(std(error_p),nx+1,nx+1);
 
 % Plot mean vorticity
 
-% % compute curl and angular velocity from mean velocity
-% [CURLZ_h, CAV_h] = curl(u_mat_h,v_mat_h);
-% [CURLZ_l, CAV_l] = curl(u_mat_l,v_mat_l);
+% compute curl and angular velocity 
+[CURLZ_h, CAV_h] = curl(u_mat_h,v_mat_h);
+[CURLZ_l, CAV_l] = curl(u_mat_l,v_mat_l);
 
 e_mat_vort_mean = reshape(mean(error_vort),nx+1,nx+1); 
 e_mat_vort_sd = reshape(std(error_vort),nx+1,nx+1); 
-
-vort_mean_h = reshape(mean(vort_h),nx+1,nx+1);
-vort_mean_l = reshape(mean(vort_l),nx+1,nx+1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% u velocity Error
@@ -632,36 +627,13 @@ end
 
 y_lim_index=65; 
 
-caxis_vec = [-0.015, 0.015];
-level_vec = [100*caxis_vec(1),linspace(caxis_vec(1), caxis_vec(2),10)];
-
-
 % make these contour plots consistent. 
 figure
 subplot(1,2,1)
-[c,h]=contourf(x,y(1:y_lim_index,:),vort_mean_l(1:y_lim_index,:),'LevelList',level_vec);
+[c,h]=contourf(x,y(1:y_lim_index,:),CURLZ_h(1:y_lim_index,:),'LevelList',[-10,linspace(-0.1031, 0.0800,10),10]);
 set(h, 'edgecolor','none');
 hold on
-caxis(caxis_vec)
-plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
-xlabel('x','interpreter', 'latex', 'fontsize', FS)
-ylabel('y','interpreter', 'latex', 'fontsize', FS)
-axis tight
-% xlim([0,1]); ylim([0,1]);
-new_labels = linspace(0, 1, 3);
-set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-set(gcf, 'Position', size_2)
-pbaspect([1 1 1])
-colorbar 
-title('$\omega_L$ ','Interpreter', 'latex')
-
-
-subplot(1,2,2)
-[c,h]=contourf(x,y(1:y_lim_index,:),vort_mean_h(1:y_lim_index,:),'LevelList',level_vec); 
-set(h, 'edgecolor','none');
-hold on
-caxis(caxis_vec)
+caxis([-0.1031    0.0800])
 % quiver(x(1:step_quiv:end),y(1:step_quiv:end),u_mat_h(1:step_quiv:end,1:...
 %     step_quiv:end), v_mat_h(1:step_quiv:end,1:step_quiv:end),'Color',c3)
 plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
@@ -674,82 +646,72 @@ set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 pbaspect([1 1 1])
 colorbar 
-title('$\omega_H$ ','Interpreter', 'latex')
-
-if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_vort','png')
-end
-
-% figure
-% [c,h]=contourf(x,y(1:y_lim_index,:),CURLZ_l(1:y_lim_index,:)-CURLZ_h(1:y_lim_index,:));
-% set(h, 'edgecolor','none');
-% hold on
-% % caxis([-0.1031    0.0800])
-% % quiver(x(1:step_quiv:end),y(1:step_quiv:end),u_mat_h(1:step_quiv:end,1:...
-% %     step_quiv:end), v_mat_h(1:step_quiv:end,1:step_quiv:end),'Color',c3)
-% plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
-% xlabel('x','interpreter', 'latex', 'fontsize', FS)
-% ylabel('y','interpreter', 'latex', 'fontsize', FS)
-% axis tight
-% % xlim([0,1]); ylim([0,1]);
-% new_labels = linspace(0, 1, 3);
-% set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
-% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% pbaspect([1 1 1])
-% colorbar 
-% title('$\omega_H$ ','Interpreter', 'latex')
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Vorticity Error
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-y_lim_index = 65; 
-
-caxis_vec_mean = [-0.015, 0.015];
-level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
-
-caxis_vec_sd = [0, 11e-3];
-level_vec_sd = linspace(caxis_vec_sd(1), caxis_vec_sd(2),11);
-
-
-figure
-subplot(1,2,1)
-[c,h]=contourf(x,y(1:y_lim_index),e_mat_vort_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
-set(h, 'edgecolor','none');
-caxis(caxis_vec_mean)
-hold on
-plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
-xlabel('x','interpreter', 'latex', 'fontsize', FS)
-ylabel('y','interpreter', 'latex', 'fontsize', FS)
-axis tight
-xlim([0,1]); ylim([0,1]);
-new_labels = linspace(0, 1, 3);
-set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% pbaspect([1 1 1])
-colorbar
-title('$\omega$ absolute error $\mu$','Interpreter', 'latex')
+title('vorticity absolute error $\mu$','Interpreter', 'latex')
 
 subplot(1,2,2)
-[c,h]=contourf(x,y(1:y_lim_index),e_mat_vort_sd(1:y_lim_index,:),'LevelList',level_vec_sd);
+[c,h]=contourf(x,y(1:y_lim_index,:),CURLZ_l(1:y_lim_index,:),'LevelList',[-10,linspace(-0.1031, 0.0800,10),10]);
 set(h, 'edgecolor','none');
-caxis(caxis_vec_sd)
 hold on
+caxis([-0.1031    0.0800])
+% quiver(x(1:step_quiv:end),y(1:step_quiv:end),u_mat_h(1:step_quiv:end,1:...
+%     step_quiv:end), v_mat_h(1:step_quiv:end,1:step_quiv:end),'Color',c3)
 plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
 xlabel('x','interpreter', 'latex', 'fontsize', FS)
 ylabel('y','interpreter', 'latex', 'fontsize', FS)
 axis tight
-xlim([0,1]); ylim([0,1]);
+% xlim([0,1]); ylim([0,1]);
 new_labels = linspace(0, 1, 3);
 set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf, 'Position', size_2)
+pbaspect([1 1 1])
+colorbar 
+title('vorticity absolute error $\sigma$','Interpreter', 'latex')
+
+
+if save_on ==1
+    saveas(gcf,'plots_qoi/LDC_vort_l','png')
+end
+
+figure
+subplot(1,2,1)
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_p_mean(1:y_lim_index,:));
+set(h, 'edgecolor','none');
+% caxis([p_min, p_max])
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf, 'Position', size_square)
 % pbaspect([1 1 1])
 colorbar
-title('$\omega$ absolute error $\sigma$','Interpreter', 'latex')
+title('P $\mu$','Interpreter', 'latex')
+
+subplot(1,2,2)
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_p_sd(1:y_lim_index,:));
+set(h, 'edgecolor','none');
+% caxis([p_min, p_max])
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf, 'Position', size_square)
+% pbaspect([1 1 1])
+colorbar
+title('P $\sigma$','Interpreter', 'latex')
 
 set(gcf,'Position',size_2)
 
 if save_on ==1
-    saveas(gcf,'plots_qoi/LDC_vort_error','png')
+    saveas(gcf,'plots_qoi/LDC_P_error_trun','png')
 end
