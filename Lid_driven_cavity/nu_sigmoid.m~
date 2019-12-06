@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-save_on = 1;  
+save_on = 0;  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -97,20 +97,14 @@ nu_1 = nu_orig*(1+delta_nu_1);
 
 nu_mat_2 = zeros(length(x_vec), length(x_vec)); 
 
-x_vec = linspace(0,1,100);
-s_tight = 30; 
-s_center = 0.25; 
-
-s_1 = nu_0+(nu_1-nu_0)./(1+exp(s_tight*(x_vec-s_center)));
-
-% vort = [0.6215,0.7357]; 
-vort =  [0.6684, 0.7357];
+s_tight = 10; 
+s_center = 0.5; 
+vort = [0.6215,0.7357]; 
 
 for i_x = 1:length(x_vec)
     for i_y = 1:length(x_vec)
         d_1 = sqrt((x_vec(i_x) - vort(1))^2+(x_vec(i_y) - vort(2))^2);
-        
-        nu_mat_2(i_x,i_y) = nu_0+(nu_1-nu_0)./(1+exp(s_tight*(d_1-s_center)));
+        nu_mat_2(i_x,i_y) = nu_0*(1+delta_nu_1/(1+exp(s_tight*(d_1-s_center))));
     end
 end
 
@@ -126,7 +120,7 @@ set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 pbaspect([1 1 1])
 colorbar 
-title('Sigmoid $\nu$','Interpreter', 'latex')
+title('Linear $\nu$','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots_nu/nu_sigmoid_cont','png')
@@ -135,9 +129,10 @@ end
 % I have nu_0 and nu_1 now do a sigmoid from 1 to the other. Magnitude is
 % difference. 
 
-x_vec = linspace(0,1,100);
-s_tight = 30; 
-s_center = 0.25; 
+x_vec = 0:0.01:1;
+s_tight = 10; 
+s_center = 0.5; 
+s_max = -0.5; 
 
 s_1 = nu_0+(nu_1-nu_0)./(1+exp(s_tight*(x_vec-s_center)));
 

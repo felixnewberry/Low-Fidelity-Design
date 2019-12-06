@@ -4,11 +4,13 @@ clear all
 close all
 clc
 
-save_on = 1; 
+save_on = 0; 
 
 % save_folder = 'plots_qoi';
 % save_folder = 'plots_qoi_nump5';
-save_folder = 'plots_qoi_nums';
+% save_folder = 'plots_qoi_nums';
+save_folder = 'plots_qoi_nups';
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -196,7 +198,7 @@ u_field_x_h = u_matrix_6;
 u_field_y_h = u_matrix_7; 
 
 % load('u_meshes/u_matrix_low.mat')
-load('u_meshes/u_matrix_low_2.mat')
+load('u_meshes/u_matrix_low_5.mat')
 
 
 p_field_l = u_matrix_5; 
@@ -759,3 +761,269 @@ set(gcf,'Position',size_2)
 if save_on ==1
     saveas(gcf,strcat(save_folder,'/LDC_vort_error'),'png')
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Plot to illustrate general effects for u,v and nu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+vortex_h = [0.6215, 0.7357]; 
+
+p_center = [0.6684, 0.7357]; 
+
+% x p is 0.7138, y is 0.7357. 
+% works for v but not so well for u 
+% or 0.7138 for both
+
+
+
+load('u_meshes/u_matrix_low_nom.mat') % nominal 
+
+p_field_l = u_matrix_5; 
+u_field_x_l = u_matrix_6; 
+u_field_y_l = u_matrix_7; 
+
+% l - h absolute error
+error_u = u_field_x_l - u_field_x_h; 
+error_v = u_field_y_l - u_field_y_h; 
+error_p = p_field_l - p_field_h; 
+
+% mean and sd of 200 samples
+e_mat_u_mean = reshape(mean(error_u),nx+1,nx+1); 
+e_mat_v_mean = reshape(mean(error_v),nx+1,nx+1); 
+e_mat_p_mean = reshape(mean(error_p),nx+1,nx+1); 
+
+figure
+
+subplot(3,3,1)
+caxis_vec_mean = [-0.1, 0.1];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_u_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+plot(p_center(1),p_center(2),'x','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$u$ nominal $\nu$','Interpreter', 'latex')
+
+
+caxis_vec_mean = [-0.2, 0.2];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+
+subplot(3,3,2)
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_v_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+plot(p_center(1),p_center(2),'x','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$v$ nominal $\nu$','Interpreter', 'latex')
+
+subplot(3,3,3)
+caxis_vec_mean = [-0.1, 0.1];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_p_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+plot(p_center(1),p_center(2),'x','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$P$ nominal $\nu$','Interpreter', 'latex')
+
+% - 65 and + 100 % nu 
+% Then try pointwise Gaussian
+
+
+load('u_meshes/u_matrix_low_mp65.mat') % - 65 %  
+
+p_field_l = u_matrix_5; 
+u_field_x_l = u_matrix_6; 
+u_field_y_l = u_matrix_7; 
+
+% l - h absolute error
+error_u = u_field_x_l - u_field_x_h; 
+error_v = u_field_y_l - u_field_y_h; 
+error_p = p_field_l - p_field_h; 
+
+% mean and sd of 200 samples
+e_mat_u_mean = reshape(mean(error_u),nx+1,nx+1); 
+e_mat_v_mean = reshape(mean(error_v),nx+1,nx+1); 
+e_mat_p_mean = reshape(mean(error_p),nx+1,nx+1); 
+
+
+subplot(3,3,4)
+
+caxis_vec_mean = [-0.1, 0.1];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_u_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$u$ $\nu -65 \%$','Interpreter', 'latex')
+
+
+caxis_vec_mean = [-0.2, 0.2];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+
+subplot(3,3,5)
+
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_v_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$v$ $\nu -65 \%$','Interpreter', 'latex')
+
+subplot(3,3,6)
+caxis_vec_mean = [-0.1, 0.1];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_p_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$P$ $\nu-65 \%$','Interpreter', 'latex')
+
+
+load('u_meshes/u_matrix_low_p1.mat') % + 100 %  
+
+p_field_l = u_matrix_5; 
+u_field_x_l = u_matrix_6; 
+u_field_y_l = u_matrix_7; 
+
+% l - h absolute error
+error_u = u_field_x_l - u_field_x_h; 
+error_v = u_field_y_l - u_field_y_h; 
+error_p = p_field_l - p_field_h; 
+
+% mean and sd of 200 samples
+e_mat_u_mean = reshape(mean(error_u),nx+1,nx+1); 
+e_mat_v_mean = reshape(mean(error_v),nx+1,nx+1); 
+e_mat_p_mean = reshape(mean(error_p),nx+1,nx+1); 
+
+subplot(3,3,7)
+
+caxis_vec_mean = [-0.1, 0.1];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_u_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$u$ $\nu+100 \%$','Interpreter', 'latex')
+
+
+caxis_vec_mean = [-0.2, 0.2];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+
+subplot(3,3,8)
+
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_v_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$v$ $\nu+100 \%$','Interpreter', 'latex')
+
+subplot(3,3,9)
+caxis_vec_mean = [-0.1, 0.1];
+level_vec_mean = [100*caxis_vec_mean(1),linspace(caxis_vec_mean(1), caxis_vec_mean(2),10)];
+
+[c,h]=contourf(x,y(1:y_lim_index),e_mat_p_mean(1:y_lim_index,:),'LevelList',level_vec_mean);
+set(h, 'edgecolor','none');
+caxis(caxis_vec_mean)
+hold on
+plot(vortex_h(1),vortex_h(2),'o','Color',c2,'MarkerSize',MS,'LineWidth',LW)
+xlabel('x','interpreter', 'latex', 'fontsize', FS)
+ylabel('y','interpreter', 'latex', 'fontsize', FS)
+axis tight
+xlim([0,1]); ylim([0,1]);
+new_labels = linspace(0, 1, 3);
+set(gca,'XTick', new_labels); set(gca,'YTick', new_labels);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% pbaspect([1 1 1])
+colorbar
+title('$P$ $\nu+100 \%$','Interpreter', 'latex')
