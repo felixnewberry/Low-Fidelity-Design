@@ -12,30 +12,6 @@ close all
 % save the correct data and put everything in percent. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Plot settings
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-LW = 2;     % Line width
-MS = 8;     % Marker Size
-FS_leg = 16; % Font size legend
-
-
-size_1 = [0,0,670,515]; 
-size_2 = [0,0,1340,515]; 
-
-FS = 28;    % Font size axis
-FS_axis = 18; 
-LW_axis = 1; 
-
-% Colors
-c1 = [0, 0.4470, 0.7410];
-c2 = [0.8500, 0.3250, 0.0980];
-c3 = [0.9290, 0.6940, 0.1250]; 
-c4 = [0.4940, 0.1840, 0.5560];
-c5 = [0.4660, 0.6740, 0.1880]; 
-c6 = [0.3010, 0.7450, 0.9330]; 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Choose optimization method and mode
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -64,9 +40,9 @@ c6 = [0.3010, 0.7450, 0.9330];
 % use the test to tune r
 % line to set bounds of search
 % random search to construct response surface with pce. 
-point_test = 1; 
+point_test = 0; 
 line_search = 0; % 1 for nu, 2 for u
-grid_search = 0; % 
+grid_search = 1; % 
 random_search = 0; % ie use PCE
 
 nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
@@ -446,7 +422,7 @@ if grid_search == 1
     delta_nu_vec = linspace(nu_lim(1),nu_lim(2),n_grid); 
     delta_u_vec = linspace(u_lim(1),u_lim(2),n_grid); 
     
-    delta_u_vec = zeros(1, length(delta_nu_vec)); 
+%     delta_u_vec = zeros(1, length(delta_nu_vec)); 
     delta_nu_vec_0 = delta_nu_vec; 
     delta_nu_vec_1 = delta_nu_vec; 
     
@@ -455,18 +431,21 @@ if grid_search == 1
     
 %     for i_nu = 1:length(delta_nu_vec)
 %         for i_u = 1:length(delta_u_vec)
-            
+    run_count = 1; 
+    
     for i_nu = 1:length(delta_nu_vec_0)
-        for i_u = 1:length(delta_nu_vec_1)
-            
+%         for i_u = 1:length(delta_nu_vec_1)
+        for i_u = 1:length(delta_u_vec)
+
 %             delta_u_vec(i_u)
 %             delta_nu_vec(i_nu)
-   
+    
             
-            [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,delta_u_vec(i_u),delta_nu_vec_0(i_nu),delta_nu_vec_0(i_u));
+            [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r,delta_u_vec(i_u),delta_nu_vec_0(i_nu),delta_nu_vec_0(i_u),run_count);
             error_bound_mat(:,i_nu, i_u) = error_bound; 
             error_Bi_mat(:,i_nu, i_u) = err_bi; 
             
+            run_count = run_count+1; 
             1; 
             
         end 

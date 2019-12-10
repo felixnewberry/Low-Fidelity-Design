@@ -39,16 +39,16 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % type of search 
-line_search = 0; 
+line_search = 1; 
 grid_search = 0; % 40x40 - 1600 samples
 random_search = 0; % pce error is about 8 % - stick with grid?
-plot_tip = 1; 
+plot_tip = 0; 
 
 % should I find a less expensive way to evauluate ? 
 
 % choose parameters to vary (mode 1-4 for line_search, 5 for grid and
 % random search. 
-mode = 5; 
+mode = 4; 
 % 0 is w
 % 1 is h1
 % 2 is h2
@@ -124,6 +124,8 @@ if line_search == 1
 
 delta_vec = -0.95:0.1:0.95;
 
+
+
 if mode == 0
     plot_label = '$ \Delta w [\%]$';
     save_label = 'line_w_pm95'; 
@@ -145,6 +147,8 @@ elseif mode == 4
     save_label = 'line_h1h2_p2m1'; 
     delta_vec = -1:0.075:2;
 end
+
+delta_vec = 0; 
 
 error_bound_mat = zeros(length(delta_vec),1); 
 error_Bi_mat = zeros(length(delta_vec),1);
