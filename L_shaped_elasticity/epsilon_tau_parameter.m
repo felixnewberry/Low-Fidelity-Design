@@ -39,7 +39,7 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%% Choose optimization method
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-check_data = 0; % update with 0 pertubations to bound. 
+check_data = 1; % update with 0 pertubations to bound. 
 
 line_search = 0; 
 
@@ -77,7 +77,7 @@ mode_qoi = 2;
 % need to fix up with deltas. 
 % grid_search = 0; % 1515 s when 40x40 grid with 50 repetitions of the bound estimate
 
-random_search = 1; % pce error is about 8 % - stick with grid?
+random_search = 0; % pce error is about 8 % - stick with grid?
 % error improves if I take average of 50 bounds. 
 % maybe 5 mintutes? 
 
@@ -147,7 +147,7 @@ nsim = 200;
 
 
 %%% test error bound
-X = 0; 
+X = [0; 0; 0]; 
 
 % Find Uh Uc and bound 
 % [error_bound,err_Ahat, Uc, Uf] = my_L_low_high(X,nsim, n, r,n_bound_reps, mode_delta, mode_qoi); 

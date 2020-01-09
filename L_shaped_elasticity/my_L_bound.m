@@ -31,7 +31,7 @@ function [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r,...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Input: Define the grid levels
-coarse_level = 1; % 1-4
+coarse_level = 1; % 1-4my_L_bound
 
 % Number of samples
 % nsim = 800;
