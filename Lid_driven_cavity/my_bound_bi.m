@@ -1,6 +1,8 @@
 function [error_bound,err_Bi, P_s] = my_bound_bi(n,r, A, B, N)
 % Calculate bi-fidelity and error bound for set of low-fidelity data
 
+1; 
+
 rand_sample = 1:n; 
 B_R = B(:,rand_sample);
 A_R = A(:,rand_sample);

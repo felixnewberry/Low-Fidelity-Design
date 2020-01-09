@@ -32,30 +32,63 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%% Load data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-n_samples = 100; 
+% These samples suck... 
 
-Uc_nom = load('Beam_data/Uc.mat', 'Uc');
-Uc_nom = Uc_nom.Uc(:,1:n_samples);
-load('Beam_data/Uf.mat')
-Uf = Uf(:,1:n_samples); 
+n_samples = 200; 
 
-Uc_opt = load('Beam_design/Uc_opt.mat');
-Uc_opt = Uc_opt.Uc;
+load('L_data/Uf_stress')
+
+
+load('L_data/Uc_stress')
+Uc_nom = Uc; 
+load('L_data/Uc_stress_opt')
+Uc_opt = Uc; 
+
+
+% load Ub 
+load('L_data/Ub_stress')
+Ub_nom = U; 
+load('L_data/Ub_stress_opt')
+Ub_opt = U; 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Histogram
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+error_b_nom = vecnorm(Ub_nom-Uf)./vecnorm(Uf);
+error_b_opt = vecnorm(Ub_opt-Uf)./vecnorm(Uf);
+
+n_hist = 20; 
+figure
+hold on
+h1 = histogram(abs(100*error_b_nom),n_hist,'FaceColor',c1);
+h2 = histogram(abs(100*error_b_opt),n_hist,'FaceColor',c2);
+hold off
+legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+xlabel('Relative Error $[\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Frequency','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gcf,'Position',size_1)
+title('U Mid','Interpreter','latex')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Apply transformations + pre-processing. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-r = 1; 
-n = r+2; 
+r = 10; % or 6
+n = r+10; 
 rand_sample = 1:n; 
-N = 100; 
+N = n_samples; 
 
 Uc = Uc_nom; 
 
 % % Normalize matrices for bi-fidelity error bound
 B = Uc/norm(Uc,'fro');
 A = Uf/norm(Uf,'fro');
+
+1; 
+
 [error_bound_nom,err_Bi_nom, P_s_nom] = my_bound_bi(n,r, A, B, N);
 
 B_R = B(:,rand_sample);
@@ -65,8 +98,20 @@ A_R = A(:,rand_sample);
 Phi = A_R* pinv(B_R); 
 B = Phi*B; 
 
+B = B/norm(B,'fro'); %? Should I take this step? Probably. 
+
+1; 
+% seems to break things... I should run an L shaped sim and save the data
+% for further exploration. Plot these errors! The histograms! 
+
 [error_bound_nom2,err_Bi_nom2, P_s_nom2] = my_bound_bi(n,r, A, B, N);
 
+% why is the bound no longer true? What assumptions are being broken? 
+% sb after 20 goes to zero. Possibly if things were interpolated this would
+% work... 
+% Must be breaking some assumption here. What could it be? I've messed with
+% B
+error_B = norm(A - B)/norm(A); % significant error - about 7 % ... 
 
 Uc = Uc_opt; 
 % % Normalize matrices for bi-fidelity error bound

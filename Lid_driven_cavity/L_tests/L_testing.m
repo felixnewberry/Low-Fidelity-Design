@@ -186,6 +186,7 @@ rand_sample = 1:n;
 
 Uf = Uf_u; 
 
+n_samples = 200; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set Uc and Uf
@@ -195,7 +196,7 @@ Uc = Uc_nom_u;
 B = Uc/norm(Uc,'fro');
 A = Uf/norm(Uf,'fro');
 
-[error_bound_u_nom,err_Bi_u_nom, P_s_u_nom] = my_bound_bi(n,r, A, B);
+[error_bound_u_nom,err_Bi_u_nom, P_s_u_nom] = my_bound_bi(n,r, A, B, n_samples);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set Uc and Uf
@@ -205,7 +206,7 @@ Uc = Uc_opt_u;
 B = Uc/norm(Uc,'fro');
 A = Uf/norm(Uf,'fro');
 
-[error_bound_u_opt,err_Bi_u_opt, P_s_u_opt] = my_bound_bi(n,r, A, B);
+[error_bound_u_opt,err_Bi_u_opt, P_s_u_opt] = my_bound_bi(n,r, A, B, n_samples);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -271,7 +272,7 @@ Phi = A_R* pinv(B_R);
 % Tansform L 
 
 B = Phi*B; 
-[error_bound_u_nom2,err_Bi_u_nom2, P_s_u_nom2] = my_bound_bi(n,r, A, B);
+[error_bound_u_nom2,err_Bi_u_nom2, P_s_u_nom2] = my_bound_bi(n,r, A, B, n_samples);
 
 % Employing pseudoinverese. 
 % Purpose is effectively to learn a transform to map L to be much more
@@ -297,7 +298,7 @@ Phi = A_R* pinv(B_R);
 
 B = Phi*B; 
 
-[error_bound_u_opt2,err_Bi_u_opt2, P_s_u_opt2] = my_bound_bi(n,r, A, B);
+[error_bound_u_opt2,err_Bi_u_opt2, P_s_u_opt2] = my_bound_bi(n,r, A, B, n_samples);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -332,7 +333,7 @@ Uf = Uf_pb;
 B = Uc/norm(Uc,'fro');
 A = Uf/norm(Uf,'fro');
 
-[error_bound_P_nom,err_Bi_P_nom, P_s_P_nom] = my_bound_bi(n,r, A, B);
+[error_bound_P_nom,err_Bi_P_nom, P_s_P_nom] = my_bound_bi(n,r, A, B, n_samples);
 
 B_R = B(:,rand_sample);
 A_R = A(:,rand_sample);
@@ -346,7 +347,7 @@ B = Phi*B;
 % Tansform L 
 
 B = Phi*B; 
-[error_bound_P_nom2,err_Bi_P_nom2, P_s_P_nom2] = my_bound_bi(n,r, A, B);
+[error_bound_P_nom2,err_Bi_P_nom2, P_s_P_nom2] = my_bound_bi(n,r, A, B, n_samples);
 
 % Set Uc and Uf
 Uc = Uc_opt_pb; 
@@ -356,7 +357,7 @@ Uf = Uf_pb;
 B = Uc/norm(Uc,'fro');
 A = Uf/norm(Uf,'fro');
 
-[error_bound_P_opt,err_Bi_P_opt, P_s_P_opt] = my_bound_bi(n,r, A, B);
+[error_bound_P_opt,err_Bi_P_opt, P_s_P_opt] = my_bound_bi(n,r, A, B, n_samples);
 
 B_R = B(:,rand_sample);
 A_R = A(:,rand_sample);
@@ -369,7 +370,7 @@ Phi = A_R* pinv(B_R);
 % Tansform L 
 
 B = Phi*B; 
-[error_bound_P_opt2,err_Bi_P_opt2, P_s_P_opt2] = my_bound_bi(n,r, A, B);
+[error_bound_P_opt2,err_Bi_P_opt2, P_s_P_opt2] = my_bound_bi(n,r, A, B, n_samples);
 
 res_mat_P =  [error_bound_P_nom, error_bound_P_nom2,error_bound_P_opt,...
     error_bound_P_opt2; ...
