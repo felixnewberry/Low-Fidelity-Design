@@ -87,6 +87,7 @@ for i_qoi = 1:length(Qoi_vec)
     Uc = Uc_all(:,:,i_qoi)'; 
     Uf = Uf_all(:,:,i_qoi)'; 
     
+  
     1; 
     
     % % Normalize matrices for bi-fidelity error bound
@@ -95,6 +96,12 @@ for i_qoi = 1:length(Qoi_vec)
 
     B_R = B(:,rand_sample);
     A_R = A(:,rand_sample);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%% L Transformation
+    Phi = A_R* pinv(B_R); 
+    B = Phi*B; 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % Obtain column skeleton of P
     [P_s,ix] = matrixIDvR(B,r);

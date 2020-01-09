@@ -29,7 +29,7 @@ content = loadmat('./LDC_data/u_nu_vec_2.mat')
 u_lid_vec = content['u_top_vec']
 nu_vec = content['nu_vec']
 
-run_count = content['run_count']
+
 
 # content = loadmat('./sample_i.mat')
 # sample_i = int(content['sample_i'])
@@ -39,6 +39,8 @@ nx = int(content['nx'])
 delta_u = float(content['delta_u'])
 delta_nu_0 = float(content['delta_nu_0'])
 delta_nu_1 = float(content['delta_nu_1'])
+
+run_count = content['run_count']
 #QoI = float(content['QoI'])
 
 ## TO obtain high-fidelity data:
