@@ -76,12 +76,8 @@ title('U Mid','Interpreter','latex')
 %%% Apply transformations + pre-processing. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% try differet r
 r = 10; % or 6
 n = r+10; 
-% r = 6; % or 6
-% n = r+2; 
-
 rand_sample = 1:n; 
 N = n_samples; 
 
@@ -104,7 +100,6 @@ B = Phi*B;
 
 B = B/norm(B,'fro'); %? Should I take this step? Probably. 
 
-B_2 = B; 
 1; 
 % seems to break things... I should run an L shaped sim and save the data
 % for further exploration. Plot these errors! The histograms! 
@@ -118,18 +113,6 @@ B_2 = B;
 % B
 error_B = norm(A - B)/norm(A); % significant error - about 7 % ... 
 
-% B was previously rank 41, and now it is rank n... This means that sb_n+1
-% is always 0... why was this not an issue for the other codes? 
-
-%Brief review of conditions in paper: 
-
-% With this method I interpolate too. Low fidelity goes from 41 to 465... 
-% is it better if I do this in advance? I could test this just with nominal
-% to see. 
-
-1; 
-
-% 
 Uc = Uc_opt; 
 % % Normalize matrices for bi-fidelity error bound
 B = Uc/norm(Uc,'fro');
@@ -148,8 +131,3 @@ res_mat =  [error_bound_nom, error_bound_nom2,error_bound_opt,...
     err_Bi_nom, err_Bi_nom2, err_Bi_opt, err_Bi_opt2]; 
 
 res_tab = array2table(res_mat,'VariableNames',{'Nom','Nom2', 'Opt', 'Opt2'}, 'RowNames',{'Bound','Bi'})
-
-% How is it possible for the bound to break?? 
-% Check conditions: 
-
-
