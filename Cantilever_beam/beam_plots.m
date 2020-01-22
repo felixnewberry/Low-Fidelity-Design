@@ -94,6 +94,7 @@ set(gcf,'Position',size_1)
 set(gcf,'Position',size_1)
 title('Line search $h_1 = h_2$','Interpreter','latex')
 
+
 if save_on ==1
     saveas(gcf,'Plots/beam_line_h1h2','epsc')
 end

@@ -131,3 +131,21 @@ res_mat =  [error_bound_nom, error_bound_nom2,error_bound_opt,...
     err_Bi_nom, err_Bi_nom2, err_Bi_opt, err_Bi_opt2]; 
 
 res_tab = array2table(res_mat,'VariableNames',{'Nom','Nom2', 'Opt', 'Opt2'}, 'RowNames',{'Bound','Bi'})
+
+
+% If I use interplated L
+load('L_data/Uc_stress_int')
+Uc = Uc_int; 
+
+B = Uc/norm(Uc,'fro');
+[error_bound_opt,err_Bi_opt, P_s_opt] = my_bound_bi(n,r, A, B, N);
+
+B_R = B(:,rand_sample);
+A_R = A(:,rand_sample);
+
+% Tansform L 
+Phi = A_R* pinv(B_R); 
+B = Phi*B; 
+[error_bound_opt3,err_Bi_opt3, P_s_opt2] = my_bound_bi(n,r, A, B, N);
+error_bound_opt3
+err_Bi_opt3

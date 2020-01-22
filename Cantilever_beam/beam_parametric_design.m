@@ -148,7 +148,7 @@ elseif mode == 4
     delta_vec = -1:0.075:2;
 end
 
-delta_vec = 0; 
+% delta_vec = 0; 
 
 error_bound_mat = zeros(length(delta_vec),1); 
 error_Bi_mat = zeros(length(delta_vec),1);
@@ -281,6 +281,10 @@ fprintf('Bi: %d \n',min_Bi);
 save('Beam_design/grid_search_N3','delta_t3_vec','delta_t1_vec','error_bound_mat', ...
     'error_Bi_mat','t3_bound', 't1_bound','t3_Bi','t1_Bi','min_bound',...
 'min_Bi_bound')
+
+% save('Beam_design/grid_search_L_transform','delta_t3_vec','delta_t1_vec','error_bound_mat', ...
+%     'error_Bi_mat','t3_bound', 't1_bound','t3_Bi','t1_Bi','min_bound',...
+% 'min_Bi_bound')
 
 figure
 hold on

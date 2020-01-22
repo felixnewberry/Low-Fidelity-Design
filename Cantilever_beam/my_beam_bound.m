@@ -118,6 +118,12 @@ A = Uf/norm(Uf,'fro');
 B_R = B(:,rand_sample);
 A_R = A(:,rand_sample);
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%% L Transformation
+% Phi = A_R* pinv(B_R); 
+% B = Phi*B; 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Obtain column skeleton of P
 [P_s,ix] = matrixIDvR(B,r);
 

@@ -444,24 +444,24 @@ load('LDC_design/grid_search_2.mat')
 
 error_bound_mat(error_bound_mat==0) = nan;
 
-% % Try: set regions close to failure to nan... 
-% nu_nom = 0.01;
-% u_nom = 1; 
-% 
-% Re = ((u_nom*(1+delta_u_vec))'*(1./(nu_nom*(1+delta_nu_vec))))';
-% Re_lim = 150; % 150 - P_base works, U_mid works less so. 
-% % 175, P_base fails, U_mid works better... 
-% % Have to decide how to proceed. 
-% 
-% % Metric is Re increases... mesh is constant... 
-% for i = 1:length(Re)
-%     for j = 1:length(Re)
-%         if Re(i,j) >= Re_lim 
-%             error_bound_mat(:,i,j) = nan; 
-%             error_Bi_mat(:,i,j) = nan; 
-%         end
-%     end
-% end
+% Try: set regions close to failure to nan... 
+nu_nom = 0.01;
+u_nom = 1; 
+
+Re = ((u_nom*(1+delta_u_vec))'*(1./(nu_nom*(1+delta_nu_vec))))';
+Re_lim = 150; % 150 - P_base works, U_mid works less so. 
+% 175, P_base fails, U_mid works better... 
+% Have to decide how to proceed. 
+
+% Metric is Re increases... mesh is constant... 
+for i = 1:length(Re)
+    for j = 1:length(Re)
+        if Re(i,j) >= Re_lim 
+            error_bound_mat(:,i,j) = nan; 
+            error_Bi_mat(:,i,j) = nan; 
+        end
+    end
+end
             
 
 % Find grid minima - bound and bi
@@ -1184,27 +1184,7 @@ end
 %%% Plot histogram of errors... 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% The optimal should be found from the bound. 
-% Case 1: exluce NaN runs. 
-% Case 2: exclude Re >= 175
-
-% Look into 'LDC_design/u_mid_opt_2.mat' 
-% and P_base_opt_2
-
-
-% Case 1 optimal: 
-% U mid
-% nu 0.2105 u 1.558
-% P base
-% nu 0.2737 u 2.4
-
-% Case 2 optimal: 
-% U mid
-% nu 1.0526 u 2.0631
-% P base
-% nu 1.637 u 0.2105
-
-
+% The optimal should be found from the boun
 %%% Vizualize  data
 n_hist = 20; 
 
