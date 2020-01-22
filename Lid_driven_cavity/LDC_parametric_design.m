@@ -195,7 +195,8 @@ if point_test == 1
 % sigmoid nu_0 is nu in surrounding area, nu_1 is nu close to vortex
     run_count = 1; % need to check reason for having this here. 
     
-    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 2.4, 0.2737, 0.2737,run_count);
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0.0, 0.0, 0.0,run_count);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0.7157, 2.805, 2.805,run_count);
 
 
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, -0.1, 0.1);

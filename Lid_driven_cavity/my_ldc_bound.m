@@ -28,11 +28,12 @@ Uf_all = cat(3,u_matrix_0, u_matrix_1, u_matrix_2, u_matrix_3, u_matrix_4);
 % This loads
 % u_matrix_ 0, 1, 2, 3, 4 
 
+% is this correct?? Pretty vital that it is... 
 % 0 is u mid v 
 % 1 is u vert u 
 % 2 is P mid
-% 3 is P base           
-% 4 is P vert
+% 3 is P vert           
+% 4 is P base
 
 Qoi_vec = 1:5; 
 
@@ -67,7 +68,7 @@ Uc= load('u_meshes/u_matrix.mat');
 delete 'u_meshes/u_matrix.mat'
 
 Uc_all = cat(3,Uc.u_matrix_0, Uc.u_matrix_1, Uc.u_matrix_2, Uc.u_matrix_3, Uc.u_matrix_4);
-
+% order is u_y, u_x, p_mid, p_vert, p_base 
 % Uc = Uc.u_matrix'; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,28 +128,15 @@ for i_qoi = 1:length(Qoi_vec)
     err_low_vec(i_qoi) = norm(Uc - Uf)/norm(Uf); 
     1; 
     
-end
-
-catch
-    err_Bi_vec(:) = nan; 
-    err_low_vec(:) = nan; 
-end
-
-1; 
-
-% if QoI == 0
+    % if i_qoi == 1
 %     save_label = 'u_mid';
-% % elseif QoI == 1
-% %     save_label = 'P_field';
-% % elseif QoI == 2
-% %     save_label = 'u_mid';
-% % elseif QoI == 3
+% % elseif i_qoi == 2
+% %     save_label = 'u_x';
+% % elseif i_qoi == 3
 % %     save_label = 'P_mid';
-% % elseif QoI == 4
-% %     save_label = 'P_top';
-% % elseif QoI == 5
-% %     save_label = 'P_mid_vert';
-% % elseif QoI == 6
+% % elseif i_qoi == 4
+% %     save_label = 'P_vert';
+% % elseif i_qoi == 5
 % %     save_label = 'P_base';
 % % end
 % % 
@@ -164,7 +152,13 @@ end
 
 % save(strcat('LDC_design/',save_label, '_nom_2'),'Uc', 'Ub', 'sb')
 % save(strcat('LDC_design/',save_label, '_opt_2'),'Uc', 'Ub', 'sb')
-1; 
+end
+
+catch
+    err_Bi_vec(:) = nan; 
+    err_low_vec(:) = nan; 
+end
+
 
 
 end
