@@ -8,7 +8,7 @@ clear all
 close all
 % clc
 
-save_on = 1; 
+save_on = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -444,24 +444,24 @@ load('LDC_design/grid_search_2.mat')
 
 error_bound_mat(error_bound_mat==0) = nan;
 
-% Try: set regions close to failure to nan... 
-nu_nom = 0.01;
-u_nom = 1; 
-
-Re = ((u_nom*(1+delta_u_vec))'*(1./(nu_nom*(1+delta_nu_vec))))';
-Re_lim = 150; % 150 - P_base works, U_mid works less so. 
-% 175, P_base fails, U_mid works better... 
-% Have to decide how to proceed. 
-
-% Metric is Re increases... mesh is constant... 
-for i = 1:length(Re)
-    for j = 1:length(Re)
-        if Re(i,j) >= Re_lim 
-            error_bound_mat(:,i,j) = nan; 
-            error_Bi_mat(:,i,j) = nan; 
-        end
-    end
-end
+% % Try: set regions close to failure to nan... 
+% nu_nom = 0.01;
+% u_nom = 1; 
+% 
+% Re = ((u_nom*(1+delta_u_vec))'*(1./(nu_nom*(1+delta_nu_vec))))';
+% Re_lim = 150; % 150 - P_base works, U_mid works less so. 
+% % 175, P_base fails, U_mid works better... 
+% % Have to decide how to proceed. 
+% 
+% % Metric is Re increases... mesh is constant... 
+% for i = 1:length(Re)
+%     for j = 1:length(Re)
+%         if Re(i,j) >= Re_lim 
+%             error_bound_mat(:,i,j) = nan; 
+%             error_Bi_mat(:,i,j) = nan; 
+%         end
+%     end
+% end
             
 
 % Find grid minima - bound and bi
@@ -591,7 +591,6 @@ results_tab = array2table(results_mat,...
 results_tab
 1; 
 
-<<<<<<< HEAD
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%% Grid search - nu_0 and nu_1 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -708,125 +707,123 @@ results_tab
 %     'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Vert', 'P_Base' },'RowNames',{'Nom Low','Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi','Best Bi'});
 % results_tab_nu_linear
 % 1; 
-=======
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Grid search - nu_0 and nu_1 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% load('LDC_design/grid_search_1.mat')
-load('LDC_design/grid_search_nu_linear_test.mat')
-% load('LDC_design/grid_search_2_n8.mat')
-
-% exclude 0s - these are nans. 
-
-error_bound_mat(error_bound_mat==0) = nan;
-
-% u becomes nu_1
-
-% Find grid minima - bound and bi
-[min_bound, min_bound_i] = min(error_bound_mat,[],[2,3],'linear'); 
-[~, i_1, i_2] = ind2sub(size(error_bound_mat),min_bound_i); 
-% index location is currently wrong 1731... 
-nu_1_bound = delta_nu_vec_1(i_2); 
-nu_bound = delta_nu_vec_0(i_1); 
-
-% Find grid minima - bound and bi
-[min_bi, min_bi_i] = min(error_Bi_mat,[],[2,3],'linear'); 
-[~, ii_1, ii_2] = ind2sub(size(error_Bi_mat),min_bi_i); 
-% index location is currently wrong 1731... 
-nu_1_bi = delta_nu_vec_1(ii_2); 
-nu_bi = delta_nu_vec_0(ii_1); 
-
-min_bi_opt = error_Bi_mat(min_bound_i); 
-
-
-%%% Plot response surface 
-% Step through each qoi 
-qoi_vec = 1:5; 
-
-plot_label = ["$U$ Mid","$U$ Vert", "$P$ Mid", "$P$ Base", "$P$ Vert"]; 
-plot_save = ["u_Mid","U_Vert", "P_Mid", "P_Base", "P_Vert"]; 
-
-for i_qoi = 1:length(qoi_vec)
-
-figure
-hold on
-contourf(100*delta_nu_vec_0,100*delta_nu_vec_1,100*reshape(error_bound_mat(i_qoi,:,:),length(delta_nu_vec_0), length(delta_nu_vec_1))')
-colorbar
-% 5, 0.2
-p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
-p2 = plot(100*nu_bound(i_qoi),100*nu_1_bound(i_qoi),'rx','MarkerSize',8,'linewidth',LW);
-p3 = plot(100*nu_bi(i_qoi),100*nu_1_bi(i_qoi),'rs','MarkerSize',8,'linewidth',LW);
-hold off
-legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
-xlabel('$\Delta \nu_0 $ [\%]','interpreter','latex','Fontsize',FS)
-ylabel('$\Delta \nu_1 $ [\%]','interpreter','latex','Fontsize',FS)
-axis tight
-caxis(100*[min(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[])) max(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[]))])
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% grid on
-set(gcf,'Position',size_1)
-title(strcat(plot_label(i_qoi),' Error bound'),'Interpreter','latex')
-
-if save_on ==1
-%     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bound'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bound'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_nu_linear_', plot_save(i_qoi), '_bound'),'epsc')
-
-end
-
-figure
-hold on
-contourf(100*delta_nu_vec_0,100*delta_nu_vec_1,100*reshape(error_Bi_mat(i_qoi,:,:),length(delta_nu_vec_0), length(delta_nu_vec_1))')
-colorbar
-% 5, 0.2
-p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
-p2 = plot(100*nu_bound(i_qoi),100*nu_1_bound(i_qoi),'rx','MarkerSize',8,'linewidth',LW);
-p3 = plot(100*nu_bi(i_qoi),100*nu_1_bi(i_qoi),'rs','MarkerSize',8,'linewidth',LW);
-hold off
-legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
-xlabel('$\Delta \nu_0 $ [\%]','interpreter','latex','Fontsize',FS)
-ylabel('$\Delta \nu_1$ [\%]','interpreter','latex','Fontsize',FS)
-axis tight
-caxis(100*[min(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[])) max(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[]))])
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% grid on
-set(gcf,'Position',size_1)
-title(strcat(plot_label(i_qoi),' Bi-fidelity Error'),'Interpreter','latex')
-
-if save_on ==1
-%     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bi'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bi'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_nu_linear_', plot_save(i_qoi), '_bi'),'epsc')
-
-end
-
-end
-
-% load('LDC_design/nominal_all_qoi')
-load('LDC_design/nominal_all_qoi_2')
-% load('LDC_design/nominal_all_qoi_2_n8')
-
-1; 
-
-nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low; 
-
-%%% Print out the bound and bi for the nominal and optimal
-
-% Should do the actual bi-fidelity found at the optimal point. 
-% min_bi - result if its the minimum of the bi-fidelity data. 
-% min_bi_opt - bi found from min locatin of bound. 
-% results_mat = [nom_low, nom_bound, nom_bi, min_bound, min_bi]'*100; 
-results_mat_nu_linear = [nom_low, nom_bound, nom_bi, min_bound, min_bi_opt, min_bi]'*100; 
-
-results_tab_nu_linear = array2table(results_mat_nu_linear,...
-    'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Base', 'P_Vert' },'RowNames',{'Nom Low','Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi','Best Bi'});
-results_tab_nu_linear
-1; 
->>>>>>> 9bd73e6af76e9340708509dd94652f0563d214c3
-
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%% Grid search - nu_0 and nu_1 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% % load('LDC_design/grid_search_1.mat')
+% load('LDC_design/grid_search_nu_linear_test.mat')
+% % load('LDC_design/grid_search_2_n8.mat')
+% 
+% % exclude 0s - these are nans. 
+% 
+% error_bound_mat(error_bound_mat==0) = nan;
+% 
+% % u becomes nu_1
+% 
+% % Find grid minima - bound and bi
+% [min_bound, min_bound_i] = min(error_bound_mat,[],[2,3],'linear'); 
+% [~, i_1, i_2] = ind2sub(size(error_bound_mat),min_bound_i); 
+% % index location is currently wrong 1731... 
+% nu_1_bound = delta_nu_vec_1(i_2); 
+% nu_bound = delta_nu_vec_0(i_1); 
+% 
+% % Find grid minima - bound and bi
+% [min_bi, min_bi_i] = min(error_Bi_mat,[],[2,3],'linear'); 
+% [~, ii_1, ii_2] = ind2sub(size(error_Bi_mat),min_bi_i); 
+% % index location is currently wrong 1731... 
+% nu_1_bi = delta_nu_vec_1(ii_2); 
+% nu_bi = delta_nu_vec_0(ii_1); 
+% 
+% min_bi_opt = error_Bi_mat(min_bound_i); 
+% 
+% 
+% %%% Plot response surface 
+% % Step through each qoi 
+% qoi_vec = 1:5; 
+% 
+% plot_label = ["$U$ Mid","$U$ Vert", "$P$ Mid", "$P$ Base", "$P$ Vert"]; 
+% plot_save = ["u_Mid","U_Vert", "P_Mid", "P_Base", "P_Vert"]; 
+% 
+% for i_qoi = 1:length(qoi_vec)
+% 
+% figure
+% hold on
+% contourf(100*delta_nu_vec_0,100*delta_nu_vec_1,100*reshape(error_bound_mat(i_qoi,:,:),length(delta_nu_vec_0), length(delta_nu_vec_1))')
+% colorbar
+% % 5, 0.2
+% p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
+% p2 = plot(100*nu_bound(i_qoi),100*nu_1_bound(i_qoi),'rx','MarkerSize',8,'linewidth',LW);
+% p3 = plot(100*nu_bi(i_qoi),100*nu_1_bi(i_qoi),'rs','MarkerSize',8,'linewidth',LW);
+% hold off
+% legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
+% xlabel('$\Delta \nu_0 $ [\%]','interpreter','latex','Fontsize',FS)
+% ylabel('$\Delta \nu_1 $ [\%]','interpreter','latex','Fontsize',FS)
+% axis tight
+% caxis(100*[min(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[])) max(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[]))])
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% % grid on
+% set(gcf,'Position',size_1)
+% title(strcat(plot_label(i_qoi),' Error bound'),'Interpreter','latex')
+% 
+% if save_on ==1
+% %     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bound'),'epsc')
+% %     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
+% %     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bound'),'epsc')
+% %     saveas(gcf,strcat('plots/LDC_2_nu_linear_', plot_save(i_qoi), '_bound'),'epsc')
+% 
+% end
+% 
+% figure
+% hold on
+% contourf(100*delta_nu_vec_0,100*delta_nu_vec_1,100*reshape(error_Bi_mat(i_qoi,:,:),length(delta_nu_vec_0), length(delta_nu_vec_1))')
+% colorbar
+% % 5, 0.2
+% p1 = plot(0,0,'ro','MarkerSize',8,'linewidth',LW);
+% p2 = plot(100*nu_bound(i_qoi),100*nu_1_bound(i_qoi),'rx','MarkerSize',8,'linewidth',LW);
+% p3 = plot(100*nu_bi(i_qoi),100*nu_1_bi(i_qoi),'rs','MarkerSize',8,'linewidth',LW);
+% hold off
+% legend([p1,p2,p3],{'Nominal','Optimal', 'Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
+% xlabel('$\Delta \nu_0 $ [\%]','interpreter','latex','Fontsize',FS)
+% ylabel('$\Delta \nu_1$ [\%]','interpreter','latex','Fontsize',FS)
+% axis tight
+% caxis(100*[min(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[])) max(reshape([error_bound_mat(i_qoi,:,:); error_Bi_mat(i_qoi,:,:)],1,[]))])
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% % grid on
+% set(gcf,'Position',size_1)
+% title(strcat(plot_label(i_qoi),' Bi-fidelity Error'),'Interpreter','latex')
+% 
+% if save_on ==1
+% %     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bi'),'epsc')
+% %     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
+% %     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bi'),'epsc')
+% %     saveas(gcf,strcat('plots/LDC_2_nu_linear_', plot_save(i_qoi), '_bi'),'epsc')
+% 
+% end
+% 
+% end
+% 
+% % load('LDC_design/nominal_all_qoi')
+% load('LDC_design/nominal_all_qoi_2')
+% % load('LDC_design/nominal_all_qoi_2_n8')
+% 
+% 1; 
+% 
+% nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low; 
+% 
+% %%% Print out the bound and bi for the nominal and optimal
+% 
+% % Should do the actual bi-fidelity found at the optimal point. 
+% % min_bi - result if its the minimum of the bi-fidelity data. 
+% % min_bi_opt - bi found from min locatin of bound. 
+% % results_mat = [nom_low, nom_bound, nom_bi, min_bound, min_bi]'*100; 
+% results_mat_nu_linear = [nom_low, nom_bound, nom_bi, min_bound, min_bi_opt, min_bi]'*100; 
+% 
+% results_tab_nu_linear = array2table(results_mat_nu_linear,...
+%     'VariableNames',{'U_Mid', 'U_Vert', 'P_Mid', 'P_Base', 'P_Vert' },'RowNames',{'Nom Low','Nom Bound','Nom Bi', 'Opt Bound', 'Opt Bi','Best Bi'});
+% results_tab_nu_linear
+% 1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Random search 
@@ -1197,10 +1194,10 @@ Uc_nom_u = Uc_nom_u.Uc;
 % Choose whether using Re constraint or not. 
 
 % Not using Re constraint: 
-% Uc_opt_u = load('LDC_design/u_mid_opt_2.mat', 'Uc','Ub','sb');
+Uc_opt_u = load('LDC_design/u_mid_opt_2.mat', 'Uc','Ub','sb');
 
 % % Using Re constraint: 
-Uc_opt_u = load('LDC_design/u_mid_opt_Re.mat', 'Uc','Ub','sb');
+% Uc_opt_u = load('LDC_design/u_mid_opt_Re.mat', 'Uc','Ub','sb');
 
 Ub_opt_u = Uc_opt_u.Ub; 
 sb_opt_u = Uc_opt_u.sb; 
@@ -1259,10 +1256,10 @@ sb_nom_pb = Uc_nom_pb.sb;
 Uc_nom_pb = Uc_nom_pb.Uc; 
 
 % Not using Re constraint:
-% Uc_opt_pb = load('LDC_design/P_base_opt.mat', 'Uc','Ub','sb');
+Uc_opt_pb = load('LDC_design/P_base_opt_2.mat', 'Uc','Ub','sb');
 
 % Using Re constraint
-Uc_opt_pb = load('LDC_design/P_base_opt_Re.mat', 'Uc','Ub','sb');
+% Uc_opt_pb = load('LDC_design/P_base_opt_Re.mat', 'Uc','Ub','sb');
 
 Ub_opt_pb = Uc_opt_pb.Ub; 
 sb_opt_pb = Uc_opt_pb.sb; 
