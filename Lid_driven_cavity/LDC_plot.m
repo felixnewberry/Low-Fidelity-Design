@@ -1207,6 +1207,7 @@ Ub_opt_u = Uc_opt_u.Ub;
 sb_opt_u = Uc_opt_u.sb; 
 Uc_opt_u = Uc_opt_u.Uc; 
 
+e_low_u = norm(Uc_opt_u - Uf_u)/norm(Uf_u); 
 
 error_b_nom_u = vecnorm(Ub_nom_u-Uf_u)./vecnorm(Uf_u);
 error_b_opt_u = vecnorm(Ub_opt_u-Uf_u)./vecnorm(Uf_u);

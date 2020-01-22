@@ -195,8 +195,9 @@ if point_test == 1
 % sigmoid nu_0 is nu in surrounding area, nu_1 is nu close to vortex
     run_count = 1; % need to check reason for having this here. 
     
-    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0.0, 0.0, 0.0,run_count);
+%     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0.0, 0.0, 0.0,run_count);
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0.7157, 2.805, 2.805,run_count);
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 1.558, 0.2737, 0.2737,run_count);
 
 
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, -0.1, 0.1);
@@ -209,7 +210,8 @@ if point_test == 1
 
     [err_low*100, error_bound*100, err_bi*100]
 
-        
+  1; 
+  
 % It would be excellent if It could run at a higher Re. 
 % For instance the corner of region investigatged is: u + 2.4 nu - 0.7 
 % standard implementation is u +- 10 % and nu +- 5 %. 
