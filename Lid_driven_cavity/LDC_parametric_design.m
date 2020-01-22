@@ -40,9 +40,9 @@ close all
 % use the test to tune r
 % line to set bounds of search
 % random search to construct response surface with pce. 
-point_test = 0; 
+point_test = 1; 
 line_search = 0; % 1 for nu, 2 for u
-grid_search = 1; % 
+grid_search = 0; % 
 random_search = 0; % ie use PCE
 
 nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
@@ -193,8 +193,9 @@ if point_test == 1
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, 0, 0);
 
 % sigmoid nu_0 is nu in surrounding area, nu_1 is nu close to vortex
-
-    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, -0.5, 1);
+    run_count = 1; % need to check reason for having this here. 
+    
+    [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 2.4, 0.2737, 0.2737,run_count);
 
 
 %     [error_bound,err_bi,err_low] = my_ldc_bound(nx,n, r, 0, -0.1, 0.1);
@@ -222,6 +223,8 @@ if point_test == 1
 %     save('LDC_design/nominal_all_qoi', 'error_bound', 'err_bi', 'err_low'); 
 %     save('LDC_design/nominal_all_qoi_2', 'error_bound', 'err_bi', 'err_low'); 
 %     save('LDC_design/nominal_all_qoi_2_n8', 'error_bound', 'err_bi', 'err_low'); 
+
+    save('LDC_design/opt_all_qoi_2', 'error_bound', 'err_bi', 'err_low'); 
 
     % with r = 1 and n = 3: 
 % Nominal settings  L, Bo, Bi

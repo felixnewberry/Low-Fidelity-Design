@@ -134,6 +134,8 @@ catch
     err_low_vec(:) = nan; 
 end
 
+1; 
+
 % if QoI == 0
 %     save_label = 'u_mid';
 % % elseif QoI == 1
@@ -157,7 +159,7 @@ end
 % save_label = 'all';
 
 % save(strcat('LDC_design/',save_label, '_nom'),'Uc', 'Ub', 'sb')
-% save(strcat('LDC_design/',save_label, '_opt'),'Uc', 'Ub', 'sb',)
+% save(strcat('LDC_design/',save_label, '_opt'),'Uc', 'Ub', 'sb')
 
 
 % save(strcat('LDC_design/',save_label, '_nom_2'),'Uc', 'Ub', 'sb')
