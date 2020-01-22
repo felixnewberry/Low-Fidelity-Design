@@ -586,7 +586,7 @@ nom_bound = error_bound; nom_bi = err_bi; nom_low = err_low;
 % min_bi - result if its the minimum of the bi-fidelity data. 
 % min_bi_opt - bi found from min locatin of bound. 
 % results_mat = [nom_low, nom_bound, nom_bi, min_bound, min_bi]'*100; 
-opt_low = [0, 0, 0, 0, 0]'; 
+opt_low = [0, 0, 0, 0, 0]; 
 
 results_mat = [nom_low, nom_bound, nom_bi, opt_low, min_bound, min_bi_opt, min_bi]'*100; 
 
@@ -1207,7 +1207,6 @@ Ub_opt_u = Uc_opt_u.Ub;
 sb_opt_u = Uc_opt_u.sb; 
 Uc_opt_u = Uc_opt_u.Uc; 
 
-
 error_b_nom_u = vecnorm(Ub_nom_u-Uf_u)./vecnorm(Uf_u);
 error_b_opt_u = vecnorm(Ub_opt_u-Uf_u)./vecnorm(Uf_u);
 
@@ -1269,8 +1268,6 @@ Uc_opt_pb = load('LDC_design/P_base_opt_2.mat', 'Uc','Ub','sb');
 Ub_opt_pb = Uc_opt_pb.Ub; 
 sb_opt_pb = Uc_opt_pb.sb; 
 Uc_opt_pb = Uc_opt_pb.Uc; 
-
-e_low_pb = norm(Uc_opt_pb - Uf_pb)/norm(Uf_pb); 
 
 error_b_nom_pb = vecnorm(Ub_nom_pb-Uf_pb)./vecnorm(Uf_pb);
 error_b_opt_pb = vecnorm(Ub_opt_pb-Uf_pb)./vecnorm(Uf_pb);
@@ -1377,10 +1374,10 @@ if save_on ==1
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Add opt low to results
+%%% Add opt no
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
-opt_low = [e_low_u, 0, 0, 0, e_low_pb]'; 
+opt_low = [0, 0, 0, 0, 0]; 
 
 results_mat = [nom_low, nom_bound, nom_bi, opt_low, min_bound, min_bi_opt, min_bi]'*100; 
 
