@@ -8,7 +8,7 @@ clear all
 close all
 % clc
 
-save_on = 0; 
+save_on = 1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -444,24 +444,24 @@ load('LDC_design/grid_search_2.mat')
 
 error_bound_mat(error_bound_mat==0) = nan;
 
-% % Try: set regions close to failure to nan... 
-% nu_nom = 0.01;
-% u_nom = 1; 
-% 
-% Re = ((u_nom*(1+delta_u_vec))'*(1./(nu_nom*(1+delta_nu_vec))))';
-% Re_lim = 150; % 150 - P_base works, U_mid works less so. 
-% % 175, P_base fails, U_mid works better... 
-% % Have to decide how to proceed. 
-% 
-% % Metric is Re increases... mesh is constant... 
-% for i = 1:length(Re)
-%     for j = 1:length(Re)
-%         if Re(i,j) >= Re_lim 
-%             error_bound_mat(:,i,j) = nan; 
-%             error_Bi_mat(:,i,j) = nan; 
-%         end
-%     end
-% end
+% Try: set regions close to failure to nan... 
+nu_nom = 0.01;
+u_nom = 1; 
+
+Re = ((u_nom*(1+delta_u_vec))'*(1./(nu_nom*(1+delta_nu_vec))))';
+Re_lim = 150; % 150 - P_base works, U_mid works less so. 
+% 175, P_base fails, U_mid works better... 
+% Have to decide how to proceed. 
+
+% Metric is Re increases... mesh is constant... 
+for i = 1:length(Re)
+    for j = 1:length(Re)
+        if Re(i,j) >= Re_lim 
+            error_bound_mat(:,i,j) = nan; 
+            error_Bi_mat(:,i,j) = nan; 
+        end
+    end
+end
             
 
 % Find grid minima - bound and bi
@@ -511,7 +511,9 @@ title(strcat(plot_label(i_qoi),' Error bound'),'Interpreter','latex')
 
 if save_on ==1
 %     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bound'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'png')
+
 %     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bound'),'epsc')
 
 end
@@ -537,12 +539,12 @@ title(strcat(plot_label(i_qoi),' Bi-fidelity Error'),'Interpreter','latex')
 
 if save_on ==1
 %     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bi'),'epsc')
-%     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
+    saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
+        saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'png')
+
 %     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bi'),'epsc')
 
 end
-
-1; 
 
 % %%% Fix range of data
 % 
@@ -652,7 +654,7 @@ if save_on ==1
 %     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bound'),'epsc')
 %     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bound'),'epsc')
 %     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bound'),'epsc')
-    saveas(gcf,strcat('plots/LDC_2_nu_linear_', plot_save(i_qoi), '_bound'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_2_nu_linear_', plot_save(i_qoi), '_bound'),'epsc')
 
 end
 
@@ -679,7 +681,7 @@ if save_on ==1
 %     saveas(gcf,strcat('plots/LDC_1_', plot_save(i_qoi), '_bi'),'epsc')
 %     saveas(gcf,strcat('plots/LDC_2_', plot_save(i_qoi), '_bi'),'epsc')
 %     saveas(gcf,strcat('plots/LDC_2_n8_', plot_save(i_qoi), '_bi'),'epsc')
-    saveas(gcf,strcat('plots/LDC_2_nu_linear_', plot_save(i_qoi), '_bi'),'epsc')
+%     saveas(gcf,strcat('plots/LDC_2_nu_linear_', plot_save(i_qoi), '_bi'),'epsc')
 
 end
 
@@ -1077,12 +1079,20 @@ Uf_u = u_matrix_0';
 
 % plot the pressure differce too just to find out? Check which pressure. 
 
+
 Uc_nom_u = load('LDC_design/u_mid_nom_2.mat', 'Uc','Ub','sb');
 Ub_nom_u = Uc_nom_u.Ub; 
 sb_nom_u = Uc_nom_u.sb; 
 Uc_nom_u = Uc_nom_u.Uc; 
 
-Uc_opt_u = load('LDC_design/u_mid_opt_2.mat', 'Uc','Ub','sb');
+% Choose whether using Re constraint or not. 
+
+% Not using Re constraint: 
+% Uc_opt_u = load('LDC_design/u_mid_opt_2.mat', 'Uc','Ub','sb');
+
+% % Using Re constraint: 
+Uc_opt_u = load('LDC_design/u_mid_opt_Re.mat', 'Uc','Ub','sb');
+
 Ub_opt_u = Uc_opt_u.Ub; 
 sb_opt_u = Uc_opt_u.sb; 
 Uc_opt_u = Uc_opt_u.Uc; 
@@ -1137,7 +1147,12 @@ Ub_nom_pb = Uc_nom_pb.Ub;
 sb_nom_pb = Uc_nom_pb.sb; 
 Uc_nom_pb = Uc_nom_pb.Uc; 
 
-Uc_opt_pb = load('LDC_design/P_base_opt_2.mat', 'Uc','Ub','sb');
+% Not using Re constraint:
+% Uc_opt_pb = load('LDC_design/P_base_opt.mat', 'Uc','Ub','sb');
+
+% Using Re constraint
+Uc_opt_pb = load('LDC_design/P_base_opt_Re.mat', 'Uc','Ub','sb');
+
 Ub_opt_pb = Uc_opt_pb.Ub; 
 sb_opt_pb = Uc_opt_pb.sb; 
 Uc_opt_pb = Uc_opt_pb.Uc; 
@@ -1224,6 +1239,7 @@ title('U Mid','Interpreter','latex')
 
 if save_on ==1
     saveas(gcf,'plots/LDC_U_mid_hist','epsc')
+    saveas(gcf,'plots/LDC_U_mid_hist','png')
 end
 
 figure
@@ -1241,6 +1257,8 @@ title('P Base','Interpreter','latex')
 
 if save_on ==1
     saveas(gcf,'plots/LDC_P_base_hist','epsc')
+    saveas(gcf,'plots/LDC_P_base_hist','png')
+
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
