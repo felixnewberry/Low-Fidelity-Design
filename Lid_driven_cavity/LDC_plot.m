@@ -1327,13 +1327,7 @@ end
 % U mid
 % nu 0.2105 u 1.558
 % P base
-% nu 0.2737 u 2.4
-
-% Case 2 optimal: 
-% U mid
-% nu 1.0526 u 2.0631
-% P base
-% nu 1.637 u 0.2105
+% nu 2.80 u 0.7158
 
 
 %%% Vizualize  data
