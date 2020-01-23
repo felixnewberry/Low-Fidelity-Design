@@ -39,34 +39,29 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % type of search 
-line_search = 1; 
-grid_search = 0; % 40x40 - 1600 samples
+line_search = 0; 
+grid_search = 1; % 40x40 - 1600 samples
 random_search = 0; % pce error is about 8 % - stick with grid?
 plot_tip = 0; 
 
-% should I find a less expensive way to evauluate ? 
+% choose parameters to vary 
 
-% choose parameters to vary (mode 1-4 for line_search, 5 for grid and
-% random search. 
-mode = 4; 
-% 0 is w
-% 1 is h1
-% 2 is h2
-% 3 is h3
-% 4 is h1 = h2
-% 5 is h1=h2 and h3
+
+% (mode 0-4 for line_search, 5 for grid)
+
+% mode = 0; % w
+% mode = 1; % h1
+% mode = 2; % h2
+% mode = 3; % h3
+% mode = 4; % h1 = h2
+mode = 5; % h1=h2 and h3
 
 % choose delta range
-delta_test = 0; 
-% 1 is +-0.95
-% 0 is specific to h3 and h1=h2. 
-
-% error improves if I take average of 50 bounds. 
-% maybe 5 minutes? - what If I don't take average... 
-
+delta_test = 0; % used for line search of h3 and h1=h2. 
+% delta_test = 1; % +-0.95
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Load data, vanilla approach first
+%%% Load data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % coordinates
@@ -86,31 +81,14 @@ load('Beam_data/xi')
 % rank of Uc is r=1. 
 % section 2.5 says that n should be slightly larger than r. heuristic R = r+10
 
-% Set 
-% tol = 1e-4; 
-
-% heuristic n = r+10
 r = 1; 
-% r = 10;
-% n = r+10; 
 n = r+2; 
 
+nsim = 3000; % Test nsim of 3000? % 9 21 to 9 23  for 100, 9 24 to 9 54. 
+% 3000: 
 
-% nsim = 100; 
-nsim = 100; 
 
-n_sample = 100; 
-efficacy_vec = zeros(1,n_sample); 
-
-% n_bound_reps = 50; % draw different sets of n samples to compute bound from N low-fidelity realizations
 n_bound_reps = 1; % does not make sense to do repetitions - this would require access to more high-fidelity samples. 
-
-% Some questions for Alireza about this. 
-
-% how best to sample? Fix 1:10 and stick with this (only captures some
-% realizatios so not the best measure)
-% randomly sample 50 times for every point. 
-% randomly sample the same 50 samples for each point. - likely this... 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Line search
@@ -123,8 +101,6 @@ if line_search == 1
 % delta_t3_rand = [0,29]; 
 
 delta_vec = -0.95:0.1:0.95;
-
-
 
 if mode == 0
     plot_label = '$ \Delta w [\%]$';
@@ -173,8 +149,6 @@ save(strcat('Beam_design/', save_label), 'error_bound_mat')
 % save('Beam_design/line_h3_p35','error_bound_mat')
 % save('Beam_design/delta_vec_h3_p35','delta_vec')
 
-
-
 % Plot error bound 
 figure
 hold on
@@ -186,7 +160,6 @@ axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
 grid on
-
 
 % Plot bi-fidelity error 
 figure
@@ -208,8 +181,6 @@ if grid_search == 1
 mode = 5; 
 
 % 40 x 40 takes 196 s
-% t3_vec = 5:5:200; 
-% t1_vec = [0.005:0.015:0.6];
 delta_t3_vec = 0:1:40; 
 delta_t1_vec = -1:0.075:2; 
 
@@ -218,6 +189,10 @@ delta_t1_vec = -1:0.075:2;
 % t1_vec = 0.005:0.03:0.6;
 % delta_t3_vec = 0:2:39; 
 % delta_t1_vec = -0.975:0.15:2; 
+
+% Find nominal and optimal data
+delta_t1_vec = [0, 1.025]; 
+delta_t3_vec = [0, 29]; 
 
 tic
 error_bound_mat = zeros(length(delta_t1_vec),length(delta_t3_vec)); 
@@ -278,9 +253,13 @@ fprintf('t3: %d, t1=t2: %d \n',t3_Bi, t1_Bi);
 fprintf('Bound: %d \n',min_bound_Bi);
 fprintf('Bi: %d \n',min_Bi);
 
-save('Beam_design/grid_search_N3','delta_t3_vec','delta_t1_vec','error_bound_mat', ...
-    'error_Bi_mat','t3_bound', 't1_bound','t3_Bi','t1_Bi','min_bound',...
-'min_Bi_bound')
+% save('Beam_design/grid_search_N3','delta_t3_vec','delta_t1_vec','error_bound_mat', ...
+%     'error_Bi_mat','t3_bound', 't1_bound','t3_Bi','t1_Bi','min_bound',...
+% 'min_Bi_bound')
+% 
+% save('Beam_design/grid_search_testing','delta_t3_vec','delta_t1_vec','error_bound_mat', ...
+%     'error_Bi_mat','t3_bound', 't1_bound','t3_Bi','t1_Bi','min_bound',...
+% 'min_Bi_bound')
 
 % save('Beam_design/grid_search_L_transform','delta_t3_vec','delta_t1_vec','error_bound_mat', ...
 %     'error_Bi_mat','t3_bound', 't1_bound','t3_Bi','t1_Bi','min_bound',...
@@ -461,7 +440,6 @@ end
 
 toc
  
-
 % % PCE stats: 
 fprintf('PCE Statistics: \n');
 fprintf('LS Mean Bound: %d, LS Sd: %d \n',mean(error_ls), std(error_ls));

@@ -147,6 +147,13 @@ error_bound = mean(error_bound_vec);
 err_Ahat = norm(A-A(:,ix)*P_s)/norm(A);
 efficacy = error_bound/err_Ahat;
 
+% % Save nominal and optimal values (optional) 
+1; 
+
+% Ub = Uf(:,ix)*P_s;
+% save('Beam_design/nom_3000','Uc', 'Ub', 'sb')
+% save('Beam_design/opt_3000','Uc', 'Ub', 'sb')
+
 % % Calculate tip error (optional) 
 1; 
 

@@ -123,6 +123,9 @@ end
 
 % load('Beam_design/Grid_search_N10')
 load('Beam_design/grid_search_N3')
+% load('Beam_design/grid_search_testing')
+n_sim = 100; % loaded Uc and Ub data also needs to be adjusted if this is changed from 100
+
 
 figure
 hold on
@@ -172,27 +175,37 @@ end
 
 % data
 
+
+
 % A_hat
-% Minimum of each column
-[min_values, index_t1_A] = min(error_Bi_mat); 
-% Global minimum, column index is t3
-[min_value, index_t3_A] = min(min_values); 
-index_t1_A = index_t1_A(index_t3_A);
+% % Minimum of each column
+% [min_values, index_t1_A] = min(error_Bi_mat,[],2); 
+% % Global minimum, column index is t3
+% [min_value, index_t3_A] = min(min_values); 
+% index_t1_A = index_t1_A(index_t3_A);
+min_value = min(min(error_Bi_mat));
+[index_t1_A,index_t3_A]=find(error_Bi_mat==min_value);
 t1_Bi = delta_t1_vec(index_t1_A);
 t3_Bi = delta_t3_vec(index_t3_A);
 min_Bi = min_value; 
 
 min_bound_Bi = error_bound_mat(index_t1_A,index_t3_A);
 
+
+
+
 % Error bound
-% Minimum of each column
-[min_values, index_t1_B] = min(error_bound_mat); 
-% Global minimum, column index is t3
-[min_value, index_t3_B] = min(min_values); 
-index_t1_B = index_t1_B(index_t3_B);
+% % Minimum of each column
+% [min_values, index_t1_B] = min(error_bound_mat); 
+% % Global minimum, column index is t3
+% [min_value, index_t3_B] = min(min_values); 
+% index_t1_B = index_t1_B(index_t3_B);
+min_value = min(min(error_bound_mat));
+[index_t1_B,index_t3_B]=find(error_bound_mat==min_value);
 t1_bound = delta_t1_vec(index_t1_B);
 t3_bound = delta_t3_vec(index_t3_B);
 min_bound = min_value; 
+
 
 min_Bi_bound = error_Bi_mat(index_t1_B,index_t3_B);
 
@@ -208,16 +221,23 @@ Uc_opt = Uc;
 
 %Uf? fine
 load('Beam_data/Uf')
-Uf = Uf(:,1:100);
-% Uc course
+Uf = Uf(:,1:n_sim);
+
 load('Beam_data/Uc')
-Uc_orig = Uc(:,1:100); 
+Uc_orig = Uc(:,1:n_sim); 
+
+% 100
 % Bi
 load('Beam_design/Bi_nom')
 Ub_nom = Bi; 
-
 load('Beam_design/Bi_opt')
 Ub_opt = Bi; 
+
+% % 3000
+% load('Beam_design/nom_3000')
+% Ub_nom = Ub; Uc_nom = Uc; 
+% load('Beam_design/opt_3000')
+% Ub_opt = Ub; Uc_opt = Uc; 
 
 x_highfidelity = x_highfidelity';
 
