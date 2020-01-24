@@ -1,0 +1,4 @@
+/tmp/tmpjs6mam_t/dolfin_expression_6425c51b3178da810b603f1d0c09ac86.cpp: In member function ‘virtual void dolfin::dolfin_expression_6425c51b3178da810b603f1d0c09ac86::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmpjs6mam_t/dolfin_expression_6425c51b3178da810b603f1d0c09ac86.cpp:61:37: error: ‘theta’ was not declared in this scope
+           values[0] = 1.0+ x[1]*tan(theta);
+                                     ^~~~~
