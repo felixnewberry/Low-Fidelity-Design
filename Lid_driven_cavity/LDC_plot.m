@@ -300,10 +300,6 @@ load('LDC_design/line_qoi_u_2.mat')
 delta_u_vec = delta_vec; 
 error_bound_u = error_bound_mat; 
 
-
-% I should probably write script so all qoi can be extracted together? 
-% maybe... 
-
 % plot nu change for different QoI, ie u_mid, u_field, p_field, p_top
 figure
 hold on

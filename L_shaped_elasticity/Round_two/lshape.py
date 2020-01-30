@@ -63,7 +63,7 @@ young = content['Youngs']
 
 content = loadmat('./fenics_inputs/inputs.mat')
 nu = float(content['nu'])
-mode_qoi = float(content['mode_qoi'])
+# mode_qoi = float(content['mode_qoi'])
 theta = float(content['theta'])
 delta_q = float(content['delta_q'])
 
@@ -154,29 +154,48 @@ for i in range(len(young)):
     u_0, u_1 = u.split(True)
     #plot(u_0,interactive=True)
     np.set_printoptions(threshold='nan')
-    fname = 'L_data/solution.' + str(i) + '.txt'
+    fname_0 = 'L_data/solution_0.' + str(i) + '.txt'
+    fname_1 = 'L_data/solution_1.' + str(i) + '.txt'
+    fname_2 = 'L_data/solution_2.' + str(i) + '.txt'
+
     #Put u in array form
     #u_0_nodal_values = u_0.vector()
     #u_0_array = u_0_nodal_values.array()
     #File("u_pvd.pvd") << u_0
 
     # hardcode coordinates? Nah. Use dof_map / find coordinates.
-    if mode_qoi == 0:
-        indices = np.where(np.logical_and(abs(dof_coords[:, 0]) < 0.000001, dof_coords[:, 1] > -0.000001))[0]
-        # indices 4 and 5 (and likely more are in wrong order.)
-        # dof_y = dof_coords[:,1]
-        # dof_y[indices]
-        u_0_array = u_0.vector()[indices]
-    elif mode_qoi == 1:
-        u_0_array=u_0.vector()
-    elif mode_qoi == 2:
-        #https://fenicsproject.org/pub/tutorial/html/._ftut1008.html
-        s = sigma(u) - (1./3)*tr(sigma(u))*Identity(d)
-        von_Mises_1 = sqrt(3./2*inner(s, s))
-        von_Mises = project(von_Mises_1, W)
-        u_0_array=von_Mises.vector()
+    # if mode_qoi == 0:
+    #     indices = np.where(np.logical_and(abs(dof_coords[:, 0]) < 0.000001, dof_coords[:, 1] > -0.000001))[0]
+    #     # indices 4 and 5 (and likely more are in wrong order.)
+    #     # dof_y = dof_coords[:,1]
+    #     # dof_y[indices]
+    #     u_0_array = u_0.vector()[indices]
+    # elif mode_qoi == 1:
+    #     u_0_array=u_0.vector()
+    # elif mode_qoi == 2:
+    #     #https://fenicsproject.org/pub/tutorial/html/._ftut1008.html
+    #     s = sigma(u) - (1./3)*tr(sigma(u))*Identity(d)
+    #     von_Mises_1 = sqrt(3./2*inner(s, s))
+    #     von_Mises = project(von_Mises_1, W)
+    #     u_0_array=von_Mises.vector()
 
-    np.savetxt(fname,u_0_array)
+
+    indices_0 = np.where(np.logical_and(abs(dof_coords[:, 0]) < 0.000001, dof_coords[:, 1] > -0.000001))[0]
+    # indices 4 and 5 (and likely more are in wrong order.)
+    # dof_y = dof_coords[:,1]
+    # dof_y[indices]
+    u_0_array_0 = u_0.vector()[indices_0]
+    np.savetxt(fname_0,u_0_array_0)
+
+    u_0_array_1=u_0.vector()
+    np.savetxt(fname_1,u_0_array_1)
+
+    #https://fenicsproject.org/pub/tutorial/html/._ftut1008.html
+    s = sigma(u) - (1./3)*tr(sigma(u))*Identity(d)
+    von_Mises_1 = sqrt(3./2*inner(s, s))
+    von_Mises = project(von_Mises_1, W)
+    u_0_array_2=von_Mises.vector()
+    np.savetxt(fname_2,u_0_array_2)
 
     # to save pvd...
     # if i == 0:

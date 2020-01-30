@@ -11,8 +11,19 @@ Cfunc - used in youngs modulus
 dof_coords_c.mat - Course grid x and y DOF coordinates
 dof_coords_f.mat - Fine grid x and y DOF coordinates
 
+Idx_c - hmm 6 indices
+Idx_f - hmm 22 indices. I suspect these are for the displacement line
+x_c - course coordinates displacement line
+x_f - fine coordinates displacement line
+Uc, Uf, Ub, denote course, fine and bi-fidelity estimates
+line - displacement line QoI
+stress - stress field QoI
+field - displacment field QoI
+
 ## fenics_inputs
-xi - 800x49 - why this size?
+xi - 800x49 - why this size? 800 samples, 49...
+Youngs - 800x41 800 samples x 41 nodal points for course grid
+inputs - python inputs
 
 ## mesh
 meshes 1 through 4 

@@ -1,5 +1,5 @@
-function [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r,...
-    mode_delta,n_reps,mode_qoi)
+function [error_bound_all,error_Bi_all] = my_L_bound(X,nsim, n, r,...
+    mode_delta,n_reps)
 
 
 %%% Inputs
@@ -23,6 +23,8 @@ function [error_bound,err_Ahat,efficacy] = my_L_bound(X,nsim, n, r,...
 % 0 is line from x = 0, y = 0 to y = 1 (change r to 6)
 % 1 is displacement field 
 % 2 is stress field 
+
+% compute all three qoi each time and just list results for all. 
 
 % n_reps number of repetitions of bound samples
 
@@ -79,23 +81,22 @@ elseif mode_delta == 6
     nu = nu*(1+X(1)); 
     corr_length = corr_length*(1+X(2)); 
     sigma = sigma*(1+X(3)); 
+    theta = X(4); 
 end
   
 1; 
 
-save('./fenics_inputs/inputs.mat','nu','mode_qoi','theta','delta_q')
+save('./fenics_inputs/inputs.mat','nu','theta','delta_q')
 
 % Extract number of degrees of freedom and nodal coordinates
 frid = fopen(['./mesh/mesh_' num2str(coarse_level) '.txt'],'r');
 mesh_info = fscanf(frid,'%d',[1,2]);
 xy_coarse = fscanf(frid,'%g %g',[2 mesh_info(1)]); xy_coarse = xy_coarse';
-if mode_qoi == 0
-    coarse_grid = 6; 
-elseif mode_qoi == 1
-    coarse_grid = size(xy_coarse,1);
-elseif mode_qoi == 2
-    coarse_grid = size(xy_coarse,1);
-end
+
+% Set up course grid for each qoi. 
+coarse_grid_0 = 6; 
+coarse_grid_1 = size(xy_coarse,1);
+coarse_grid_2 = size(xy_coarse,1);
 
 
 % % xi 
@@ -115,121 +116,125 @@ t_c = toc/nsim;
 1; 
 
 %4A upload data to matrix
-Uc=zeros(coarse_grid,nsim);    
+Uc_0=zeros(coarse_grid_0,nsim);    
+Uc_1=zeros(coarse_grid_1,nsim);    
+Uc_2=zeros(coarse_grid_2,nsim);    
+
+
 for i=1:nsim
-    filename = [ 'L_data/solution.' num2str(i-1) '.txt' ];
+    filename = [ 'L_data/solution_0.' num2str(i-1) '.txt' ];
     fileID = fopen(filename,'r');
-    Uc(:,i)=fscanf(fileID, '%f');
+    Uc_0(:,i)=fscanf(fileID, '%f');
+    fclose(fileID);
+    
+    filename = [ 'L_data/solution_1.' num2str(i-1) '.txt' ];
+    fileID = fopen(filename,'r');
+    Uc_1(:,i)=fscanf(fileID, '%f');
+    fclose(fileID);
+    
+    filename = [ 'L_data/solution_2.' num2str(i-1) '.txt' ];
+    fileID = fopen(filename,'r');
+    Uc_2(:,i)=fscanf(fileID, '%f');
     fclose(fileID);
 end
 
 % % save course data
 % file = sprintf( 'L_data/U%d.mat',coarse_level);
 % save(file,'U','-mat')
-system('rm -f L_data/solution.*');
 
-
+system('rm -f L_data/solution_*');
 
 %Uf fine
-if mode_qoi == 0  
-    load('L_data/Idx_f')
-    load('L_data/Idx_c')
-    load('L_data/Uf_line')
-    Uf = U(Idx_f,:); 
 
-%     load('L_data/Uf_line_2')
-%     Uf = Uf(Idx_f,:); 
-    
-    Uc = Uc(Idx_c,:); 
-elseif mode_qoi == 1
-    load('L_data/Uf_field')
-    Uf = U; 
-elseif mode_qoi == 2
-    load('L_data/Uf_stress')
-    Uf = Uf; 
-end
+% indices for identifying line from x = 0, y = 0 to y = 1. 
+load('L_data/Idx_f', 'Idx_f')
+load('L_data/Idx_c', 'Idx_c')
+load('L_data/Uf_line', 'U')
+Uf_0 = U(Idx_f,:); 
 
+Uc_0 = Uc_0(Idx_c,:); 
+
+load('L_data/Uf_field', 'U')
+Uf_1 = U; 
+
+
+load('L_data/Uf_stress', 'Uf')
+Uf_2 = Uf; 
+
+
+% Group into Uf_all and Uc_all
+
+Uc_all = {Uc_0, Uc_1, Uc_2}; 
+Uf_all = {Uf_0, Uf_1, Uf_2}; 
 
 samps = 1:nsim; 
 
-Uf = Uf(:,samps);
-Uc = Uc(:,samps);
+error_bound_all = zeros(3,1); 
+error_Bi_all = zeros(3,1); 
 
-1; 
-mean(Uc(:))
+Ub_all = cell(1,3);
+sb_all = cell(1,3);
 
+for i_qoi = 1:3
+    Uf = Uf_all{i_qoi}; 
+    Uc = Uc_all{i_qoi}; 
+    
+    Uf = Uf(:,samps);
+    Uc = Uc(:,samps);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Bi-fid details
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-error_bound_vec = zeros(1,n_reps); 
-
-for i_reps = 1:n_reps
-
-% Subset of vectors for bi-fidelity error estimate
-% rand_sample = randsample(nsim,n);
-rand_sample = 1:n; 
-
-% % Normalize matrices
-% Uc= Uc;
-% Uf = Uf;
-
-% Bi-fid matrices. 
-B_R = Uc(:,rand_sample)/norm(Uc,'fro');
-A_R = Uf(:,rand_sample)/norm(Uf,'fro');
-
-% % % Normalize matrices
-% B_R= B_R/norm(B_R,'fro');
-% A_R = A_R/norm(A_R,'fro');
-
-% Obtain column skeleton of P
-% In the paper they use 100 samples of Uc here... 
-
-[P_s,ix] = matrixIDvR(B_R,n);
-
-% Inputs
-normC = norm(P_s);
-sb = svd(B_R); 
-err_Bhat = norm(B_R-B_R(:,ix)*P_s); 
-N = nsim;
+%     1; 
+%     mean(Uc(:))
 
 
-% % % Compute epsilon tau... 
-[delta_eps, ahat_error_est,Ir, min_de1,min_de2] = ...
-    mat_id_error_est_one_normal(B_R, A_R, normC, err_Bhat, sb,N,n);
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%% Bi-fid details
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-error_bound_vec(i_reps) = ahat_error_est/norm(A_R);
+%     error_bound_vec = zeros(1,n_reps); 
 
+%     for i_reps = 1:n_reps
+
+    % Subset of vectors for bi-fidelity error estimate
+    % rand_sample = randsample(nsim,n);
+    rand_sample = 1:n; 
+
+    % % Normalize matrices for bi-fidelity error bound
+    B = Uc/norm(Uc,'fro');
+    A = Uf/norm(Uf,'fro');
+
+    B_R = B(:,rand_sample);
+    A_R = A(:,rand_sample);
+
+    % Obtain column skeleton of P
+    [P_s,ix] = matrixIDvR(B,r);
+
+    % Inputs
+    normC = norm(P_s);
+    sb = svd(B); 
+    err_Bhat = norm(B-B(:,ix)*P_s); 
+    N = nsim;
+
+    % % % Compute epsilon tau... 
+    [~, ahat_error_est,~, ~,~] = ...
+        mat_id_error_est_one_normal(B_R, A_R, normC, err_Bhat, sb,N,n);
+
+    error_bound_all(i_qoi) = ahat_error_est/norm(A);
+
+%     end
+
+    error_Bi_all(i_qoi) = norm(A-A(:,ix)*P_s)/norm(A);
+    
+    
+    Ub_all{i_qoi} = Uf(:,ix)*P_s;
+    sb_all{i_qoi} = sb; 
+
+    
 end
 
-error_bound = mean(error_bound_vec); 
+save_label = 'all';
+% 
+save(strcat('L_design/',save_label, '_nom'),'Uc_all', 'Ub_all', 'sb_all', 'error_bound_all', 'error_Bi_all');
 
-1; 
-
-[P_s_r,ix_r] = matrixIDvR(Uc,r);
-err_Ahat = norm(Uf-Uf(:,ix_r)*P_s_r)/norm(Uf);
-efficacy = error_bound/err_Ahat;
-
-
-% tip error calculation
-errors_Ahat = (Uf-Uf(:,ix_r)*P_s_r); %/norm(Uf);
-% tip_error_1 = errors_Ahat(end,:)/norm(Uf(end,:)); 
-
-% or 
-% tip_error = errors_Ahat(end,:)./Uf(end,:); 
-
-% save('tip_error_regular','tip_error')
-% save('tip_error_optimized','tip_error')
-
-% U = Uf(:,ix_r)*P_s_r; 
-% % save('Beam_design/Bi_nom','Bi')
-% save('L_data/Ub_stress_opt','U')
-
-err_Ahat
-ahat_error_est/norm(A_R)
-1; 
-
-
+% save(strcat('L_design/',save_label, '_opt'),'Uc_all', 'Ub_all', 'sb_all', 'error_bound_all', 'error_Bi_all')
 
 end

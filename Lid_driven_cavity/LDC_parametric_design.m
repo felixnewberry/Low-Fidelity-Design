@@ -31,9 +31,6 @@ close all
 % 3 is P base           
 % 4 is P vert
 
-
-
-
 % % make data for presentation
 % plot_ghia = 0; 
 
@@ -76,23 +73,6 @@ c5 = [0.4660, 0.6740, 0.1880];
 c6 = [0.3010, 0.7450, 0.9330]; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Simulation settings
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%fprintf('**************** Simulation Settings ****************\n')
-tic
-
-% This runs, but asks for sudo command. 
-pyFi_sudo = ' sudo python3.6 LDC_nonlinear.py';
-%pyFi = ' python3.6 LDC_nonlinear.py';
-
-pyFi_ensemble = 'sudo python3.6 LDC_ensemble.py';
-
-% number of repetitions to generate PC response curve
-N_sim_PCE = 1; %100; 
-% check whether this should be eliminated. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Generate samples 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -132,30 +112,9 @@ load('LDC_data/x_32.mat');
 load('LDC_data/y_32.mat');
 load('LDC_data/x_all.mat');
 
-
 % random inputs, xi_mat, nu_vec, u_top_vec
 % load('LDC_data/xi_mat.mat');
 load('LDC_data/u_nu_vec.mat');
-
-% % Results
-% load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/u_matrix_32.mat');
-% Uf = u_matrix'; 
-% load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/u_matrix_8.mat');
-% u_mat_8 = u_matrix'; 
-% load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/u_matrix_6.mat');
-% u_mat_6 = u_matrix'; 
-% load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/u_matrix_4.mat');
-% u_mat_4 = u_matrix'; 
-
-% % check pressure whole field: 
-% load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/p_field_matrix_int_4.mat');
-% Uc = p_field_matrix'; 
-% 
-% load('home/felixnewberry/Documents/Research/10_low_fidelity_design/u_meshes/p_field_matrix_int_32.mat');
-% Uf = p_field_matrix'; 
-
-% epsilon tau setup and test. 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Point Test

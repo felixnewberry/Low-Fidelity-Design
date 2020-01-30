@@ -44,7 +44,7 @@ B_R = B(:,rand_sample);
 A_R = A(:,rand_sample);
 
 % Obtain column skeleton of P
-[P_s,ix] = matrixIDvR(B,n);
+[P_s,ix] = matrixIDvR(B,r);
 
 % Inputs
 normC = norm(P_s);
