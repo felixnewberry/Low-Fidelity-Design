@@ -322,6 +322,26 @@ if save_on ==1
     saveas(gcf,'plots/L_line_nu','epsc')
 end
 
+figure
+hold on
+% p1 = plot(100*delta_vec,100*error_bound_mat(:,1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+% p2 = plot(100*delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'o-', 'Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel('$ \Delta  \nu [\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+% legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
+% legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+% grid on
+set(gcf,'Position',size_large)
+title('Line search of $\nu$','Interpreter', 'latex')
+
+if save_on ==1
+    saveas(gcf,'plots/L_line_nu_s_field','epsc')
+end
+
 
 %%% corr
 load('L_design/line_qoi_cor_0_2p6.mat')
@@ -350,7 +370,7 @@ figure
 hold on
 % p1 = plot(100*delta_vec,100*error_bound_mat(:,1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
 % p2 = plot(100*delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'o-', 'Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel('$ \Delta  corr [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
@@ -393,7 +413,7 @@ figure
 hold on
 % p1 = plot(100*delta_vec,100*error_bound_mat(:,1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
 % p2 = plot(100*delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'o-', 'Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
 xlabel('$ \Delta  \sigma [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
@@ -431,6 +451,26 @@ title('Line search of $\theta$','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots/L_line_theta','epsc')
+end
+
+figure
+hold on
+% p1 = plot(100*delta_vec,100*error_bound_mat(:,1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+% p2 = plot(100*delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'o-', 'Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel('$\theta [rad]$','interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+% legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
+% legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+% grid on
+set(gcf,'Position',size_large)
+title('Line search of $\theta$','Interpreter', 'latex')
+
+if save_on ==1
+    saveas(gcf,'plots/L_line_theta_s_field','epsc')
 end
 
 % % plot bound for all QoI... 
@@ -609,9 +649,7 @@ ylim([0,30])
 title('S Field','Interpreter','latex')
 
 if save_on ==1
-%     saveas(gcf,'plots/LDC_1_u','epsc')
     saveas(gcf,'plots/L_rand_samples_s','epsc')
-%     saveas(gcf,'plots/LDC_2_u_n8','epsc')
 end
 
 % Stress (maybe d field and line but likely not
@@ -657,9 +695,7 @@ ylim([0,30])
 title('d Field','Interpreter','latex')
 
 if save_on ==1
-%     saveas(gcf,'plots/LDC_1_u','epsc')
     saveas(gcf,'plots/L_rand_samples_d_line','epsc')
-%     saveas(gcf,'plots/LDC_2_u_n8','epsc')
 end
 
 figure
@@ -681,9 +717,7 @@ title('d field','Interpreter','latex')
 
 
 if save_on ==1
-%     saveas(gcf,'plots/LDC_1_u','epsc')
     saveas(gcf,'plots/L_rand_samples_d_field','epsc')
-%     saveas(gcf,'plots/LDC_2_u_n8','epsc')
 end
 
 
@@ -691,9 +725,6 @@ end
 delta_mat_s(:,bound_index_s(1))
 bound_sort_s(1)
 bi_sort_s(1)
-
-%%% Interpolate Uc to find low-fidelity error. 
-% Plot histograms. 
 
 1; 
 
@@ -754,6 +785,8 @@ axis tight
 set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
 % title('Stress Field','Interpreter','latex')
+
+1; 
 
 if save_on ==1
     saveas(gcf,'plots/L_s_field_hist','epsc')
@@ -938,6 +971,10 @@ title('Optimal Error Realization','Interpreter','latex')
 % zlim([0,zmax])
 colorbar
 
+if save_on ==1
+    saveas(gcf,'plots/L_error_Bi_nom_opt','epsc')
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Check errors near singularity/contribution to error. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -989,3 +1026,7 @@ set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);grid off; box off; axis tight;
 title('Bi Difference Var','Interpreter','latex')
 % zlim([0,zmax])
 colorbar
+
+if save_on ==1
+    saveas(gcf,'plots/L_error_mu_var','epsc')
+end

@@ -39,6 +39,7 @@ c6 = [0.3010, 0.7450, 0.9330];
 
 %%% 1 rep 
 
+% rename line to individual sensitivity, ie ind_sens_
 %%% N = 2
 load('Beam_design/line_w_pm95')
 error_w = error_bound_mat;
@@ -92,7 +93,7 @@ set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
 % grid on
 set(gcf,'Position',size_1)
-title('Line search $h_1 = h_2$','Interpreter','latex')
+title('Individual Sensitivity $h_1 = h_2$','Interpreter','latex')
 
 
 if save_on ==1
@@ -109,7 +110,7 @@ set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
 set(gcf,'Position',size_1)
 % grid on
 set(gcf,'Position',size_1)
-title('Line search $h_3$','Interpreter','latex')
+title('Individual Sensitivity $h_3$','Interpreter','latex')
 
 if save_on ==1
     saveas(gcf,'Plots/beam_line_h3','epsc')

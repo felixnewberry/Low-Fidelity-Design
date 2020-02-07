@@ -39,25 +39,25 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % type of search 
-line_search = 0; 
-grid_search = 1; % 40x40 - 1600 samples
+individual_search = 1; 
+grid_search = 0; % 40x40 - 1600 samples
 random_search = 0; % pce error is about 8 % - stick with grid?
 plot_tip = 0; 
 
 % choose parameters to vary 
 
 
-% (mode 0-4 for line_search, 5 for grid)
+% (mode 0-4 for individual_search, 5 for grid)
 
 % mode = 0; % w
 % mode = 1; % h1
 % mode = 2; % h2
 % mode = 3; % h3
 % mode = 4; % h1 = h2
-mode = 5; % h1=h2 and h3
+mode = 0; % h1=h2 and h3
 
 % choose delta range
-delta_test = 0; % used for line search of h3 and h1=h2. 
+delta_test = 0; % used for individual search of h3 and h1=h2. 
 % delta_test = 1; % +-0.95
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,17 +84,18 @@ load('Beam_data/xi')
 r = 1; 
 n = r+2; 
 
-nsim = 3000; % Test nsim of 3000? % 9 21 to 9 23  for 100, 9 24 to 9 54. 
+nsim = 100; % Test nsim of 3000? % 9 21 to 9 23  for 100, 9 24 to 9 54. 
 % 3000: 
+% 100 or 3000? 
 
 
 n_bound_reps = 1; % does not make sense to do repetitions - this would require access to more high-fidelity samples. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Line search
+%%% individual search
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if line_search == 1
+if individual_search == 1
     
 % nominal and optimal delta values
 % delta_t1_rand = [0, 1.5];
@@ -104,23 +105,23 @@ delta_vec = -0.95:0.1:0.95;
 
 if mode == 0
     plot_label = '$ \Delta w [\%]$';
-    save_label = 'line_w_pm95'; 
+    save_label = 'individual_w_pm95'; 
 elseif mode == 1
     plot_label = '$ \Delta h_1 [\%]$';
-    save_label = 'line_h1_pm95'; 
+    save_label = 'individual_h1_pm95'; 
 elseif mode == 2
     plot_label = '$ \Delta h_2 [\%]$';
-    save_label = 'line_h2_pm95'; 
+    save_label = 'individual_h2_pm95'; 
 elseif mode == 3
     plot_label = '$ \Delta h_3 [\%]$';
-    save_label = 'line_h3_pm95'; 
+    save_label = 'individual_h3_pm95'; 
     if delta_test == 0
-        save_label = 'line_h3_p35';
+        save_label = 'individual_h3_p35';
         delta_vec = 0:1:40;       
     end
 elseif mode == 4
     plot_label = '$ \Delta h_1 = \Delta h_2 [\%]$';
-    save_label = 'line_h1h2_p2m1'; 
+    save_label = 'individual_h1h2_p2m1'; 
     delta_vec = -1:0.075:2;
 end
 
@@ -143,10 +144,10 @@ end
 
 save(strcat('Beam_design/', save_label), 'error_bound_mat')
 
-% save('Beam_design/line_h1h2_p2m1','error_bound_mat')
+% save('Beam_design/individual_h1h2_p2m1','error_bound_mat')
 % save('Beam_design/delta_vec_h1h2_p2m1','delta_vec')
 
-% save('Beam_design/line_h3_p35','error_bound_mat')
+% save('Beam_design/individual_h3_p35','error_bound_mat')
 % save('Beam_design/delta_vec_h3_p35','delta_vec')
 
 % Plot error bound 

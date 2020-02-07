@@ -103,11 +103,7 @@ error_bound_vec = zeros(1,n_reps);
 
 for i_reps = 1:n_reps
 
-% Subset of vectors for bi-fidelity error estimate
-% rng(42); 
-% rand_sample = randsample(nsim,n);
 
-rand_sample = 1:n; 
 
 %%% made some changes: rerun
 
@@ -115,8 +111,7 @@ rand_sample = 1:n;
 B = Uc/norm(Uc,'fro');
 A = Uf/norm(Uf,'fro');
 
-B_R = B(:,rand_sample);
-A_R = A(:,rand_sample);
+
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%% L Transformation
@@ -132,6 +127,17 @@ normC = norm(P_s);
 sb = svd(B); 
 err_Bhat = norm(B-B(:,ix)*P_s); 
 N = nsim;
+
+1; 
+
+% Subset of vectors for bi-fidelity error estimate 
+% Choose the first n - those chosen by column skeleton
+
+rand_sample = [1:n-length(ix),ix]; 
+    
+B_R = B(:,rand_sample);
+A_R = A(:,rand_sample);
+
 
 % % % Compute epsilon tau... 
 [~, ahat_error_est,~, ~,~] = ...
