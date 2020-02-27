@@ -118,6 +118,9 @@ N = nsim;
 % Ensure column skeleton slection are used + additional samples to reach
 % total of n
 
+% This doesn't eleminate chance that indices are used twice. How to fix
+% this? 
+rand_sample = ix; 
 rand_sample = [1:n-length(ix),ix]; 
     
 B_R = B(:,rand_sample);

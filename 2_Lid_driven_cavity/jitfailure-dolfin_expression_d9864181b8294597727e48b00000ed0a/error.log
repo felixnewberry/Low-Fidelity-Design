@@ -1,0 +1,11 @@
+/tmp/tmpdzlq3z1r/dolfin_expression_d9864181b8294597727e48b00000ed0a.cpp: In member function ‘virtual void dolfin::dolfin_expression_d9864181b8294597727e48b00000ed0a::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmpdzlq3z1r/dolfin_expression_d9864181b8294597727e48b00000ed0a.cpp:67:117: error: expected ‘;’ before ‘)’ token
+           values[0] = nu_0+(nu_1-nu_0)/(1+exp(sig_tight*((sqrt(pow(x[0]-vort_x,2)+pow(x[1]-vort_y,2)))-sig_center))));
+                                                                                                                     ^
+/tmp/tmpdzlq3z1r/dolfin_expression_d9864181b8294597727e48b00000ed0a.cpp: In member function ‘virtual double dolfin::dolfin_expression_d9864181b8294597727e48b00000ed0a::get_property(std::__cxx11::string) const’:
+/tmp/tmpdzlq3z1r/dolfin_expression_d9864181b8294597727e48b00000ed0a.cpp:79:11: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+           if (name == "nu_0") return nu_0;          if (name == "nu_1") return nu_1;          if (name == "sig_tight") return sig_tight;          if (name == "vort_x") return vort_x;          if (name == "vort_y") return vort_y;          if (name == "sig_center") return sig_center;
+           ^~
+/tmp/tmpdzlq3z1r/dolfin_expression_d9864181b8294597727e48b00000ed0a.cpp:79:53: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+           if (name == "nu_0") return nu_0;          if (name == "nu_1") return nu_1;          if (name == "sig_tight") return sig_tight;          if (name == "vort_x") return vort_x;          if (name == "vort_y") return vort_y;          if (name == "sig_center") return sig_center;
+                                                     ^~

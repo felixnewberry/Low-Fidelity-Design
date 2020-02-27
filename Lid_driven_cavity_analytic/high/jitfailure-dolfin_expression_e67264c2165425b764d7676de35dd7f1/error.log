@@ -1,0 +1,10 @@
+/tmp/tmp3p9v6rxf/dolfin_expression_e67264c2165425b764d7676de35dd7f1.cpp: In member function ‘virtual void dolfin::dolfin_expression_e67264c2165425b764d7676de35dd7f1::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmp3p9v6rxf/dolfin_expression_e67264c2165425b764d7676de35dd7f1.cpp:62:39: error: invalid type argument of unary ‘*’ (have ‘double’)
+           values[0] = (Re)*8.0*(x[0]**4.0-2.0*x[0]**3.0+x[0]**2.0);
+                                       ^~~
+/tmp/tmp3p9v6rxf/dolfin_expression_e67264c2165425b764d7676de35dd7f1.cpp:62:53: error: invalid type argument of unary ‘*’ (have ‘double’)
+           values[0] = (Re)*8.0*(x[0]**4.0-2.0*x[0]**3.0+x[0]**2.0);
+                                                     ^~~
+/tmp/tmp3p9v6rxf/dolfin_expression_e67264c2165425b764d7676de35dd7f1.cpp:62:63: error: invalid type argument of unary ‘*’ (have ‘double’)
+           values[0] = (Re)*8.0*(x[0]**4.0-2.0*x[0]**3.0+x[0]**2.0);
+                                                               ^~~
