@@ -80,9 +80,7 @@ load('Beam_data/xi')
 r = 1; 
 n = r+4; 
 
-nsim = 3000; 
-% Test nsim of 3000? % 9 21 to 9 23  for 100, 9 24 to 9 54. 
-% 3000: 
+nsim = 100; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% individual search
@@ -196,45 +194,6 @@ efficacy_mat(i_test,i_t3) = efficacy;
 end
 
 end
-
-toc
-
-% % Identify minimum with respect to both A_hat and bound
-% 
-% % A_hat
-% % Minimum of each column
-% [min_values, index_t1_A] = min(error_Bi_mat); 
-% % Global minimum, column index is t3
-% [min_value, index_t3_A] = min(min_values); 
-% index_t1_A = index_t1_A(index_t3_A);
-% t1_Bi = delta_t1_vec(index_t1_A);
-% t3_Bi = delta_t3_vec(index_t3_A);
-% min_Bi = min_value; 
-% 
-% min_bound_Bi = error_bound_mat(index_t1_A,index_t3_A);
-% 
-% % Error bound
-% % Minimum of each column
-% [min_values, index_t1_B] = min(error_bound_mat); 
-% % Global minimum, column index is t3
-% [min_value, index_t3_B] = min(min_values); 
-% index_t1_B = index_t1_B(index_t3_B);
-% t1_bound = delta_t1_vec(index_t1_B);
-% t3_bound = delta_t3_vec(index_t3_B);
-% min_bound = min_value; 
-% 
-% % min_bound_A = error_est_sum(index_t1_A,index_t3_A); 
-% min_Bi_bound = error_Bi_mat(index_t1_B,index_t3_B);
-% 
-% fprintf('Bound location and values \n');
-% fprintf('t3: %d, t1=t2: %d \n',t3_bound, t1_bound);
-% fprintf('Bound: %d \n',min_bound);
-% fprintf('Bi: %d \n',min_Bi_bound);
-% 
-% fprintf('Bi location and values \n');
-% fprintf('t3: %d, t1=t2: %d \n',t3_Bi, t1_Bi);
-% fprintf('Bound: %d \n',min_bound_Bi);
-% fprintf('Bi: %d \n',min_Bi);
 
 save('Beam_design/grid_search','delta_t3_vec','delta_t1_vec',...
     'error_bound_mat', 'error_Bi_mat')
