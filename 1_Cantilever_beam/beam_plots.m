@@ -317,12 +317,12 @@ end
 load('Beam_data/Uf')
 % Uf = Uf(:,1:n_sim);
 
-load('Beam_design/Nom_3000')
+load('Beam_design/Nom_all')
 Uc_nom_3 = Uc;
 Ub_nom_3 = Ub; 
 error_bound_nom_3 = error_bound; 
 
-load('Beam_design/Opt_3000')
+load('Beam_design/Opt_all')
 Uc_opt_3 = Uc;
 Ub_opt_3 = Ub; 
 error_bound_opt_3 = error_bound; 
@@ -454,19 +454,31 @@ if save_on ==1
     saveas(gcf,'Plots/beam_tip_bi_hist','epsc')
 end
 
-%%% Optimal L is a very narrow distribution - looks silly. 
-% figure
-% hold on
-% h1 = histogram(abs(tip_error_nom_L),n_hist);
-% h2 = histogram(abs(tip_error_opt_L),n_hist);
-% hold off
-% legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
-% xlabel('bi-fidelity error','interpreter','latex','Fontsize',FS)
-% ylabel('frequency','interpreter','latex','Fontsize',FS)
-% axis tight
-% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% grid on
+%%% Plot basis reduction ensemble as well. 
+load('Beam_design/results_br'); 
+tip_error_nom_br = (u_bi_nom(:,end)' - Uf(end,:))./Uf(end,:);
+tip_error_opt_br = (u_bi_opt(:,end)' - Uf(end,:))./Uf(end,:);
+% tip_error_opt_br = eu_bi_nom(:,end);
 
+figure
+hold on
+h1 = histogram(abs(100*tip_error_nom_br),n_hist,'FaceColor',c1);
+h2 = histogram(abs(100*tip_error_opt_br),n_hist,'FaceColor',c2);
+hold off
+legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+xlabel('Relative Error $[\%]$','interpreter','latex','Fontsize',FS)
+ylabel('Frequency','interpreter','latex','Fontsize',FS)
+axis tight
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+% grid on
+set(gcf,'Position',size_1)
+
+if save_on ==1
+    saveas(gcf,'Plots/beam_tip_bi_hist_br','epsc')
+end
+
+fprintf('Basis reduction results:')
+results_tab
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot eigenvalue decay 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
