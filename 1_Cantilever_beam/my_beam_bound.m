@@ -16,11 +16,12 @@ function [error_bound,err_Ahat,efficacy] = my_beam_bound(X,nsim, n, r, mode)
 % 3 test h3
 % 4 test h1 = h2
 % 5 test h1 = h2 and h3
+% 6 save nominal and optimal results
 
 %%% Outputs
-% error_bound - average over repetitions
-% err_Ahat - average over repetitions
-% efficiacy - average over repetionns
+% error_bound 
+% err_Ahat 
+% efficiacy 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Beam details

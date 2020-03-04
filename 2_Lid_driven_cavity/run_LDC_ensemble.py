@@ -37,10 +37,10 @@ nu_vec = content['nu_vec']
 content = loadmat('./LDC_data/inputs_vec.mat')
 nx = int(content['nx'])
 delta_u = float(content['delta_u'])
-delta_nu_0 = float(content['delta_nu_0'])
-delta_nu_1 = float(content['delta_nu_1'])
+delta_nu = float(content['delta_nu'])
+# delta_nu_1 = float(content['delta_nu_1'])
 
-run_count = content['run_count']
+#run_count = content['run_count']
 #QoI = float(content['QoI'])
 
 ## TO obtain high-fidelity data:
@@ -60,7 +60,7 @@ u_matrix_7 = np.zeros((200,4225))
 
 
 # Apply deltas to u and nu % want them to be multiplicative. :/
-# nu_vec = nu_vec*(1+delta_nu)
+nu_vec = nu_vec*(1+delta_nu)
 u_lid_vec = u_lid_vec*(1+delta_u)
 
 #print(QoI)
@@ -73,14 +73,14 @@ for i in range(200): #200
     u_lid = Constant(u_lid)
     #
     nu = float(nu_vec[sample_i])
-    nu_0 = nu*(1+delta_nu_0)
-    nu_1 = nu*(1+delta_nu_1)
-    # nu = Constant(nu)
+    #nu = nu*(1+delta_nu)
+    #nu_1 = nu*(1+delta_nu_1)
+    nu = Constant(nu)
     #
     #u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base = Navier_Stokes_LDC(u_lid, nu_0, nu_1, nx)
 
     # # linearly varying nu and sigmoid
-    u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base, p_field, u_x_field, u_y_field = Navier_Stokes_LDC(u_lid, nu_0, nu_1, nx)
+    u_y_array, u_x_array, p_array_mid, p_array_vert, p_array_base, p_field, u_x_field, u_y_field = Navier_Stokes_LDC(u_lid, nu, nx)
 
     u_matrix_0[i,:] = u_y_array
     u_matrix_1[i,:] = u_x_array
@@ -94,6 +94,7 @@ for i in range(200): #200
 # Save QoI
 
 scipy.io.savemat('./u_meshes/u_matrix.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
+
 #scipy.io.savemat('./u_meshes/L_data/u_matrix_' + str(run_count)+'.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})
 
 # scipy.io.savemat('./u_meshes/u_matrix_low_mp5_s1.mat', mdict={'u_matrix_0':u_matrix_0, 'u_matrix_1':u_matrix_1, 'u_matrix_2':u_matrix_2, 'u_matrix_3':u_matrix_3, 'u_matrix_4':u_matrix_4, 'u_matrix_5':u_matrix_5, 'u_matrix_6':u_matrix_6, 'u_matrix_7':u_matrix_7})

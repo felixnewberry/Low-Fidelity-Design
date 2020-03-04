@@ -1,12 +1,28 @@
-function [error_bound_vec,err_Bi_vec,err_low_vec] = my_ldc_bound(nx, n, r, delta_u, delta_nu_0, delta_nu_1,run_count)
+function [error_bound_vec,err_Bi_vec,err_low_vec] = my_ldc_bound(nx, n, r, delta_u, delta_nu, nom_opt)
+
+%%% Inputs
+
+% Revisit inputs... 
+
+% X - vector of deltas 
+% X(1) = delta_u;
+% X(2) = delta_nu;
+% nx - grid resultion of FEniCS code 
+% n - truncation - subset of data from which bound is estimated. 
+% r - truncation with which bi-fidelity model is found
+
+% mode:
+% 0 test u and nu
+% 1 save nominal and optimal results
+
+%%% Outputs
+% error_bound 
+% err_Ahat 
+% efficiacy 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% LDC details
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%% first check standard. Have to change nu and u in python later to check
-%%% new one. 
-% use new RVs: twice the range
 
 xi = load('LDC_data/xi_mat_2.mat');
 xi = xi.xi_2; 
@@ -46,9 +62,14 @@ err_low_vec = zeros(length(Qoi_vec),1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % save './ensemble_inputs/nx.mat' 'nx' 
-save('LDC_data/inputs_vec.mat', 'nx', 'delta_u', 'delta_nu_0','delta_nu_1','run_count') ;
+% save('LDC_data/inputs_vec.mat', 'nx', 'delta_u', 'delta_nu_0','delta_nu_1','run_count') ;
+% save('LDC_data/inputs_vec.mat', 'nx', 'delta_u', 'delta_nu_0','delta_nu_1') ;
+% delta_u = X(1); 
+% delta_nu = X(2); 
 
 1; 
+
+save('LDC_data/inputs_vec.mat', 'nx', 'delta_u', 'delta_nu');
 
 tic
 % Call python/fenics
@@ -62,6 +83,7 @@ toc
 try
 % load Uc matrix
 Uc= load('u_meshes/u_matrix.mat');
+
 1; 
 
 % delete Uc matrix file 
@@ -79,8 +101,6 @@ Uc_all = cat(3,Uc.u_matrix_0, Uc.u_matrix_1, Uc.u_matrix_2, Uc.u_matrix_3, Uc.u_
 % fid. 
 % tol = 1e-4; 
 
-
-
 % Step through each QoI
 
 for i_qoi = 1:length(Qoi_vec)
@@ -94,29 +114,22 @@ for i_qoi = 1:length(Qoi_vec)
     B = Uc/norm(Uc,'fro');
     A = Uf/norm(Uf,'fro');
 
-    B_R = B(:,rand_sample);
-    A_R = A(:,rand_sample);
-    
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     %%% L Transformation
-%     Phi = A_R* pinv(B_R); 
-%     B = Phi*B; 
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
     % Obtain column skeleton of P
     [P_s,ix] = matrixIDvR(B,r);
-
-    % Subset of vectors for bi-fidelity error estimate 
-    % Ensure column skeleton slection are used + additional samples to reach
-    % total of n
-
-    rand_sample = [1:n-length(ix),ix]; 
-
+    
     % Error bound inputs
     normC = norm(P_s);
     sb = svd(B); 
     err_Bhat = norm(B-B(:,ix)*P_s); 
     N = 200;
+    
+    % Subset of vectors for bi-fidelity error estimate 
+    % Ensure column skeleton slection are used + additional samples to reach
+    % total of n
+    rand_sample = [ix, getfield(setxor(ix,1:N), {1:n-numel(ix)})];
+
+    B_R = B(:,rand_sample);
+    A_R = A(:,rand_sample);
 
     % % % Compute epsilon tau... 
     [~, ahat_error_est,~, ~,~] = ...
@@ -133,37 +146,39 @@ for i_qoi = 1:length(Qoi_vec)
     err_low_vec(i_qoi) = norm(Uc - Uf)/norm(Uf); 
     1; 
     
-    % if i_qoi == 1
-%     save_label = 'u_mid';
-% % elseif i_qoi == 2
-% %     save_label = 'u_x';
-% % elseif i_qoi == 3
-% %     save_label = 'P_mid';
-% % elseif i_qoi == 4
-% %     save_label = 'P_vert';
-% % elseif i_qoi == 5
-% %     save_label = 'P_base';
-% % end
-% % 
-% Ub = Uf(:,ix)*P_s;
-% % 
-% % 1; 
-% % 
-% save_label = 'all';
+    
+    if nom_opt == 1
+        if i_qoi == 1
+            % U Mid - first qoi 
+            Ub = Uf(:,ix)*P_s;
+            save('LDC_design/Nom_u_mid','Uc', 'Ub', 'sb','rand_sample','n','r')
+        elseif i_qoi == 5
+            Ub = Uf(:,ix)*P_s;
+            save('LDC_design/Nom_p_base','Uc', 'Ub', 'sb','rand_sample','n','r')
+        end
+    elseif nom_opt == 2
+        if i_qoi == 1
+            Ub = Uf(:,ix)*P_s;
+            save('LDC_design/Opt_u_mid','Uc', 'Ub', 'sb','rand_sample','n','r')
+        end
+    elseif nom_opt == 3
+        if i_qoi == 5
+            Ub = Uf(:,ix)*P_s;
+            save('LDC_design/Opt_p_base','Uc', 'Ub', 'sb','rand_sample','n','r')    
+        end
+    end
+    
+end
 
-% save(strcat('LDC_design/',save_label, '_nom'),'Uc', 'Ub', 'sb')
-% save(strcat('LDC_design/',save_label, '_opt'),'Uc', 'Ub', 'sb')
-
-
-% save(strcat('LDC_design/',save_label, '_nom_2'),'Uc', 'Ub', 'sb')
-% save(strcat('LDC_design/',save_label, '_opt_2'),'Uc', 'Ub', 'sb')
+if nom_opt == 1
+    save('LDC_design/Nom_errors_all','error_bound_vec','err_Bi_vec','err_low_vec','n','r')
 end
 
 catch
     err_Bi_vec(:) = nan; 
     err_low_vec(:) = nan; 
+    1;
+    
 end
-
-
 
 end

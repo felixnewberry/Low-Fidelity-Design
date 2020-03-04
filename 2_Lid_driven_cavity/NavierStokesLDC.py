@@ -37,7 +37,7 @@ set_log_level(LogLevel.WARNING)
 #content = sciio.loadmat('./nx.mat')
 #nx = int(content['nx'])
 
-def Navier_Stokes_LDC(u_top, nu_0, nu_1, nx):
+def Navier_Stokes_LDC(u_top, nu, nx):
     # Inputs:
     # u_top - velocity of top plate
     # nu - viscosity of fluid
@@ -64,7 +64,7 @@ def Navier_Stokes_LDC(u_top, nu_0, nu_1, nx):
     x[:] = 0.5*(np.cos(np.pi*(x-1) / 2) + 1)
 
     # nu varies linearly from nu_0 to nu_1
-    nu = Expression('nu_0 + (nu_1-nu_0)*x[1]', nu_1= nu_1, nu_0=nu_0, degree=1)
+    #nu = Expression('nu_0 + (nu_1-nu_0)*x[1]', nu_1= nu_1, nu_0=nu_0, degree=1)
 
     # nu sigmoid depression centered at vortex.
     # vortex center is 0.6215, 0.7357
@@ -105,15 +105,13 @@ def Navier_Stokes_LDC(u_top, nu_0, nu_1, nx):
     # Set parameter values
     Re = 100
     #nu = 1.0/Re
-    #nu = Constant(nu)
+    nu = Constant(nu)
 
 
-    #print(nu)
     # Define boundary conditions
 
     #u_top = 1    # Velocity of top plate.
     u_top = Constant(u_top)
-    #print(u_top)
     noslip  = DirichletBC(W.sub(0), (0, 0), "x[0] < DOLFIN_EPS || x[0] > 1.0 - DOLFIN_EPS || x[1] < DOLFIN_EPS")
     lid  = DirichletBC(W.sub(0), (u_top,0), "x[1] > 1.0 - DOLFIN_EPS")
     pref = DirichletBC(W.sub(1), 0, "x[0] < DOLFIN_EPS && x[1] < DOLFIN_EPS", "pointwise")
