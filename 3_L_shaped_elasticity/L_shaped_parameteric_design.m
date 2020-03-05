@@ -39,11 +39,11 @@ c6 = [0.3010, 0.7450, 0.9330];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 point_test = 0; % update with 0 pertubations to bound. 
-individual_sensitivity = 1; 
+individual_sensitivity = 0; 
 
 % I think this is broken for E (=1) just now... 
 
-mode_delta = 0; 
+mode_delta = 6; 
 
 %%% change this
 % 0 is nu
@@ -60,7 +60,7 @@ mode_delta = 0;
 
 random_search = 0; % pce error is about 8 % - stick with grid?
 % maybe 5 mintutes? 
-
+nom_opt = 1; 
 % 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,7 +78,7 @@ load('fenics_inputs/xi')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% epsilon tau
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % heuristic n = r+10
 r = 6; 
@@ -113,7 +113,7 @@ X = [0; 0; 0; 0];
 % X = [0.3027; 2.3445; -0.4413; 0.3113]; 
 
 
-[error_bound,error_Bi] = my_L_bound(X,nsim, n, r, mode_delta); 
+[error_bound,error_Bi] = my_L_bound(X,nsim, n, r, mode_delta, nom_opt); 
 
 % Load established Uh and nominal Ul and Ub. 
 
@@ -149,7 +149,7 @@ elseif mode_delta == 2
     delta_vec = 0.0:0.2:2.6;
     save_label = 'L_design/individual_qoi_cor_0_2p6';
     % delta_vec = 0.0:0.05:0.2;
-%     save_label = 'L_design/line_qoi_cor_0_p2';
+%     save_label = 'L_design/individual_qoi_cor_0_p2';
 elseif mode_delta == 3
     %%% 3: Sigma
     delta_vec = -1:0.1:0;
@@ -157,7 +157,7 @@ elseif mode_delta == 3
 elseif mode_delta == 4
     %%% 4: Theta
 %     delta_vec = [-pi/8:pi/32:pi/8];
-%     save_label = 'L_design/line_qoi_theta_m_pi_o8_pi_o8'; 
+%     save_label = 'L_design/individual_qoi_theta_m_pi_o8_pi_o8'; 
     delta_vec = [0:pi/32:pi/4];
     save_label = 'L_design/individual_qoi_theta_m_0_pi_o4'; 
 elseif mode_delta == 5
@@ -166,9 +166,9 @@ elseif mode_delta == 5
     save_label = 'L_design/individual_qoi_q_mp75_p75';
 end
 
-% % First test, does parameter display bound sensitivity? 
-delta_vec = -0.5:0.1:0.5;
-save_label = strcat('L_design/individual_qoi_',num2str(mode_delta),'_mp5_p5');
+% % % First test, does parameter display bound sensitivity? 
+% delta_vec = -0.5:0.1:0.5;
+% save_label = strcat('L_design/individual_qoi_',num2str(mode_delta),'_mp5_p5');
 
 % Store all three qoi for all sample points
 error_bound_mat = zeros(length(delta_vec),3); 
@@ -180,7 +180,7 @@ tic
 
 for i_test = 1:length(delta_vec)
 
-[error_bound,error_Bi] = my_L_bound(delta_vec(i_test),nsim, n, r, mode_delta); 
+[error_bound,error_Bi] = my_L_bound(delta_vec(i_test),nsim, n, r, mode_delta, nom_opt); 
 
 error_bound_mat(i_test,:) = error_bound;
 error_Bi_mat(i_test,:) =  error_Bi;
@@ -210,17 +210,17 @@ if random_search == 1
 
 n_samps = 200; 
 
-% % For s field
-% delta_nu_vec = [0,0.7]; 
-% delta_corr_vec = [1.8,2.6];
-% delta_sigma_vec = [-0.8,0];
-% delta_theta_vec = [0,pi/4];
-
-% for d line and field
+% For s field
 delta_nu_vec = [0,0.7]; 
-delta_corr_vec = [-0.3,0.6];
-delta_sigma_vec = [0,0];
-delta_theta_vec = [0,pi/4];
+delta_corr_vec = [1.8,2.6];
+delta_sigma_vec = [-0.8,0];
+delta_theta_vec = [-pi/8,pi/4];
+
+% % for d line and field
+% delta_nu_vec = [0,0.7]; 
+% delta_corr_vec = [-0.3,0.6];
+% delta_sigma_vec = [0,0];
+% delta_theta_vec = [-pi/8,pi/4];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PCE fit to random points. 
@@ -300,7 +300,7 @@ error_Bi_mat = zeros(n_samps,3);
 
 for i_t = 1:n_samps
     
-[error_bound,error_Bi] = my_L_bound(delta_mat(:,i_t),nsim, n, r, mode_delta); 
+[error_bound,error_Bi] = my_L_bound(delta_mat(:,i_t),nsim, n, r, mode_delta, nom_opt); 
 
 error_bound_mat(i_t,:) = error_bound;
 error_Bi_mat(i_t,:) =  error_Bi;
@@ -314,7 +314,7 @@ error_bound_mat(1:n_samps)
 error_Bi_mat(1:n_samps)
 
 
-% save('nu_corr_sigma_r6','error_bound_mat','error_Ahat_mat','delta_mat','xi_rand','delta_nu_vec','delta_corr_vec','delta_sigma_vec');
+% save('L_design/nu_corr_sigma_theta_r6','error_bound_mat','error_Bi_mat','delta_mat','xi_rand','delta_nu_vec','delta_corr_vec','delta_sigma_vec');
 
 % save('L_design/nu_corr_sigma_theta_r6','error_bound_mat','error_Bi_mat',...
 %     'delta_mat','xi_rand','delta_nu_vec','delta_corr_vec','delta_sigma_vec', 'delta_theta_vec');
@@ -325,5 +325,18 @@ error_Bi_mat(1:n_samps)
 
 
 end
+
+end
+
+if nom_opt == 1
+    
+    delta_mat = [zeros(1,4); 0.0576, 2.3855, -0.3868, 0.1075]'; 
+    
+
+    for i_t = 1:2
+        [error_bound,error_Bi] = my_L_bound(delta_mat(:,i_t),nsim, n, r, mode_delta, nom_opt); 
+    end
+
+    
 end
 

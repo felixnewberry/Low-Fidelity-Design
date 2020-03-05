@@ -432,6 +432,7 @@ end
 
 %%% theta
 load('L_design/individual_qoi_theta_m_0_pi_o4.mat')
+% load('L_design/individual_qoi_theta_m_pi_o8_pi_o8.mat')
 
 figure
 hold on
@@ -518,7 +519,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load data: 
-load('L_design/nu_corr_sigma_theta_r6')
+% load('L_design/nu_corr_sigma_theta_r6')
 
 % xi_rand = xi_rand*2-1;
 % 
@@ -653,75 +654,6 @@ title('S Field','Interpreter','latex')
 if save_on ==1
     saveas(gcf,'plots/L_rand_samples_s','epsc')
 end
-
-% Stress (maybe d field and line but likely not
-
-% d line does poorly regardless of choice. 
-% load('L_design/nu_corr_sigma_theta_r6')
-% likely: 
-load('L_design/nu_corr_theta_r6_d')
-
-
-[bound_sort_d_line, bound_index_d_line] = sort(error_bound_mat(:,1));
-bi_sort_d_line = error_Bi_mat(bound_index_s,1); 
-
-[bound_sort_d_field, bound_index_d_field] = sort(error_bound_mat(:,2));
-bi_sort_d_field = error_Bi_mat(bound_index_s,2); 
-
-
-
-% Find optimal for d line and d field
-
-% load('L_design/all_opt')
-% Uc_opt_s_field = Uc_all{3}; 
-% Ub_opt_s_field = Ub_all{3}; 
-% sb_opt_s_field = sb_all{3}; 
-% opt_bi_s_field = error_Bi_all(3); 
-% opt_bound_s_field = error_bound_all(3); 
-
-
-figure
-p1 = plot(100*bound_sort_d_line,'ob','color', c1, 'LineWidth',LW,'MarkerSize',MS); 
-hold on
-p2 = plot(100*bi_sort_d_line,'xr', 'color', c2,'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot([1,200],[nom_bound_d_line*100, nom_bound_d_line*100],'b-','color', c1, 'LineWidth',LW); 
-p4 = plot([1,200],[nom_bi_d_line*100, nom_bi_d_line*100],'r--', 'color', c2,'LineWidth',LW); 
-hold off
-xlabel('sample','interpreter','latex','Fontsize',FS)
-ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2,p3,p4],{'Bound Samples','Bi Samples','Nominal Bound','Nominal Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% grid on
-ylim([0,30])
-title('d Field','Interpreter','latex')
-
-if save_on ==1
-    saveas(gcf,'plots/L_rand_samples_d_line','epsc')
-end
-
-figure
-p1 = plot(100*bound_sort_d_field,'ob','color', c1, 'LineWidth',LW,'MarkerSize',MS); 
-hold on
-p2 = plot(100*bi_sort_d_field,'xr', 'color', c2,'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot([1,200],[nom_bound_d_field*100, nom_bound_d_field*100],'b-','color', c1, 'LineWidth',LW); 
-p4 = plot([1,200],[nom_bi_d_field*100, nom_bi_d_field*100],'r--', 'color', c2,'LineWidth',LW); 
-hold off
-xlabel('sample','interpreter','latex','Fontsize',FS)
-ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2,p3,p4],{'Bound Samples','Bi Samples','Nominal Bound','Nominal Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
-axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
-% grid on
-ylim([0,30])
-title('d field','Interpreter','latex')
-
-
-
-if save_on ==1
-    saveas(gcf,'plots/L_rand_samples_d_field','epsc')
-end
-
 
 %%% best performing 
 delta_mat_s(:,bound_index_s(1))

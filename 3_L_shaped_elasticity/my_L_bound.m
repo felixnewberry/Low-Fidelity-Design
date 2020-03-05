@@ -1,5 +1,5 @@
 function [error_bound_all,error_Bi_all] = my_L_bound(X,nsim, n, r,...
-    mode_delta)
+    mode_delta, nom_opt)
 
 
 %%% Inputs
@@ -168,6 +168,7 @@ error_Bi_all = zeros(3,1);
 
 Ub_all = cell(1,3);
 sb_all = cell(1,3);
+ix_all = cell(1,3);
 
 for i_qoi = 1:3
     Uf = Uf_all{i_qoi}; 
@@ -222,13 +223,19 @@ for i_qoi = 1:3
     
     Ub_all{i_qoi} = Uf(:,ix)*P_s;
     sb_all{i_qoi} = sb; 
-
+    ix_all{i_qoi} = ix; 
     
 end
 
-save_label = 'all';
-% 
-save(strcat('L_design/',save_label, '_nom'),'Uc_all', 'Ub_all', 'sb_all', 'error_bound_all', 'error_Bi_all');
+if nom_opt == 1
+    
+
+if X(1) == 0 
+    save_label = 'all_nom';
+else 
+    save_label = 'all_opt';
+end
+save(strcat('L_design/',save_label),'Uc_all', 'Ub_all', 'sb_all', 'error_bound_all', 'error_Bi_all', 'ix_all');
 
 % save(strcat('L_design/',save_label, '_opt'),'Uc_all', 'Ub_all', 'sb_all', 'error_bound_all', 'error_Bi_all')
 
