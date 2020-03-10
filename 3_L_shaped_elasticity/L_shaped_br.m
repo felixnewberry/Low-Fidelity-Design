@@ -21,7 +21,7 @@ clc
 
 % Tip error, or entire deflection? 
 
-% n_sim = 200; 
+n_sim = 200; 
 
 
 load('L_data/Uf_stress')
@@ -29,24 +29,18 @@ Uf = Uf(:,1:n_sim);
 
 load('L_design/all_nom')
 Uc_nom = Uc_all{3}; 
+ix_nom = ix_all{3};
 
-% ix_nom = rand_sample(1:r);
 load('L_design/all_opt')
 Uc_opt = Uc_all{3}; 
-
-% ix_opt = rand_sample(1:r); 
+ix_opt = ix_all{3};
 
 % random inputs
 load('Fenics_inputs/xi')
-load('Beam_data/xi')
-% xi_ref dim: Number of reference samples x stochastic dimension d
-xi_ref = xi(1:n_sim,:); 
-xi_low = xi_ref; 
-
-% Coordinates
-load('Beam_data/x_highfidelity.txt')
-x_l = x_highfidelity; 
-x_h = x_l; 
+% d = 7; 
+% n_terms = d*d; 
+xi_ref = xi(1:n_sim,:);
+xi_low = xi(1:n_sim,:);
 
 % rename and tranpose to be: Number of samples x spatial/temporal dimension of problem
 Uf = Uf'; 
@@ -58,14 +52,14 @@ Uc_opt = Uc_opt';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Desired polynomial order of PCE
-pol = 3; 
+pol = 1; 
  
 % set range of number of high-fidelity samples 
-N_hi = [2]; 
+N_hi = [12]; 
 % N_hi = [10, 15, 20, 25];
 
 % Set approximation rank of truncation 
-r = [1]; 
+r = [5]; 
 % The covariance matrix is always rank 1 - anything else will break for
 % beam. 
 
@@ -81,6 +75,8 @@ index_pc = nD_polynomial_array(size(xi_ref,2),pol);
 
 % size of PC basis (set of P basis functions 
 P = size(index_pc,1);
+
+% P is 1275 if pol = 2... for pol = 1: P=50
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Hi-fid PC basis - in practice not available, just a limited number. 
@@ -133,9 +129,9 @@ opts = spgSetParms('iterations',10000,'verbosity',0,'optTol',1e-9,'bpTol',1e-9);
 weights = get_matrix_weights(psi_low);
 Psiweights = psi_low*weights;
 % % sigma is truncation error of PCE (approximated)
-sigma =  cross_val_sigma(psi_low,Uc_nom(:,end));
+sigma =  cross_val_sigma(psi_low,Uc_nom(:,10));
 
-fprintf('Low-fidelity PC validation error of tip: %d %% \n', 100*sigma)
+fprintf('Low-fidelity PC validation error of sample stress: %d %% \n', 100*sigma)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Bi-fidelity model 
@@ -151,11 +147,23 @@ fprintf('Results basis reduction: \n');
 results = [error_low_nom, error_bi_nom; ...
     error_low_opt, error_bi_opt]; 
 
+fprintf("r = %d \n", r);
+fprintf("N_hi = %d \n", N_hi)
+
 results_tab = array2table(100*results, 'VariableNames',{'Low','Bi'},...
     'RowNames',{'Nominal', 'Optimal'})
 
-% Use table and histogram of tip-end. 
+% P = 1, N_hi = 7, r = 4/4
 
-% save('Beam_design/results_br','results', 'results_tab', 'u_bi_nom', 'u_bi_opt');
+% Nom = 13.7, opt = 9.86, pc = 117% 
+% Nom, Opt about 8.3 for r=1... 
 
-% save('Beam_design/results_br_all','results', 'results_tab', 'u_bi_nom', 'u_bi_opt');
+% 13.4 to 6.5 for r = 5, N = 7. Similar 6. 14 to 10 for 7. 
+% 11.6 to 4.7 for r = 5 N = 12
+
+% Maybe I should ramp up the number of samples for the nominal and optimal
+% - ie full 800. Test effiacy on that! 
+% Yes. Create new samples 
+
+save('L_design/results_br','results', 'results_tab', 'u_bi_nom', 'u_bi_opt');
+% save('L_design/results_br_all','results', 'results_tab', 'u_bi_nom', 'u_bi_opt');

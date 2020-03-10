@@ -32,7 +32,10 @@ psi_bi = psi_bi(:,1:end-1);
 u_bi = c_bi*psi_bi'; 
 u_bi = u_bi'; 
 
-error_low = norm(Uc - Uf)/norm(Uf); 
+1; 
+
+%error_low = norm(Uc - Uf)/norm(Uf); 
+error_low = 1; 
 error_bi = norm(u_bi - Uf)/norm(Uf); 
 end
 
