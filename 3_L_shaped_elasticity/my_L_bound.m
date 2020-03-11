@@ -36,7 +36,7 @@ function [error_bound_all,error_Bi_all] = my_L_bound(X,nsim, n, r,...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Input: Define the grid levels
-coarse_level = 1; % 1-4my_L_bound
+coarse_level = 4; % 1-4my_L_bound
 
 % Number of samples
 % nsim = 800;
@@ -45,10 +45,15 @@ coarse_level = 1; % 1-4my_L_bound
 % Define sigma, correlation length, and dimension of the one-D Gaussian defining youngs
 
 % Test 2 
-sigma = .85;
+% sigma = .85;
+sigma = .95;
+% sigma = 1.0;
 corr_length = 0.1;
 
+
+
 d = 7;
+% d = 10;
 youngs_0 = 0.1; % was 0.1. not sure what to make of this. 
 num_kl_grid = 8 * d; % Note this should be appropriately checked
 
@@ -88,13 +93,17 @@ mesh_info = fscanf(frid,'%d',[1,2]);
 xy_coarse = fscanf(frid,'%g %g',[2 mesh_info(1)]); xy_coarse = xy_coarse';
 
 % Set up course grid for each qoi. 
-coarse_grid_0 = 6; 
+% coarse_grid_0 = 6; % for course
+coarse_grid_0 = 22; % for fine 
 coarse_grid_1 = size(xy_coarse,1);
 coarse_grid_2 = size(xy_coarse,1);
 
 
 % % xi 
-load('fenics_inputs/xi')
+load('fenics_inputs/xi', 'xi')
+xi = xi(1:nsim,:); 
+% load('fenics_inputs/xi_2', 'xi_2')
+% xi = xi_2(1:nsim,:); 
 
 %%%%%%%%%%%%COARSE GRID
 %2A generate youngs data
@@ -143,15 +152,19 @@ system('rm -f L_data/solution_*');
 % indices for identifying line from x = 0, y = 0 to y = 1. 
 load('L_data/Idx_f', 'Idx_f')
 load('L_data/Idx_c', 'Idx_c')
+
+%%%
+% Uf_0 = Uc_0; Uf_1 = Uc_1; Uf_2 = Uc_2; 
+% Uf_all = {Uf_0, Uf_1, Uf_2}; 
+% save('L_data/Uf_all_sigmap95','Uf_all')
+%%%
+
 load('L_data/Uf_line', 'U')
 Uf_0 = U(Idx_f,:); 
 
 Uc_0 = Uc_0(Idx_c,:); 
-
 load('L_data/Uf_field', 'U')
 Uf_1 = U; 
-
-
 load('L_data/Uf_stress', 'Uf')
 Uf_2 = Uf; 
 
@@ -171,6 +184,10 @@ sb_all = cell(1,3);
 ix_all = cell(1,3);
 
 for i_qoi = 1:3
+    if i_qoi ~=3
+        nsim = 200; 
+        samps = 1:nsim; 
+    end
     Uf = Uf_all{i_qoi}; 
     Uc = Uc_all{i_qoi}; 
     

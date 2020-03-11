@@ -92,10 +92,10 @@ n = r+10;
 
 % mess with parameters.. 
 
-% nsim = 800; 
-nsim = 200; 
+nsim = 800; 
+% nsim = 200; 
 
-n_sample = 200; 
+% n_sample = 200; 
 
 n_bound_reps = 1; 
 
