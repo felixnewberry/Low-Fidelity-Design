@@ -52,8 +52,6 @@ QoI_vec = 0:7;
 % P vert - 0.2 % at 64... not necessarily a useful QoI... 
 % P top - terrible - singularities 
 
-% I could run test case for these with current random inputs - may want to ramp up... 
-% Test with current RVs then ramp up RVs.. 
 
 % First - save high -fidelity for the two U, then for P vert and P base. 
 
@@ -64,7 +62,6 @@ QoI_vec = 0:7;
 % P base
 % P vert
 
-% need to check out p base and p vert
 error_mat = zeros(8,6); 
 
 for i_qoi = 1:length(QoI_vec)
@@ -96,31 +93,12 @@ elseif QoI == 7
     plot_label = 'u vert';
 end
 
-% P base error is good: 0.13 % at 64 - comparing to 256. 
-% P field error is terrible (75% at 128 at 128... because of singularities?
-
 load('LDC_data/x_64')
 x_64 = x_64(:,1); 
 
 % plot u_matrix
 
 nx_vec = [4,8,16,32,64,128,256]; 
-
-% figure
-% p1 = plot(x_64,u_matrix(1,:),'Color',c1,'LineWidth',LW);
-% hold on
-% p2 = plot(x_64,u_matrix(2,:),'Color',c2,'LineWidth',LW);
-% p3 = plot(x_64,u_matrix(3,:),'Color',c3,'LineWidth',LW);
-% p4 = plot(x_64,u_matrix(4,:),'Color',c4,'LineWidth',LW);
-% p5 = plot(x_64,u_matrix(5,:),'Color',c5,'LineWidth',LW);
-% p6 = plot(x_64,u_matrix(6,:),'Color',c6,'LineWidth',LW);
-% p7 = plot(x_64,u_matrix(7,:),'LineWidth',LW);
-% 
-% ylabel('$P$ Base', 'interpreter', 'latex', 'fontsize', FS)
-% xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
-% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis); %box on; 
-% axis tight;
-
 
 % Calculate error
 error = zeros(length(nx_vec)-1,1); 
@@ -141,45 +119,6 @@ results = [nx_vec(1:end-1);100*error']'
 
 error_mat(i_qoi,:) = 100*error'; 
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Fix data
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% load('u_meshes/u_mesh_all')
-% 
-% error_mat_2 = zeros(5,6); 
-% 
-% for i_qoi = 1:5
-%     if i_qoi == 1
-%         u_matrix = u_matrix_0; 
-%     elseif i_qoi == 2
-%         u_matrix = u_matrix_1; 
-%     elseif i_qoi == 3 
-%         u_matrix = u_matrix_2; 
-%     elseif i_qoi == 4 
-%         u_matrix = u_matrix_3; 
-%     elseif i_qoi == 5
-%         u_matrix = u_matrix_4; 
-%     end
-%     
-%     error = zeros(length(nx_vec)-1,1); 
-%     for i = 1:length(nx_vec)-1
-%         error(i) = norm(u_matrix(i,:)-u_matrix(end,:))/norm(u_matrix(end,:));
-%     end
-% 
-%     error_mat_2(i_qoi,:) = 100*error'; 
-% end
-% 
-% % compare error_mat and error_mat_2
-% % rows correspond to u_field p_field, u_mid, p_mid p_top p_vert p_base
-% % u_vert
-% % u mid, u vert, p mid, p vert, p base
-% 
-% % just need to edit p_mid
-% 
-% load('u_meshes/u_mesh_P_mid')
-% 
-% 1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Generate high-fidelity data: first save x_64... 
@@ -224,5 +163,3 @@ legend([p1,p2,p3,p4,p5,p6,p7,p8],{'U Field','P Field','U Mid','P Mid','P Top', '
        'interpreter', 'latex', 'fontsize', FS_leg/2)
 % title(strcat(plot_label,' Convergence'),'Interpreter','latex')
 
-% P vert and P mid are the same ... one is mistaken... 
-% FIx P mid and P vert and then fix the solver. Do this tuesday morning. 

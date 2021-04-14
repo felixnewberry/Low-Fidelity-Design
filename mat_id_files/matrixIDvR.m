@@ -5,6 +5,7 @@ function [P,ix,k] = matrixIDvR(Y,maxrnk)
 % Matthew Reynolds
 % University of Colorado Boulder
 %
+
   % compute the QR factorization of Y
   [~,R,ix,k] = rank_k_gsqr(Y,maxrnk);%dgsqr(Y,tol);
  
@@ -26,4 +27,6 @@ function [P,ix,k] = matrixIDvR(Y,maxrnk)
   P = [eye(k),T];
   P = P * Pr';
    
+  1; 
+  
 end

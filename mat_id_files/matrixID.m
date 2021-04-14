@@ -20,6 +20,5 @@ function [P,ix] = matrixID(Y,tol)
   %T = R(1:k,1:k) \ R(1:k,(k+1):end);
 
   P = [eye(k),T];
-  P = P * Pr';
-   
+  P = P * Pr';  
 end

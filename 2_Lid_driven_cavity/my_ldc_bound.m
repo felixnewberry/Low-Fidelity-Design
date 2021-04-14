@@ -73,7 +73,9 @@ save('LDC_data/inputs_vec.mat', 'nx', 'delta_u', 'delta_nu');
 
 tic
 % Call python/fenics
-pyFi_ensemble = 'sudo python3.6 run_LDC_ensemble.py';
+% pyFi_ensemble = 'sudo python3.6 run_LDC_ensemble.py';
+pyFi_ensemble = 'sudo python3 run_LDC_ensemble.py';
+
 system(pyFi_ensemble); 
 toc
 

@@ -11,4 +11,5 @@ Contains the code neccessary to carry out low-fidelty design, as described in pa
 1. Cantilever Beam
 2. Lid-driven Cavity
 3. L-shaped Elasticity
+4. Airfoil
 

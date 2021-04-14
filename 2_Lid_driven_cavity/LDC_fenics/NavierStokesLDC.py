@@ -47,11 +47,6 @@ def Navier_Stokes_LDC(u_top, nu, nx):
     # Outputs: x and y velocities, and magnitude
     # In previous versions the output has been pressure along the top surface.
 
-    #print("u_top =: " + str(u_top(0)))
-    #print("nu =: " + str(nu(0)))
-    # nu is linear from nu_0 at y = 0 to nu_1 at y = 1
-
-
     ny = nx
 
     n_points = nx+1

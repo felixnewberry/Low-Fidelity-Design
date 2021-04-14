@@ -19,9 +19,9 @@ clc
 % 4 is P vert
 
 % convert point_test into nom_opt
-individual_search = 0; % 1 for nu, 2 for u
+individual_search = 1; % 1 for nu, 2 for u
 grid_search = 0; % 
-nom_opt = 1; % Save data for nominal and optimal runs - have to edit bound too
+nom_opt = 0; % Save data for nominal and optimal runs - have to edit bound too
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -48,7 +48,7 @@ c5 = [0.4660, 0.6740, 0.1880];
 c6 = [0.3010, 0.7450, 0.9330]; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Generate samples 
+%%% Generate samples (updated in mesh_independence.m
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% 200 samples
@@ -74,10 +74,6 @@ c6 = [0.3010, 0.7450, 0.9330];
 % % nx = 6 took 4.94 s to run. 
 % % nx = 4 took 3.88 s to run. 
 
-% % % load('LDC_data/nu_vec.mat')
-% % % load('LDC_data/u_top_vec.mat')
-% % % load('LDC_data/xi_mat.mat')
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Load data, vanilla approach first
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,10 +82,6 @@ c6 = [0.3010, 0.7450, 0.9330];
 load('LDC_data/x_32.mat');
 load('LDC_data/y_32.mat');
 load('LDC_data/x_all.mat');
-
-% random inputs, xi_mat, nu_vec, u_top_vec
-% load('LDC_data/xi_mat.mat');
-load('LDC_data/u_nu_vec.mat');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Individual Sensitivity
@@ -103,9 +95,9 @@ if individual_search >= 1
     nx = 4; 
 %     r = 1; 
     r = 1; 
-    n = r+2; 
-        
-    
+%     n = r+2; 
+    n = r+4; 
+
 %     delta_u_vec = -0.6:0.02:0.0;
 %     delta_nu_vec = 0.0:0.1:3;
     
@@ -163,14 +155,14 @@ if individual_search == 1
     plot_label = '$ \Delta \nu [\%]$';
     delta_vec = delta_nu_vec; 
 %     save('LDC_design/line_qoi_nu_1','error_bound_mat', 'delta_vec')
-    save('LDC_design/individual_qoi_nu','error_bound_mat', 'delta_vec')
+    save('LDC_design/individual_qoi_nu_n5','error_bound_mat', 'delta_vec')
 %     save('LDC_design/line_qoi_nu_2_n8','error_bound_mat', 'delta_vec')
 
 elseif individual_search == 2
     plot_label = '$ \Delta U [\%]$';
     delta_vec = delta_u_vec; 
 %     save('LDC_design/line_qoi_u_1','error_bound_mat', 'delta_vec')
-    save('LDC_design/individual_qoi_u','error_bound_mat', 'delta_vec')
+    save('LDC_design/individual_qoi_u_n5','error_bound_mat', 'delta_vec')
 %     save('LDC_design/line_qoi_u_2_n8','error_bound_mat', 'delta_vec')
 elseif individual_search == 3
 %     plot_label = '$ \Delta \nu_0 [\%]$';
@@ -289,7 +281,7 @@ if grid_search == 1
 %         save('LDC_design/grid_search_test','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
 %         save('LDC_design/grid_search_nu_linear_test','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec_0','delta_nu_vec_1')
 %         save('LDC_design/grid_search_2_Transform','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
-        save('LDC_design/grid_search','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
+        save('LDC_design/grid_search_n5','error_bound_mat', 'error_Bi_mat', 'delta_u_vec','delta_nu_vec')
 
 end
 
@@ -297,7 +289,8 @@ if nom_opt == 1
     
 nx = 4; 
 r = 1; 
-n = r+2; 
+% n = r+2; 
+n = r+4;
 
 % Find nominal and optimal data - just for U mid and P base 
 delta_u_vec = [0, 1.5579, 0.71579]; 
