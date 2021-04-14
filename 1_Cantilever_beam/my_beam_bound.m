@@ -118,7 +118,8 @@ N = nsim;
 % Subset of vectors for bi-fidelity error estimate 
 % Ensure column skeleton slection are used + additional samples to reach
 % total of n
-rand_sample = [ix, getfield(setxor(ix,1:N), {1:n-numel(ix)})];
+% rand_sample = [ix, getfield(setxor(ix,1:N), {1:n-numel(ix)})];
+rand_sample = [ix, getfield(setxor(ix,1:n), {1:n-numel(ix)})];
 
 B_R = B(:,rand_sample);
 A_R = A(:,rand_sample);
@@ -152,14 +153,6 @@ if mode == 6
         save('Beam_design/Opt','Uc', 'Ub', 'sb','X','rand_sample','n','r')
         save('Beam_design/tip_error_opt','tip_error_bi','tip_error_L','X','rand_sample','n','r')
     end
-
-%     if X(1) == 0 
-%         save('Beam_design/Nom_all','Uc', 'Ub', 'sb','error_bound','rand_sample','n','r')
-%        	save('Beam_design/tip_error_nom_all','tip_error_bi','tip_error_L','rand_sample','n','r')
-%     else
-%         save('Beam_design/Opt_all','Uc', 'Ub', 'sb','error_bound','X','rand_sample','n','r')
-%         save('Beam_design/tip_error_opt_all','tip_error_bi','tip_error_L','X','rand_sample','n','r')
-%     end
 end
 
 end
