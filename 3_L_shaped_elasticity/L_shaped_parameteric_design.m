@@ -180,7 +180,7 @@ tic
 
 for i_test = 1:length(delta_vec)
 
-[error_bound,error_Bi] = my_L_bound(delta_vec(i_test),nsim, n, r, mode_delta, nom_opt); 
+    [error_bound,error_Bi] = my_L_bound(delta_vec(i_test),nsim, n, r, mode_delta, nom_opt);
 
 error_bound_mat(i_test,:) = error_bound;
 error_Bi_mat(i_test,:) =  error_Bi;

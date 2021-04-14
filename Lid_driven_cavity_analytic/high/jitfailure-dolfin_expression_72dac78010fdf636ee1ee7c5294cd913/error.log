@@ -1,7 +1,0 @@
-/tmp/tmp4o64pujv/dolfin_expression_72dac78010fdf636ee1ee7c5294cd913.cpp: In member function ‘virtual void dolfin::dolfin_expression_72dac78010fdf636ee1ee7c5294cd913::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
-/tmp/tmp4o64pujv/dolfin_expression_72dac78010fdf636ee1ee7c5294cd913.cpp:65:40: error: invalid operands of types ‘Eigen::DenseCoeffsBase<Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, 0>::CoeffReturnType {aka double}’ and ‘Eigen::DenseCoeffsBase<Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, 0>::CoeffReturnType {aka double}’ to binary ‘operator^’
-           values[0] = u_top/nu*8*((x[0]^4-2*x[0]^3+x[0]^2));
-                                    ~~~~^~~~~~~~~
-/tmp/tmp4o64pujv/dolfin_expression_72dac78010fdf636ee1ee7c5294cd913.cpp:65:42: warning: suggest parentheses around arithmetic in operand of ‘^’ [-Wparentheses]
-           values[0] = u_top/nu*8*((x[0]^4-2*x[0]^3+x[0]^2));
-                                         ~^~~~~~~

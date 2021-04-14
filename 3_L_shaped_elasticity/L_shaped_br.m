@@ -19,6 +19,7 @@ clc
 %%% Load data 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%% all broke? Fix! 
 % Tip error, or entire deflection? 
 
 n_sim = 200; 
@@ -46,6 +47,8 @@ xi_low = xi(1:n_sim,:);
 Uf = Uf'; 
 Uc_nom = Uc_nom'; 
 Uc_opt = Uc_opt'; 
+
+1; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PC Specs
@@ -152,18 +155,6 @@ fprintf("N_hi = %d \n", N_hi)
 
 results_tab = array2table(100*results, 'VariableNames',{'Low','Bi'},...
     'RowNames',{'Nominal', 'Optimal'})
-
-% P = 1, N_hi = 7, r = 4/4
-
-% Nom = 13.7, opt = 9.86, pc = 117% 
-% Nom, Opt about 8.3 for r=1... 
-
-% 13.4 to 6.5 for r = 5, N = 7. Similar 6. 14 to 10 for 7. 
-% 11.6 to 4.7 for r = 5 N = 12
-
-% Maybe I should ramp up the number of samples for the nominal and optimal
-% - ie full 800. Test effiacy on that! 
-% Yes. Create new samples 
 
 save('L_design/results_br','results', 'results_tab', 'u_bi_nom', 'u_bi_opt');
 % save('L_design/results_br_all','results', 'results_tab', 'u_bi_nom', 'u_bi_opt');

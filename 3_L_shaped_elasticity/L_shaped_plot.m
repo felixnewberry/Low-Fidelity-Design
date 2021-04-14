@@ -7,7 +7,7 @@ clear all
 close all
 % clc
 
-save_on = 1;
+save_on = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -17,9 +17,8 @@ LW = 2;     % Line width
 MS = 8;     % Marker Size
 FS_leg = 16; % Font size legend
 
-
-size_1 = [0,0,445,345]; 
-size_2 = [0,0,1340,515]; 
+size_1 = [0,0,575,445]; 
+size_2 = [0,0,1150,445]; 
 
 size_square = [0,0,445,445]; 
 size_large = [0,0,668,518]; 
@@ -120,9 +119,10 @@ if plot_qoi == 0
     hold off
     xlabel('y', 'interpreter', 'latex', 'fontsize', FS)
     ylabel('Horizontal displacement', 'interpreter', 'latex', 'fontsize', FS)
-    % legend([p1,p2,p3,p4],{'H','L','L_int','B'},'interpreter', 'latex', 'fontsize', FS_leg)
-    legend([p1,p2,p4],{'H','L','B'},'interpreter', 'latex', 'fontsize', FS_leg)
-    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+    % legend([p1,p2,p3,p4],{'HF','LF','L_int','BF'},'interpreter', 'latex', 'fontsize', FS_leg)
+    legend([p1,p2,p4],{'HF','LF','BF'},'interpreter', 'latex', 'fontsize', FS_leg)
+    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+ axis tight;
     
     % pdf
     [f_f,x_pdf_f] = ksdensity(Uf(1,:)); 
@@ -137,8 +137,9 @@ if plot_qoi == 0
     hold off
     xlabel('Horizontal displacement, $u(0.0,1.0)$', 'interpreter', 'latex', 'fontsize', FS)
     ylabel('plot of $u(0.0,1.0)$', 'interpreter', 'latex', 'fontsize', FS)
-    legend([p1,p2,p3],{'H','L','B'},'interpreter', 'latex', 'fontsize', FS_leg)
-    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+    legend([p1,p2,p3],{'HF','LF','BF'},'interpreter', 'latex', 'fontsize', FS_leg)
+    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+axis tight;
     
     
 elseif plot_qoi == 1 || plot_qoi == 2
@@ -148,11 +149,12 @@ elseif plot_qoi == 1 || plot_qoi == 2
     p2 = plot3(dof_coords_c(:,1),dof_coords_c(:,2),Uc(:,end),'o','color',c2);
     p3 = plot3(dof_coords_f(:,1),dof_coords_f(:,2),Uc_nom_int(:,end),'d','color',c3);
     hold off
-    xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
-    ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
+    xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+    ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
     zlabel('Horizontal displacement', 'interpreter', 'latex', 'fontsize', FS)
-    legend([p1,p2,p3],{'H','L','L_int'},'interpreter', 'latex', 'fontsize', FS_leg)
-    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+    legend([p1,p2,p3],{'HF','LF','L_int'},'interpreter', 'latex', 'fontsize', FS_leg)
+    grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+ axis tight;
     
 end
 
@@ -160,7 +162,7 @@ end
 error_L = norm(Uf-Uc_nom_int)/norm(Uf);
 error_B = norm(Uf-Ub)/norm(Uf);
 
-fprintf("Low-fidelity error:  %d \n Error Bound:  %d \n Bi-fidelity error:  %d \n",error_L, error_bound, error_Ahat);
+fprintf("LF error:  %d \n Error Bound:  %d \n BF error:  %d \n",error_L, error_bound, error_Ahat);
 
 % svd
 figure
@@ -170,8 +172,9 @@ p2 = semilogy(svd(Uc)/max(svd(Uc)),'-o','color',c2,'LineWidth',LW,'MarkerSize',M
 % p3 = semilogy(svd(Ub)/max(svd(Ub)),'-x','color',c1,'LineWidth',LW,'MarkerSize',MS); 
 xlabel('index $i$', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('Normalized singular value', 'interpreter', 'latex', 'fontsize', FS)
-legend([p1,p2],{'H','L'},'interpreter', 'latex', 'fontsize', FS_leg)
-grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+legend([p1,p2],{'HF','LF'},'interpreter', 'latex', 'fontsize', FS_leg)
+grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+ axis tight;
 xlim([1,30])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,7 +219,7 @@ bound_d_line(6,:) = error_bound_mat(:,1);
 bound_d_field(6,:) = error_bound_mat(:,2);
 bound_s_field(6,:) = error_bound_mat(:,3);
 
-plot_label = '$ \Delta [\%]$';
+plot_label = '$ \Delta  [\%],\: \Delta \beta [100$rad$]$';
 
 % Plot for d_line
 figure
@@ -231,12 +234,13 @@ hold off
 xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
-legend([p1,p2,p3,p4,p5,p6],{'$\nu$','$E$', '$corr$', '$\sigma$', '$\theta$', '$q$'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3,p4,p5,p6],{'$\nu \: [\%]$','$E\: [\%]$', '$\ell\: [\%]$', '$\sigma\: [\%]$', '$\beta\: [$rad$]$', '$q\: [\%]$'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+
 % grid on
-set(gcf,'Position',size_large)
-title('QoI: $d$ Individual Sensitivity','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('QoI: $d$ Individual Sensitivity','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots/L_individual_all_d_line','epsc')
@@ -255,12 +259,13 @@ hold off
 xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
-legend([p1,p2,p3,p4,p5,p6],{'$\nu$','$E$', '$corr$', '$\sigma$', '$\theta$', '$q$'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3,p4,p5,p6],{'$\nu \: [\%]$','$E\: [\%]$', '$\ell\: [\%]$', '$\sigma\: [\%]$', '$\beta\: [$rad$]$', '$q\: [\%]$'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+
 % grid on
-set(gcf,'Position',size_large)
-title('QoI: $d$ field','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('QoI: $d$ field','Interpreter', 'latex')
 
 
 if save_on ==1
@@ -280,15 +285,65 @@ hold off
 xlabel(plot_label,'interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
-legend([p1,p2,p3,p4,p5,p6],{'$\nu$','$E$', '$corr$', '$\sigma$', '$\theta$', '$q$'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3,p4,p5,p6],{'$\nu \: [\%]$','$E\: [\%]$', '$\ell\: [\%]$', '$\sigma\: [\%]$', '$\beta\: [$rad$]$', '$q\: [\%]$'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('QoI: $s$ field','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+% title('QoI: Stress Field','Interpreter', 'latex')
+
+1; 
 
 if save_on ==1
     saveas(gcf,'plots/L_individual_all_s_field','epsc')
+end
+
+% for presentation
+
+figure
+hold on
+p1 = plot(100*delta_vec,100*bound_s_field(1,:),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+p2 = plot(100*delta_vec,100*bound_s_field(2,:),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+%p3 = plot(100*delta_vec,100*bound_s_field(3,:),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
+%p4 = plot(100*delta_vec,100*bound_s_field(4,:),'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+%p5 = plot(100*delta_vec,100*bound_s_field(5,:),'+-', 'Color',c5, 'LineWidth',LW,'MarkerSize',MS); 
+%p6 = plot(100*delta_vec,100*bound_s_field(6,:),'v--', 'Color',c6, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel(plot_label,'interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+legend([p1,p2],{'$\nu$','$E$'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+ylim([20.2247   31.6110])
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+% grid on
+set(gcf,'Position',size_1)
+%title('QoI: Stress Field','Interpreter', 'latex')
+
+if save_on ==1
+    saveas(gcf,'plots/L_individual_all_s_field_nuE','epsc')
+end
+
+figure
+hold on
+p1 = plot(100*delta_vec,100*bound_s_field(1,:),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+% p2 = plot(100*delta_vec,100*bound_s_field(2,:),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+%p3 = plot(100*delta_vec,100*bound_s_field(3,:),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
+%p4 = plot(100*delta_vec,100*bound_s_field(4,:),'d:', 'Color',c4, 'LineWidth',LW,'MarkerSize',MS); 
+%p5 = plot(100*delta_vec,100*bound_s_field(5,:),'+-', 'Color',c5, 'LineWidth',LW,'MarkerSize',MS); 
+%p6 = plot(100*delta_vec,100*bound_s_field(6,:),'v--', 'Color',c6, 'LineWidth',LW,'MarkerSize',MS); 
+hold off
+xlabel(plot_label,'interpreter','latex','Fontsize',FS)
+ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
+legend([p1],{'$\nu$'},'interpreter', 'latex', 'fontsize', FS_leg)
+axis tight
+ylim([20.2247   31.6110])
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+% grid on
+set(gcf,'Position',size_1)
+%title('QoI: Stress Field','Interpreter', 'latex')
+
+if save_on ==1
+    saveas(gcf,'plots/L_individual_all_s_field_nu','epsc')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -297,7 +352,7 @@ end
 
 1; 
 
-% nu, corr, sigma and theta
+% nu, \ell, sigma and beta
 
 %%% nu
 load('L_design/individual_qoi_nu_0_p7.mat')
@@ -313,10 +368,10 @@ ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('Individual Sensitivity of $\nu$','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('Individual Sensitivity of $\nu$','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots/L_individual_nu','epsc')
@@ -333,17 +388,17 @@ ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 % legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('Individual Sensitivity of $\nu$','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('Individual Sensitivity of $\nu$','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots/L_individual_nu_s_field','epsc')
 end
 
 
-%%% corr
+%%% \ell
 load('L_design/individual_qoi_cor_0_2p6.mat')
 
 figure
@@ -352,15 +407,15 @@ p1 = plot(100*delta_vec,100*error_bound_mat(:,1),'o-', 'Color',c1,'LineWidth',LW
 p2 = plot(100*delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
 p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
-xlabel('$ \Delta  corr [\%]$','interpreter','latex','Fontsize',FS)
+xlabel('$ \Delta  \ell [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('Individual Sensitivity of $corr$','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('Individual Sensitivity of $\ell$','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots/L_individual_corr','epsc')
@@ -372,15 +427,15 @@ hold on
 % p2 = plot(100*delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
 p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'o-', 'Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
-xlabel('$ \Delta  corr [\%]$','interpreter','latex','Fontsize',FS)
+xlabel('$ \Delta  \ell [\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 % legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('Individual Sensitivity of $corr$','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('Individual Sensitivity of $\ell$','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots/L_individual_corr_s_field','epsc')
@@ -400,10 +455,10 @@ ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('Individual Sensitivity search of $\sigma$','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('Individual Sensitivity of $\sigma$','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots/L_individual_sigma','epsc')
@@ -420,58 +475,58 @@ ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 % legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('Individual Sensitivity of $\sigma$','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('Individual Sensitivity of $\sigma$','Interpreter', 'latex')
 
 if save_on ==1
     saveas(gcf,'plots/L_individual_sigma_s_field','epsc')
 end
 
 
-%%% theta
+%%% beta
 load('L_design/individual_qoi_theta_m_0_pi_o4.mat')
 % load('L_design/individual_qoi_theta_m_pi_o8_pi_o8.mat')
 
 figure
 hold on
-p1 = plot(100*delta_vec,100*error_bound_mat(:,1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
-p2 = plot(100*delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
+p1 = plot(delta_vec,100*error_bound_mat(:,1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
+p2 = plot(delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(delta_vec,100*error_bound_mat(:,3),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
-xlabel('$\theta [rad]$','interpreter','latex','Fontsize',FS)
+xlabel('$\Delta \beta [$rad$]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('Individual Sensitivity of $\theta$','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('Individual Sensitivity of $\beta$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/L_individual_theta','epsc')
+    saveas(gcf,'plots/L_individual_beta','epsc')
 end
 
 figure
 hold on
 % p1 = plot(100*delta_vec,100*error_bound_mat(:,1),'o-', 'Color',c1,'LineWidth',LW,'MarkerSize',MS); 
 % p2 = plot(100*delta_vec,100*error_bound_mat(:,2),'x--', 'Color',c2, 'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot(100*delta_vec,100*error_bound_mat(:,3),'o-', 'Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
+p3 = plot(delta_vec,100*error_bound_mat(:,3),'o-', 'Color',c1, 'LineWidth',LW,'MarkerSize',MS); 
 hold off
-xlabel('$\theta [rad]$','interpreter','latex','Fontsize',FS)
+xlabel('$\Delta \beta [$rad$]$','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
 % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 % legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$s$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);%box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
-set(gcf,'Position',size_large)
-title('Individual Sensitivity of $\theta$','Interpreter', 'latex')
+set(gcf,'Position',size_1)
+%title('Individual Sensitivity of $\beta$','Interpreter', 'latex')
 
 if save_on ==1
-    saveas(gcf,'plots/L_individual_theta_s_field','epsc')
+    saveas(gcf,'plots/L_individual_beta_s_field','epsc')
 end
 
 % % plot bound for all QoI... 
@@ -504,7 +559,7 @@ end
 % p3 = plot(100*delta_vec,100*error_bi_mat(:,3),'s-.', 'Color',c3, 'LineWidth',LW,'MarkerSize',MS); 
 % hold off
 % xlabel(plot_label,'interpreter','latex','Fontsize',FS)
-% ylabel('Error Bi $[\%]$','interpreter','latex','Fontsize',FS)
+% ylabel('Error BF $[\%]$','interpreter','latex','Fontsize',FS)
 % % legend([p1,p2,p3,p4,p5],{'$U$ Mid','$U$ Vert','$P$ Mid','$P$ Vert', '$P$ Base'},'interpreter', 'latex', 'fontsize', FS_leg)
 % legend([p1,p2,p3],{'$d$ Line','$d$ Field', '$\sigma$ Field'},'interpreter', 'latex', 'fontsize', FS_leg)
 % axis tight
@@ -583,10 +638,10 @@ end
 % 
 % % % PCE stats: 
 % fprintf('PCE Statistics: \n');
-% % fprintf('LS Bound: %d, LS Bi: %d \n',error_val_ls, error_val_ls_A);
-% % fprintf('SPG Bound: %d, SPG Bi: %d \n',error_val_spg, error_val_spg_A);
+% % fprintf('LS Bound: %d, LS BF: %d \n',error_val_ls, error_val_ls_A);
+% % fprintf('SPG Bound: %d, SPG BF: %d \n',error_val_spg, error_val_spg_A);
 % 
-% fprintf('SPG Bound: %d, SPG Bi: %d \n',sigma, sigma_A);
+% fprintf('SPG Bound: %d, SPG BF: %d \n',sigma, sigma_A);
 % 
 % % could change this so that spg uses all 200 samples from start. 
 % % using least squares and N = 150 vs 50 for validation
@@ -626,12 +681,16 @@ nom_bound_s_field = error_bound_all(3);
 load('L_design/all_opt')
 Uc_opt_s_field = Uc_all{3}; 
 Ub_opt_s_field = Ub_all{3}; 
-sb_opt_s_field = sb_all{3}; 
-opt_bi_s_field = error_Bi_all(3); 
-opt_bound_s_field = error_bound_all(3); 
+% sb_opt_s_field = sb_all{3}; 
+
+% opt_bi_s_field = error_Bi_all(3); 
+% opt_bound_s_field = error_bound_all(3); 
 
 [bound_sort_s, bound_index_s] = sort(error_bound_mat(:,3));
 bi_sort_s = error_Bi_mat(bound_index_s,3); 
+
+opt_bi_s_field = bi_sort_s(1); 
+opt_bound_s_field = bound_sort_s(1); 
 
 delta_mat_s = delta_mat; 
 
@@ -639,18 +698,18 @@ figure
 p1 = plot(100*bound_sort_s,'ob','color', c1, 'LineWidth',LW,'MarkerSize',MS); 
 hold on
 p2 = plot(100*bi_sort_s,'xr', 'color', c2,'LineWidth',LW,'MarkerSize',MS); 
-p3 = plot([1,200],[nom_bound_s_field*100, nom_bound_s_field*100],'b-','color', c1, 'LineWidth',LW); 
-p4 = plot([1,200],[nom_bi_s_field*100, nom_bi_s_field*100],'r--', 'color', c2,'LineWidth',LW); 
+p3 = plot([1,200],[nom_bound_s_field*100, nom_bound_s_field*100],'b-','color', c3, 'LineWidth',LW); 
+p4 = plot([1,200],[nom_bi_s_field*100, nom_bi_s_field*100],'r--', 'color', c4,'LineWidth',LW); 
 hold off
-xlabel('sample','interpreter','latex','Fontsize',FS)
+xlabel('Sample','interpreter','latex','Fontsize',FS)
 ylabel('Error Bound $[\%]$','interpreter','latex','Fontsize',FS)
-legend([p1,p2,p3,p4],{'Bound Samples','Bi Samples','Nominal Bound','Nominal Bi'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([p1,p2,p3,p4],{'Bound Samples','BF Samples','Nominal Bound','Nominal BF'},'interpreter', 'latex', 'fontsize', FS_leg, 'Location', 'NorthWest')
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 % grid on
 ylim([0,30])
-title('S Field','Interpreter','latex')
-
+% title('Stress Field','Interpreter','latex')
+set(gcf,'Position',size_1)
 if save_on ==1
     saveas(gcf,'plots/L_rand_samples_s','epsc')
 end
@@ -665,27 +724,31 @@ bi_sort_s(1)
 load('L_data/Uf_stress')
 Uf_s = Uf; 
     
-Uc_nom_int = zeros(length(dof_coords_f),nsim); 
-for i_int = 1:nsim
-    F = scatteredInterpolant(dof_coords_c(:,1),dof_coords_c(:,2), Uc_nom_s_field(:,i_int));
-    Uc_nom_int(:,i_int) = F(dof_coords_f(:,1),dof_coords_f(:,2));
-end
-nom_low = norm(Uc_nom_int - Uf_s)/norm(Uf_s); 
+% Uc_nom_int = zeros(length(dof_coords_f),nsim); 
+% for i_int = 1:nsim
+%     F = scatteredInterpolant(dof_coords_c(:,1),dof_coords_c(:,2), Uc_nom_s_field(:,i_int));
+%     Uc_nom_int(:,i_int) = F(dof_coords_f(:,1),dof_coords_f(:,2));
+% end
+% nom_low = norm(Uc_nom_int - Uf_s)/norm(Uf_s); 
+% 
+% 
+% Uc_opt_int = zeros(length(dof_coords_f),nsim); 
+% for i_int = 1:nsim
+%     F = scatteredInterpolant(dof_coords_c(:,1),dof_coords_c(:,2), Uc_opt_s_field(:,i_int));
+%     Uc_opt_int(:,i_int) = F(dof_coords_f(:,1),dof_coords_f(:,2));
+% end
+% nom_opt = norm(Uc_opt_int - Uf_s)/norm(Uf_s); 
 
-
-Uc_opt_int = zeros(length(dof_coords_f),nsim); 
-for i_int = 1:nsim
-    F = scatteredInterpolant(dof_coords_c(:,1),dof_coords_c(:,2), Uc_opt_s_field(:,i_int));
-    Uc_opt_int(:,i_int) = F(dof_coords_f(:,1),dof_coords_f(:,2));
-end
-nom_opt = norm(Uc_opt_int - Uf_s)/norm(Uf_s); 
-
+% This has to be checked, seems curious. 
+nom_low = norm(Uc_nom_s_field(:,1:nsim) - Uf_s)/norm(Uf_s); 
+nom_opt = norm(Uc_opt_s_field(:,1:nsim) - Uf_s)/norm(Uf_s); 
+Uc_opt_int = Uc_opt_s_field(:,1:nsim); 
 
 
 results_mat = [nom_low, nom_bound_s_field, nom_bi_s_field, nom_opt, opt_bound_s_field, opt_bi_s_field]'*100; 
 
 results_tab = array2table(results_mat,...
-    'VariableNames',{'S_field' },'RowNames',{'Nom Low','Nom Bound','Nom Bi', 'Opt Low', 'Opt Bound', 'Opt Bi'});
+    'VariableNames',{'S_field' },'RowNames',{'Nom LF','Nom Bound','Nom BF', 'Opt LF', 'Opt Bound', 'Opt BF'});
 results_tab
 
 % Check convergence of high fidelity I suppose? Probably necessary to be
@@ -701,31 +764,100 @@ results_tab
 
 error_b_nom_s = vecnorm(Ub_nom_s_field-Uf_s)./vecnorm(Uf_s);
 error_b_opt_s = vecnorm(Ub_opt_s_field-Uf_s)./vecnorm(Uf_s);
-
-
+% norm(Ub_opt_s_field-Uf_s)/norm(Uf_s);
 %%% Vizualize  data
 n_hist = 20; 
 
-% check data on this one... 
+% figure
+% hold on
+% h1 = histogram(abs(100*error_b_nom_s),n_hist,'FaceColor',c1);
+% h2 = histogram(abs(100*error_b_opt_s),n_hist,'FaceColor',c2);
+% hold off
+% legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+% xlabel('Relative Error $[\%]$','interpreter','latex','Fontsize',FS)
+% ylabel('Frequency','interpreter','latex','Fontsize',FS)
+% axis tight
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+% set(gcf,'Position',size_1)
+% % title('Stress Field','Interpreter','latex')
+% 
+% 1; 
+% 
+% if save_on ==1
+%     saveas(gcf,'plots/L_s_field_hist','epsc')
+% %     saveas(gcf,'plots/LDC_U_mid_hist','png')
+% end
+
+
+% histogram 
+
+results_mat = [nom_low, nom_bound_s_field, nom_bi_s_field, nom_opt, opt_bound_s_field, opt_bi_s_field]'*100; 
+
+x_lim = [0 21.4]; 
+y_lim = [0 33]; 
+
 figure
 hold on
+l1 = xline(nom_bound_s_field*100,'LineWidth', LW, 'Color', c1);
+l2 = xline(opt_bound_s_field*100,'--','LineWidth', LW, 'Color', c2);
+
 h1 = histogram(abs(100*error_b_nom_s),n_hist,'FaceColor',c1);
 h2 = histogram(abs(100*error_b_opt_s),n_hist,'FaceColor',c2);
+
 hold off
-legend([h1,h2],{'Nominal','Optimal'},'interpreter', 'latex', 'fontsize', FS_leg)
+% legend([l1],{'Nominal Bound'},'interpreter', 'latex', 'fontsize', FS_leg)
+% legend([l1, l2],{'Nominal Bound','Optimal Bound'},'interpreter', 'latex', 'fontsize', FS_leg)
+% legend([l1, l2, h1],{'Nominal Bound','Optimal Bound','Nominal Ensemble'},'interpreter', 'latex', 'fontsize', FS_leg)
+legend([l1, l2, h1,h2],{'Nominal Bound','Optimal Bound','Nominal Ensemble','Optimal Ensemble'},'interpreter', 'latex', 'fontsize', FS_leg)
 xlabel('Relative Error $[\%]$','interpreter','latex','Fontsize',FS)
 ylabel('Frequency','interpreter','latex','Fontsize',FS)
 axis tight
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on
+xlim(x_lim); ylim(y_lim);
+yl = ylim;
+ylim([yl(1),yl(2)*(1+0.05)]);
+xl = xlim;
+xlim([xl(1),xl(2)*(1+0.05)]);
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
 set(gcf,'Position',size_1)
-% title('Stress Field','Interpreter','latex')
 
-1; 
+x_limits = xlim; 
+y_limits = ylim; 
 
 if save_on ==1
     saveas(gcf,'plots/L_s_field_hist','epsc')
 %     saveas(gcf,'plots/LDC_U_mid_hist','png')
 end
+
+% figure
+% hold on
+% l1 = xline(nom_bound_s_field*100,'LineWidth', LW, 'Color', c1);
+% l2 = xline(opt_bound_s_field*100,'--','LineWidth', LW, 'Color', c2);
+% 
+% h1 = histogram(abs(100*error_b_nom_s),n_hist,'FaceColor',c1);
+% h2 = histogram(abs(100*error_b_opt_s),n_hist,'FaceColor',c2);
+% 
+% hold off
+% % legend([l1],{'Nominal Bound'},'interpreter', 'latex', 'fontsize', FS_leg)
+% % legend([l1, l2],{'Nominal Bound','Optimal Bound'},'interpreter', 'latex', 'fontsize', FS_leg)
+% % legend([l1, l2, h1],{'Nominal Bound','Optimal Bound','Nominal Ensemble'},'interpreter', 'latex', 'fontsize', FS_leg)
+% legend([l1, l2, h1,h2],{'Nominal Bound','Optimal Bound','Nominal Ensemble','Optimal Ensemble'},'interpreter', 'latex', 'fontsize', FS_leg)
+% xlabel('Relative Error $[\%]$','interpreter','latex','Fontsize',FS)
+% ylabel('Frequency','interpreter','latex','Fontsize',FS)
+% axis tight
+% xlim(x_limits); 
+% ylim(y_limits); 
+% % xlim(x_lim); ylim(y_lim);
+% % yl = ylim;
+% % ylim([yl(1),yl(2)*(1+0.05)]);
+% % xl = xlim;
+% % xlim([xl(1),xl(2)*(1+0.05)]);
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+% set(gcf,'Position',size_1)
+% 
+% if save_on ==1
+%     saveas(gcf,'plots/L_s_field_hist_3','epsc')
+% %     saveas(gcf,'plots/LDC_U_mid_hist','png')
+% end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot QoI realization
@@ -807,8 +939,9 @@ p5 = plot(x_pdf_b_opt,f_b_opt , 'color',c5,'LineWidth',LW);
 hold off
 xlabel('Von Mises Stress at point $(0.0, 0.1903)$', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('pdf', 'interpreter', 'latex', 'fontsize', FS)
-legend([p1,p2,p3,p4,p5],{'H','L Nom','B Nom','L Opt','B Opt'},'interpreter', 'latex', 'fontsize', FS_leg)
-grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+legend([p1,p2,p3,p4,p5],{'HF','LF Nom','BF Nom','LF Opt','BF Opt'},'interpreter', 'latex', 'fontsize', FS_leg)
+grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+ axis tight;
 
 
 % or pdf of all stress for one sample? 
@@ -829,8 +962,9 @@ p5 = plot(x_pdf_b_opt,f_b_opt , 'color',c5,'LineWidth',LW);
 hold off
 xlabel('Von Mises Stress for realization 30', 'interpreter', 'latex', 'fontsize', FS)
 ylabel('pdf', 'interpreter', 'latex', 'fontsize', FS)
-legend([p1,p2,p3,p4,p5],{'H','L Nom','B Nom','L Opt','B Opt'},'interpreter', 'latex', 'fontsize', FS_leg)
-grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);box on; axis tight;
+legend([p1,p2,p3,p4,p5],{'HF','LF Nom','BF Nom','LF Opt','BF Opt'},'interpreter', 'latex', 'fontsize', FS_leg)
+grid on; set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+ axis tight;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Field
@@ -862,9 +996,10 @@ zmax = max(Uf_surf(:));
 figure
 surf(Xq, Yq, Uf_surf,'edgecolor','none')
 view(0,90)
-xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
-ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis); grid off; box off; axis tight; 
+xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+ grid off; box off; axis tight; 
 caxis([0,zmax]); 
 
 % Interpolate error nom
@@ -878,35 +1013,82 @@ V_opt(index_1) = NaN;
 zmax = max(V_nom(:)); 
 
 
+% figure
+% set(gcf, 'Position',  size_2)
+% subplot(1,2,1)
+% surf(Xq, Yq, V_nom,'edgecolor','none')
+% view(0,90)
+% xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+% ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+%  grid off; box off; axis tight; 
+% caxis([0,zmax]); % could do 0.4
+% %title('Nominal Error Realization','Interpreter','latex')
+% 
+% % zlim([0,zmax])
+% 
+% % Interpolate error bi
+% % [Xq,Yq] = meshgrid(-1:0.01:1,-1:0.01:1);
+% 
+% subplot(1,2,2)
+% surf(Xq, Yq, V_opt,'edgecolor','none')
+% view(0,90)
+% xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+% ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+% grid off; box off; axis tight;
+% caxis([0,zmax]);
+% %title('Optimal Error Realization','Interpreter','latex')
+% % zlim([0,zmax])
+% colorbar
+% c =colorbar;
+% c.TickLabelInterpreter = 'latex'; 
+% set(gcf,'Position',size_2)
+% 
+% if save_on ==1
+%     saveas(gcf,'plots/L_error_Bi_nom_opt','epsc')
+% end
+
 figure
-set(gcf, 'Position',  size_2)
-subplot(1,2,1)
+set(gcf, 'Position',  size_1)
 surf(Xq, Yq, V_nom,'edgecolor','none')
 view(0,90)
-xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
-ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis); grid off; box off; axis tight; 
+xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+ grid off; box off; axis tight; 
+ colorbar
+c =colorbar;
+c.TickLabelInterpreter = 'latex'; 
 caxis([0,zmax]); % could do 0.4
-title('Nominal Error Realization','Interpreter','latex')
+%title('Nominal Error Realization','Interpreter','latex')
+
+if save_on ==1
+    saveas(gcf,'plots/L_error_Bi_nom','epsc')
+end
 
 % zlim([0,zmax])
 
 % Interpolate error bi
 % [Xq,Yq] = meshgrid(-1:0.01:1,-1:0.01:1);
 
-subplot(1,2,2)
+figure
+set(gcf, 'Position',  size_1)
 surf(Xq, Yq, V_opt,'edgecolor','none')
 view(0,90)
-xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
-ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);grid off; box off; axis tight;
+xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+grid off; box off; axis tight;
 caxis([0,zmax]);
-title('Optimal Error Realization','Interpreter','latex')
+%title('Optimal Error Realization','Interpreter','latex')
 % zlim([0,zmax])
 colorbar
+c =colorbar;
+c.TickLabelInterpreter = 'latex'; 
 
 if save_on ==1
-    saveas(gcf,'plots/L_error_Bi_nom_opt','epsc')
+    saveas(gcf,'plots/L_error_Bi_opt','epsc')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -914,7 +1096,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-e_BB_p = e_B_nom_p - e_B_opt_p; % how much worse is nomanl B compared to Optimal - for all points. 
+e_BB_p = e_B_nom_p - e_B_opt_p; % how much worse is nomanl BF compared to Optimal - for all points. 
 
 % 465x200. 
 % Plot mean and sd
@@ -931,36 +1113,97 @@ V_var = griddata(x_f(:,1),x_f(:,2),var_e_BB_p,Xq,Yq);
 V_mu(index_1) = NaN; 
 V_var(index_1) = NaN; 
 
-% zmax = max(V_nom(:)); 
+zmax = max(V_mu(:)); 
+
+
+% figure
+% set(gcf, 'Position',  size_2)
+% subplot(1,2,1)
+% surf(Xq, Yq, V_mu,'edgecolor','none')
+% view(0,90)
+% xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+% ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+% grid off; box off; axis tight; 
+% % caxis([0,zmax]); % could do 0.4
+% %title('BF Difference $\mu$','Interpreter','latex')
+% 
+% % zlim([0,zmax])
+% 
+% % Interpolate error bi
+% % [Xq,Yq] = meshgrid(-1:0.01:1,-1:0.01:1);
+% 
+% subplot(1,2,2)
+% surf(Xq, Yq, V_var,'edgecolor','none')
+% view(0,90)
+% xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+% ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+% set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+% grid off; box off; axis tight;
+% % caxis([0,zmax]);
+% %title('BF Difference Var','Interpreter','latex')
+% % zlim([0,zmax])
+% colorbar
+% c =colorbar;
+% c.TickLabelInterpreter = 'latex'; 
+% set(gcf,'Position',size_2)
+% 
+% if save_on ==1
+%     saveas(gcf,'plots/L_error_mu_var','epsc')
+% end
 
 
 figure
-set(gcf, 'Position',  size_2)
-subplot(1,2,1)
+set(gcf, 'Position',  size_1)
 surf(Xq, Yq, V_mu,'edgecolor','none')
 view(0,90)
-xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
-ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis); grid off; box off; axis tight; 
+xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+grid off; box off; axis tight; 
+colorbar
+c =colorbar;
+c.TickLabelInterpreter = 'latex'; 
+caxis([0,zmax]); % could do 0.4
+
+
+if save_on ==1
+    saveas(gcf,'plots/L_error_mu','epsc')
+end
+
 % caxis([0,zmax]); % could do 0.4
-title('Bi Difference $\mu$','Interpreter','latex')
+%title('BF Difference $\mu$','Interpreter','latex')
 
 % zlim([0,zmax])
 
 % Interpolate error bi
 % [Xq,Yq] = meshgrid(-1:0.01:1,-1:0.01:1);
 
-subplot(1,2,2)
+figure
+set(gcf,'Position',size_1)
 surf(Xq, Yq, V_var,'edgecolor','none')
 view(0,90)
-xlabel('x', 'interpreter', 'latex', 'fontsize', FS)
-ylabel('y', 'interpreter', 'latex', 'fontsize', FS)
-set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis);grid off; box off; axis tight;
-% caxis([0,zmax]);
-title('Bi Difference Var','Interpreter','latex')
+xlabel('$x$', 'interpreter', 'latex', 'fontsize', FS)
+ylabel('$y$', 'interpreter', 'latex', 'fontsize', FS)
+set(gca,'Fontsize', FS_axis, 'linewidth',LW_axis,'TickLabelInterpreter','latex'); box on
+grid off; box off; axis tight;
+caxis([0,zmax]);
+%title('BF Difference Var','Interpreter','latex')
 % zlim([0,zmax])
 colorbar
+c =colorbar;
+c.TickLabelInterpreter = 'latex'; 
+
 
 if save_on ==1
-    saveas(gcf,'plots/L_error_mu_var','epsc')
+    saveas(gcf,'plots/L_error_var','epsc')
 end
+
+Uc_nom_int
+
+B = Uc_nom_int/norm(Uc_nom_int,'fro');
+r = 6;
+% Gives error above 5% 
+[P_s,ix] = matrixIDvR(B,r);
+err_Bhat = norm(B-B(:,ix)*P_s) 
+

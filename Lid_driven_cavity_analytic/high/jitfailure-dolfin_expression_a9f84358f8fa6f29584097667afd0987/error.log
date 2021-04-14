@@ -1,4 +1,0 @@
-/tmp/tmpo7ak86af/dolfin_expression_a9f84358f8fa6f29584097667afd0987.cpp: In member function ‘virtual void dolfin::dolfin_expression_a9f84358f8fa6f29584097667afd0987::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
-/tmp/tmpo7ak86af/dolfin_expression_a9f84358f8fa6f29584097667afd0987.cpp:64:31: error: invalid type argument of unary ‘*’ (have ‘double’)
-           values[0] = Re*1.2**1.1;
-                               ^~~
