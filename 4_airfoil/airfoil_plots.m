@@ -4,7 +4,7 @@ clear all
 close all
 clc
 
-save_on = 1; 
+save_on = 0; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Plot settings
@@ -46,9 +46,6 @@ load('airfoil_data/Uc_nom.mat', 'Uc_nom')
 %%% Individual Sensitivity
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-% load('results_plot/plot_data_pm50_r10')
-% load('results_plot/plot_data_pm10_r10')
 
 load('results_plot/plot_data_pm50_r6')
 load('results_plot/plot_data_pm10_r6')
